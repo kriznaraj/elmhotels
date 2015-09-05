@@ -1,0 +1,68 @@
+Elm.Filters = Elm.Filters || {};
+Elm.Filters.make = function (_elm) {
+   "use strict";
+   _elm.Filters = _elm.Filters || {};
+   if (_elm.Filters.values)
+   return _elm.Filters.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Filters",
+   $Basics = Elm.Basics.make(_elm),
+   $Html = Elm.Html.make(_elm),
+   $Html$Attributes = Elm.Html.Attributes.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
+   var filters = A2($Html.section,
+   _L.fromArray([$Html$Attributes.$class("filters")]),
+   _L.fromArray([A2($Html.div,
+                _L.fromArray([]),
+                _L.fromArray([A2($Html.label,
+                             _L.fromArray([]),
+                             _L.fromArray([$Html.text("Hotel Name: ")]))
+                             ,A2($Html.input,
+                             _L.fromArray([$Html$Attributes.type$("text")]),
+                             _L.fromArray([]))]))
+                ,A2($Html.hr,
+                _L.fromArray([]),
+                _L.fromArray([]))
+                ,A2($Html.div,
+                _L.fromArray([]),
+                _L.fromArray([A2($Html.label,
+                _L.fromArray([]),
+                _L.fromArray([$Html.text("Stars: ")]))]))
+                ,A2($Html.hr,
+                _L.fromArray([]),
+                _L.fromArray([]))
+                ,A2($Html.div,
+                _L.fromArray([]),
+                _L.fromArray([A2($Html.label,
+                             _L.fromArray([]),
+                             _L.fromArray([$Html.text("Minimum Rating: ")]))
+                             ,A2($Html.input,
+                             _L.fromArray([$Html$Attributes.type$("range")]),
+                             _L.fromArray([]))]))
+                ,A2($Html.hr,
+                _L.fromArray([]),
+                _L.fromArray([]))
+                ,A2($Html.div,
+                _L.fromArray([]),
+                _L.fromArray([A2($Html.label,
+                             _L.fromArray([]),
+                             _L.fromArray([$Html.text("Minimum Price: ")]))
+                             ,A2($Html.input,
+                             _L.fromArray([$Html$Attributes.type$("range")]),
+                             _L.fromArray([]))]))
+                ,A2($Html.hr,
+                _L.fromArray([]),
+                _L.fromArray([]))
+                ,A2($Html.button,
+                _L.fromArray([]),
+                _L.fromArray([$Html.text("Search")]))]));
+   _elm.Filters.values = {_op: _op
+                         ,filters: filters};
+   return _elm.Filters.values;
+};

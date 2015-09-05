@@ -1,0 +1,28 @@
+Elm.HotelsList = Elm.HotelsList || {};
+Elm.HotelsList.make = function (_elm) {
+   "use strict";
+   _elm.HotelsList = _elm.HotelsList || {};
+   if (_elm.HotelsList.values)
+   return _elm.HotelsList.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "HotelsList",
+   $Basics = Elm.Basics.make(_elm),
+   $Html = Elm.Html.make(_elm),
+   $Html$Attributes = Elm.Html.Attributes.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
+   var hotelList = F2(function (address,
+   model) {
+      return A2($Html.section,
+      _L.fromArray([$Html$Attributes.$class("hotel-list")]),
+      _L.fromArray([$Html.text("this is where the hotel results will go")]));
+   });
+   _elm.HotelsList.values = {_op: _op
+                            ,hotelList: hotelList};
+   return _elm.HotelsList.values;
+};

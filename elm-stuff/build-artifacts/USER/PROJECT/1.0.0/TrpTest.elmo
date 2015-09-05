@@ -1,0 +1,152 @@
+Elm.TrpTest = Elm.TrpTest || {};
+Elm.TrpTest.make = function (_elm) {
+   "use strict";
+   _elm.TrpTest = _elm.TrpTest || {};
+   if (_elm.TrpTest.values)
+   return _elm.TrpTest.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "TrpTest",
+   $Basics = Elm.Basics.make(_elm),
+   $Filters = Elm.Filters.make(_elm),
+   $Header = Elm.Header.make(_elm),
+   $HotelsList = Elm.HotelsList.make(_elm),
+   $Html = Elm.Html.make(_elm),
+   $Html$Attributes = Elm.Html.Attributes.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Pager = Elm.Pager.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $SortBar = Elm.SortBar.make(_elm),
+   $StartApp$Simple = Elm.StartApp.Simple.make(_elm);
+   var view = F2(function (address,
+   model) {
+      return A2($Html.div,
+      _L.fromArray([]),
+      _L.fromArray([A2($Html.section,
+                   _L.fromArray([$Html$Attributes.$class("header")]),
+                   _L.fromArray([$Header.header]))
+                   ,A2($Html.section,
+                   _L.fromArray([$Html$Attributes.$class("sidebar")]),
+                   _L.fromArray([$Filters.filters
+                                ,$SortBar.sortBar]))
+                   ,A2($Html.section,
+                   _L.fromArray([$Html$Attributes.$class("content")]),
+                   _L.fromArray([$Pager.pager
+                                ,A2($HotelsList.hotelList,
+                                address,
+                                model)
+                                ,$Pager.pager]))
+                   ,A2($Html.section,
+                   _L.fromArray([$Html$Attributes.$class("footer")]),
+                   _L.fromArray([A2($Html.h3,
+                   _L.fromArray([]),
+                   _L.fromArray([$Html.text("This is the footer")]))]))]));
+   });
+   var update = F2(function (action,
+   model) {
+      return model;
+   });
+   var NoOp = {ctor: "NoOp"};
+   var Model = F2(function (a,b) {
+      return {_: {}
+             ,criteria: a
+             ,hotels: b};
+   });
+   var Criteria = F3(function (a,
+   b,
+   c) {
+      return {_: {}
+             ,filter: a
+             ,paging: c
+             ,sort: b};
+   });
+   var Filter = F4(function (a,
+   b,
+   c,
+   d) {
+      return {_: {}
+             ,hotelName: c
+             ,minPrice: d
+             ,minRating: b
+             ,stars: a};
+   });
+   var Price = function (a) {
+      return {ctor: "Price",_0: a};
+   };
+   var HotelName = function (a) {
+      return {ctor: "HotelName"
+             ,_0: a};
+   };
+   var Rating = function (a) {
+      return {ctor: "Rating"
+             ,_0: a};
+   };
+   var Stars = function (a) {
+      return {ctor: "Stars",_0: a};
+   };
+   var Desc = {ctor: "Desc"};
+   var Asc = {ctor: "Asc"};
+   var Paging = F2(function (a,b) {
+      return {_: {}
+             ,pageIndex: b
+             ,pageSize: a};
+   });
+   var initialModel = {_: {}
+                      ,criteria: A3(Criteria,
+                      A4(Filter,
+                      _L.fromArray([]),
+                      0,
+                      "",
+                      0),
+                      HotelName(Asc),
+                      A2(Paging,10,0))
+                      ,hotels: _L.fromArray([])};
+   var main = $StartApp$Simple.start({_: {}
+                                     ,model: initialModel
+                                     ,update: update
+                                     ,view: view});
+   var Hotel = F5(function (a,
+   b,
+   c,
+   d,
+   e) {
+      return {_: {}
+             ,image: b
+             ,name: a
+             ,price: e
+             ,rating: d
+             ,stars: c};
+   });
+   var Five = {ctor: "Five"};
+   var Four = {ctor: "Four"};
+   var Three = {ctor: "Three"};
+   var Two = {ctor: "Two"};
+   var One = {ctor: "One"};
+   _elm.TrpTest.values = {_op: _op
+                         ,One: One
+                         ,Two: Two
+                         ,Three: Three
+                         ,Four: Four
+                         ,Five: Five
+                         ,Hotel: Hotel
+                         ,Paging: Paging
+                         ,Asc: Asc
+                         ,Desc: Desc
+                         ,Stars: Stars
+                         ,Rating: Rating
+                         ,HotelName: HotelName
+                         ,Price: Price
+                         ,Filter: Filter
+                         ,Criteria: Criteria
+                         ,Model: Model
+                         ,initialModel: initialModel
+                         ,NoOp: NoOp
+                         ,update: update
+                         ,view: view
+                         ,main: main};
+   return _elm.TrpTest.values;
+};

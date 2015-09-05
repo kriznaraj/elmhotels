@@ -1,0 +1,25 @@
+Elm.Pager = Elm.Pager || {};
+Elm.Pager.make = function (_elm) {
+   "use strict";
+   _elm.Pager = _elm.Pager || {};
+   if (_elm.Pager.values)
+   return _elm.Pager.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Pager",
+   $Basics = Elm.Basics.make(_elm),
+   $Html = Elm.Html.make(_elm),
+   $Html$Attributes = Elm.Html.Attributes.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
+   var pager = A2($Html.section,
+   _L.fromArray([$Html$Attributes.$class("pager")]),
+   _L.fromArray([$Html.text("this is the pager")]));
+   _elm.Pager.values = {_op: _op
+                       ,pager: pager};
+   return _elm.Pager.values;
+};

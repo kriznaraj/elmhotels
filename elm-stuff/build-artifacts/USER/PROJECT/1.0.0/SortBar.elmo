@@ -1,0 +1,56 @@
+Elm.SortBar = Elm.SortBar || {};
+Elm.SortBar.make = function (_elm) {
+   "use strict";
+   _elm.SortBar = _elm.SortBar || {};
+   if (_elm.SortBar.values)
+   return _elm.SortBar.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "SortBar",
+   $Basics = Elm.Basics.make(_elm),
+   $Html = Elm.Html.make(_elm),
+   $Html$Attributes = Elm.Html.Attributes.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
+   var sortBar = A2($Html.section,
+   _L.fromArray([$Html$Attributes.$class("sort-bar")]),
+   _L.fromArray([A2($Html.div,
+                _L.fromArray([]),
+                _L.fromArray([A2($Html.label,
+                             _L.fromArray([]),
+                             _L.fromArray([$Html.text("Sort by: ")]))
+                             ,A2($Html.select,
+                             _L.fromArray([]),
+                             _L.fromArray([A2($Html.option,
+                                          _L.fromArray([]),
+                                          _L.fromArray([$Html.text("Hotel Name")]))
+                                          ,A2($Html.option,
+                                          _L.fromArray([]),
+                                          _L.fromArray([$Html.text("Stars")]))
+                                          ,A2($Html.option,
+                                          _L.fromArray([]),
+                                          _L.fromArray([$Html.text("Rating")]))
+                                          ,A2($Html.option,
+                                          _L.fromArray([$Html$Attributes.selected(true)]),
+                                          _L.fromArray([$Html.text("Price")]))]))]))
+                ,A2($Html.div,
+                _L.fromArray([]),
+                _L.fromArray([A2($Html.label,
+                             _L.fromArray([]),
+                             _L.fromArray([$Html.text("Direction: ")]))
+                             ,A2($Html.select,
+                             _L.fromArray([]),
+                             _L.fromArray([A2($Html.option,
+                                          _L.fromArray([$Html$Attributes.selected(true)]),
+                                          _L.fromArray([$Html.text("Ascending")]))
+                                          ,A2($Html.option,
+                                          _L.fromArray([]),
+                                          _L.fromArray([$Html.text("Descending")]))]))]))]));
+   _elm.SortBar.values = {_op: _op
+                         ,sortBar: sortBar};
+   return _elm.SortBar.values;
+};

@@ -1,0 +1,65 @@
+/*
+   red = #e35885
+   green = #8ec16d
+   blue = #61a1bc
+ */
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  box-sizing: border-box;
+}
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+
+body {
+  background: #eaeaea;
+  color: #4f4f4f;
+  font: 14px "Helvetica Neue", Helvetica, Arial, sans-serif;
+  line-height: 1.4em;
+}
+
+section {
+    padding:10px;
+}
+
+.header {
+    text-align: center;
+    background:lime;
+}
+
+.sidebar {
+    float:left;
+    width:20%;
+    background:yellow;
+}
+
+.content {
+    float:left;
+    width:80%;
+    background:pink;
+}
+
+.footer {
+    clear:both;
+    background:blue;
+    color:#fff;
+    text-align:center;
+}
+
+label {
+    display : block;
+}
+
+.filters>div, .sort-bar>div{
+    padding-bottom:10px;
+}
+
+input, select {
+    width : 100%;
+}
