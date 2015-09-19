@@ -104,6 +104,27 @@ port requests =
     Signal.map getHotels query.signal
       |> Signal.map (\task -> Task.toResult task `andThen` Signal.send results.address)
 
+page : Paging -> (List Hotel) -> (List Hotel)
+page paging hotels =
+    hotels
+
+sort : Sort -> (List Hotel) -> (List Hotel)
+sort sortOrder hotels =
+    hotels
+
+filter : Filter -> (List Hotel) -> (List Hotel)
+filter filterCriteria hotels =
+    hotels
+
+restrict : (List Hotel) -> Criteria -> (List Hotel)
+restrict hotels criteria =
+    hotels
+        |> filter criteria.filter
+        |> sort criteria.sort
+        |> page criteria.paging
+
+-- change this to return Task String (List Hotel) 
+-- and to reduce the results according to the Criteria
 getHotels : Criteria -> Task Http.Error (List Hotel)
 getHotels query =
     Http.get hotels ("hotels.json")

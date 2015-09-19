@@ -13661,6 +13661,22 @@ Elm.TrpTest.make = function (_elm) {
    $SortBar = Elm.SortBar.make(_elm),
    $StartApp$Simple = Elm.StartApp.Simple.make(_elm),
    $Task = Elm.Task.make(_elm);
+   var filter = F2(function (filterCriteria,
+   hotels) {
+      return hotels;
+   });
+   var sort = F2(function (sortOrder,
+   hotels) {
+      return hotels;
+   });
+   var page = F2(function (paging,
+   hotels) {
+      return hotels;
+   });
+   var restrict = F2(function (hotels,
+   criteria) {
+      return page(criteria.paging)(sort(criteria.sort)(filter(criteria.filter)(hotels)));
+   });
    var results = $Signal.mailbox($Result.Ok(_L.fromArray([])));
    var view = F2(function (address,
    model) {
@@ -13838,6 +13854,10 @@ Elm.TrpTest.make = function (_elm) {
                          ,main: main
                          ,query: query
                          ,results: results
+                         ,page: page
+                         ,sort: sort
+                         ,filter: filter
+                         ,restrict: restrict
                          ,getHotels: getHotels
                          ,hotels: hotels};
    return _elm.TrpTest.values;
