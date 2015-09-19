@@ -2798,12 +2798,11 @@ Elm.HotelsList.make = function (_elm) {
    $Maybe = Elm.Maybe.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm);
-   var hotelList = F2(function (address,
-   model) {
+   var hotelList = function (hotels) {
       return A2($Html.section,
       _L.fromArray([$Html$Attributes.$class("hotel-list")]),
-      _L.fromArray([$Html.text("this is where the hotel results will go")]));
-   });
+      _L.fromArray([$Html.text($Basics.toString($List.length(hotels)))]));
+   };
    _elm.HotelsList.values = {_op: _op
                             ,hotelList: hotelList};
    return _elm.HotelsList.values;
@@ -13659,8 +13658,23 @@ Elm.TrpTest.make = function (_elm) {
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm),
    $SortBar = Elm.SortBar.make(_elm),
-   $StartApp$Simple = Elm.StartApp.Simple.make(_elm),
    $Task = Elm.Task.make(_elm);
+   var results = $Signal.mailbox(_L.fromArray([]));
+   var unwrapHotels = function (result) {
+      return function () {
+         switch (result.ctor)
+         {case "Err":
+            return A2($Signal.send,
+              results.address,
+              _L.fromArray([]));
+            case "Ok":
+            return A2($Signal.send,
+              results.address,
+              result._0);}
+         _U.badCase($moduleName,
+         "between lines 127 and 129");
+      }();
+   };
    var filter = F2(function (filterCriteria,
    hotels) {
       return hotels;
@@ -13677,9 +13691,7 @@ Elm.TrpTest.make = function (_elm) {
    criteria) {
       return page(criteria.paging)(sort(criteria.sort)(filter(criteria.filter)(hotels)));
    });
-   var results = $Signal.mailbox($Result.Ok(_L.fromArray([])));
-   var view = F2(function (address,
-   model) {
+   var view = function (hotels) {
       return A2($Html.div,
       _L.fromArray([]),
       _L.fromArray([A2($Html.section,
@@ -13692,26 +13704,20 @@ Elm.TrpTest.make = function (_elm) {
                    ,A2($Html.section,
                    _L.fromArray([$Html$Attributes.$class("content")]),
                    _L.fromArray([$Pager.pager
-                                ,A2($HotelsList.hotelList,
-                                address,
-                                model)
+                                ,$HotelsList.hotelList(hotels)
                                 ,$Pager.pager]))
                    ,A2($Html.section,
                    _L.fromArray([$Html$Attributes.$class("footer")]),
                    _L.fromArray([A2($Html.h3,
                    _L.fromArray([]),
                    _L.fromArray([$Html.text("This is the footer")]))]))]));
-   });
+   };
    var update = F2(function (action,
    model) {
       return model;
    });
    var NoOp = {ctor: "NoOp"};
-   var Model = F2(function (a,b) {
-      return {_: {}
-             ,criteria: a
-             ,hotels: b};
-   });
+   var initialModel = _L.fromArray([]);
    var Criteria = F3(function (a,
    b,
    c) {
@@ -13751,20 +13757,6 @@ Elm.TrpTest.make = function (_elm) {
              ,pageIndex: b
              ,pageSize: a};
    });
-   var initialModel = {_: {}
-                      ,criteria: A3(Criteria,
-                      A4(Filter,
-                      _L.fromArray([]),
-                      0,
-                      "",
-                      0),
-                      HotelName(Asc),
-                      A2(Paging,10,0))
-                      ,hotels: _L.fromArray([])};
-   var main = $StartApp$Simple.start({_: {}
-                                     ,model: initialModel
-                                     ,update: update
-                                     ,view: view});
    var query = $Signal.mailbox(A3(Criteria,
    A4(Filter,
    _L.fromArray([]),
@@ -13773,6 +13765,13 @@ Elm.TrpTest.make = function (_elm) {
    0),
    HotelName(Asc),
    A2(Paging,10,0)));
+   var restrictedResults = A3($Signal.map2,
+   restrict,
+   results.signal,
+   query.signal);
+   var main = A2($Signal.map,
+   view,
+   restrictedResults);
    var Hotel = F6(function (a,
    b,
    c,
@@ -13812,19 +13811,12 @@ Elm.TrpTest.make = function (_elm) {
       "Establishments",
       $Json$Decode.list(hotel));
    }();
-   var getHotels = function (query) {
-      return A2($Http.get,
-      hotels,
-      "hotels.json");
-   };
-   var requests = Elm.Native.Task.make(_elm).performSignal("requests",
-   $Signal.map(function (task) {
-      return A2($Task.andThen,
-      $Task.toResult(task),
-      $Signal.send(results.address));
-   })(A2($Signal.map,
-   getHotels,
-   query.signal)));
+   var getHotels = A2($Http.get,
+   hotels,
+   "hotels.json");
+   var requests = Elm.Native.Task.make(_elm).perform(A2($Task.andThen,
+   $Task.toResult(getHotels),
+   unwrapHotels));
    var Five = {ctor: "Five"};
    var Four = {ctor: "Four"};
    var Three = {ctor: "Three"};
@@ -13846,18 +13838,19 @@ Elm.TrpTest.make = function (_elm) {
                          ,Price: Price
                          ,Filter: Filter
                          ,Criteria: Criteria
-                         ,Model: Model
                          ,initialModel: initialModel
                          ,NoOp: NoOp
                          ,update: update
                          ,view: view
                          ,main: main
-                         ,query: query
-                         ,results: results
                          ,page: page
                          ,sort: sort
                          ,filter: filter
                          ,restrict: restrict
+                         ,restrictedResults: restrictedResults
+                         ,query: query
+                         ,results: results
+                         ,unwrapHotels: unwrapHotels
                          ,getHotels: getHotels
                          ,hotels: hotels};
    return _elm.TrpTest.values;

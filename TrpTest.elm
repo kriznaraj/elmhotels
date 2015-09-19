@@ -53,14 +53,10 @@ type alias Criteria = {
     paging : Paging
 }
 
-type alias Model = { 
-    criteria : Criteria, 
-    hotels : List Hotel
-}
+type alias Model = (List Hotel)
 
 initialModel : Model   
-initialModel = { criteria = Criteria (Filter [] 0 "" 0) (HotelName Asc) (Paging 10 0),
-    hotels = [] }
+initialModel = []
 
 --UPDATE
 type Action = NoOp
@@ -70,8 +66,8 @@ update action model = model
 
 --VIEW
 
-view: Address Action -> Model -> Html
-view address model = 
+view: Model -> Html
+view hotels = 
     div [] [
         section [ class "header" ] [
             Header.header
@@ -82,54 +78,66 @@ view address model =
         ],
         section [ class "content" ] [
             Pager.pager,
-            (HotelsList.hotelList address model),
+            (HotelsList.hotelList hotels),
             Pager.pager
         ], 
         section [class "footer"] [ h3 [] [text "This is the footer"]]]
 
-main : Signal Html
-main = 
-    StartApp.start { model = initialModel, view =  view, update = update }
+-- main : Signal Html
+-- main = 
+--     StartApp.start { model = initialModel, view =  view, update = update }
 
-query : Signal.Mailbox Criteria
-query = 
-    Signal.mailbox (Criteria (Filter [] 0 "" 0) (HotelName Asc) (Paging 10 0))
+main =
+    Signal.map view restrictedResults
 
-results : Signal.Mailbox (Result Http.Error (List Hotel))
-results = 
-    Signal.mailbox (Ok [])
-
-port requests : Signal (Task x ())
-port requests =
-    Signal.map getHotels query.signal
-      |> Signal.map (\task -> Task.toResult task `andThen` Signal.send results.address)
-
-page : Paging -> (List Hotel) -> (List Hotel)
+page : Paging -> Model -> Model
 page paging hotels =
     hotels
 
-sort : Sort -> (List Hotel) -> (List Hotel)
+sort : Sort -> Model -> Model
 sort sortOrder hotels =
     hotels
 
-filter : Filter -> (List Hotel) -> (List Hotel)
+filter : Filter -> Model -> Model
 filter filterCriteria hotels =
     hotels
 
-restrict : (List Hotel) -> Criteria -> (List Hotel)
+restrict : Model -> Criteria -> Model
 restrict hotels criteria =
     hotels
         |> filter criteria.filter
         |> sort criteria.sort
         |> page criteria.paging
 
--- change this to return Task String (List Hotel) 
--- and to reduce the results according to the Criteria
-getHotels : Criteria -> Task Http.Error (List Hotel)
-getHotels query =
+restrictedResults : Signal Model
+restrictedResults =
+    Signal.map2 restrict results.signal query.signal
+     
+query : Signal.Mailbox Criteria
+query = 
+    Signal.mailbox (Criteria (Filter [] 0 "" 0) (HotelName Asc) (Paging 10 0))
+
+results : Signal.Mailbox Model
+results = 
+    Signal.mailbox []
+
+--if we have any sort of error just return no results
+unwrapHotels : (Result Http.Error Model) -> (Task x ())
+unwrapHotels result =
+    case result of
+        Err _ -> Signal.send results.address []
+        Ok hotels -> Signal.send results.address hotels
+
+port requests : (Task x ())
+port requests =
+     Task.toResult getHotels 
+         `andThen` unwrapHotels
+
+getHotels : Task Http.Error Model
+getHotels =
     Http.get hotels ("hotels.json")
 
-hotels : Json.Decoder (List Hotel)
+hotels : Json.Decoder Model
 hotels = 
     let hotel =
         Json.object6 Hotel
