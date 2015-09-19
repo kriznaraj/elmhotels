@@ -14,6 +14,7 @@ import SortBar
 import Pager
 import Filters
 import HotelsList
+import Debug exposing (log)
 
 --MODEL
 type Star = One | Two | Three | Four | Five
@@ -23,7 +24,7 @@ type alias Hotel = {
     thumbnail : String,
     image : String,
     stars : Int,
-    rating : Int,
+    rating : Float,
     price : Float
 }
 
@@ -125,8 +126,10 @@ results =
 unwrapHotels : (Result Http.Error Model) -> (Task x ())
 unwrapHotels result =
     case result of
-        Err _ -> Signal.send results.address []
-        Ok hotels -> Signal.send results.address hotels
+        Err e -> 
+            log (toString e) Signal.send results.address []
+        Ok hotels -> 
+            Signal.send results.address hotels
 
 port requests : (Task x ())
 port requests =
@@ -145,7 +148,7 @@ hotels =
            ("ThumbnailUrl" := Json.string)
            ("ImageUrl" := Json.string)
            ("Stars" := Json.int)
-           ("UserRating" := Json.int)
+           ("UserRating" := Json.float)
            ("MinCost" := Json.float)
     in
        "Establishments" := Json.list hotel

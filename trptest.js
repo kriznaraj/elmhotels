@@ -13645,6 +13645,7 @@ Elm.TrpTest.make = function (_elm) {
    _L = _N.List.make(_elm),
    $moduleName = "TrpTest",
    $Basics = Elm.Basics.make(_elm),
+   $Debug = Elm.Debug.make(_elm),
    $Filters = Elm.Filters.make(_elm),
    $Header = Elm.Header.make(_elm),
    $HotelsList = Elm.HotelsList.make(_elm),
@@ -13664,7 +13665,9 @@ Elm.TrpTest.make = function (_elm) {
       return function () {
          switch (result.ctor)
          {case "Err":
-            return A2($Signal.send,
+            return A4($Debug.log,
+              $Basics.toString(result._0),
+              $Signal.send,
               results.address,
               _L.fromArray([]));
             case "Ok":
@@ -13672,7 +13675,7 @@ Elm.TrpTest.make = function (_elm) {
               results.address,
               result._0);}
          _U.badCase($moduleName,
-         "between lines 127 and 129");
+         "between lines 128 and 132");
       }();
    };
    var filter = F2(function (filterCriteria,
@@ -13803,7 +13806,7 @@ Elm.TrpTest.make = function (_elm) {
       $Json$Decode.$int),
       A2($Json$Decode._op[":="],
       "UserRating",
-      $Json$Decode.$int),
+      $Json$Decode.$float),
       A2($Json$Decode._op[":="],
       "MinCost",
       $Json$Decode.$float));
