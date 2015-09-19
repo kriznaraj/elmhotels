@@ -1,5 +1,8 @@
 module TrpTest where
 
+import Http
+import Json.Decode as Json exposing ((:=))
+import Task exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
@@ -17,8 +20,9 @@ type Star = One | Two | Three | Four | Five
 
 type alias Hotel = {
     name : String,
+    thumbnail : String,
     image : String,
-    stars : Star,
+    stars : Int,
     rating : Int,
     price : Float
 }
@@ -86,3 +90,34 @@ view address model =
 main : Signal Html
 main = 
     StartApp.start { model = initialModel, view =  view, update = update }
+
+query : Signal.Mailbox Criteria
+query = 
+    Signal.mailbox (Criteria (Filter [] 0 "" 0) (HotelName Asc) (Paging 10 0))
+
+results : Signal.Mailbox (Result Http.Error (List Hotel))
+results = 
+    Signal.mailbox (Ok [])
+
+port requests : Signal (Task x ())
+port requests =
+    Signal.map getHotels query.signal
+      |> Signal.map (\task -> Task.toResult task `andThen` Signal.send results.address)
+
+getHotels : Criteria -> Task Http.Error (List Hotel)
+getHotels query =
+    Http.get hotels ("hotels.json")
+
+hotels : Json.Decoder (List Hotel)
+hotels = 
+    let hotel =
+        Json.object6 Hotel
+           ("Name" := Json.string)
+           ("ThumbnailUrl" := Json.string)
+           ("ImageUrl" := Json.string)
+           ("Stars" := Json.int)
+           ("UserRating" := Json.int)
+           ("MinCost" := Json.float)
+    in
+       "Establishments" := Json.list hotel
+

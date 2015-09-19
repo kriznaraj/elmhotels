@@ -15,13 +15,17 @@ Elm.TrpTest.make = function (_elm) {
    $HotelsList = Elm.HotelsList.make(_elm),
    $Html = Elm.Html.make(_elm),
    $Html$Attributes = Elm.Html.Attributes.make(_elm),
+   $Http = Elm.Http.make(_elm),
+   $Json$Decode = Elm.Json.Decode.make(_elm),
    $List = Elm.List.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
    $Pager = Elm.Pager.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm),
    $SortBar = Elm.SortBar.make(_elm),
-   $StartApp$Simple = Elm.StartApp.Simple.make(_elm);
+   $StartApp$Simple = Elm.StartApp.Simple.make(_elm),
+   $Task = Elm.Task.make(_elm);
+   var results = $Signal.mailbox($Result.Ok(_L.fromArray([])));
    var view = F2(function (address,
    model) {
       return A2($Html.div,
@@ -109,18 +113,66 @@ Elm.TrpTest.make = function (_elm) {
                                      ,model: initialModel
                                      ,update: update
                                      ,view: view});
-   var Hotel = F5(function (a,
+   var query = $Signal.mailbox(A3(Criteria,
+   A4(Filter,
+   _L.fromArray([]),
+   0,
+   "",
+   0),
+   HotelName(Asc),
+   A2(Paging,10,0)));
+   var Hotel = F6(function (a,
    b,
    c,
    d,
-   e) {
+   e,
+   f) {
       return {_: {}
-             ,image: b
+             ,image: c
              ,name: a
-             ,price: e
-             ,rating: d
-             ,stars: c};
+             ,price: f
+             ,rating: e
+             ,stars: d
+             ,thumbnail: b};
    });
+   var hotels = function () {
+      var hotel = A7($Json$Decode.object6,
+      Hotel,
+      A2($Json$Decode._op[":="],
+      "Name",
+      $Json$Decode.string),
+      A2($Json$Decode._op[":="],
+      "ThumbnailUrl",
+      $Json$Decode.string),
+      A2($Json$Decode._op[":="],
+      "ImageUrl",
+      $Json$Decode.string),
+      A2($Json$Decode._op[":="],
+      "Stars",
+      $Json$Decode.$int),
+      A2($Json$Decode._op[":="],
+      "UserRating",
+      $Json$Decode.$int),
+      A2($Json$Decode._op[":="],
+      "MinCost",
+      $Json$Decode.$float));
+      return A2($Json$Decode._op[":="],
+      "Establishments",
+      $Json$Decode.list(hotel));
+   }();
+   var getHotels = function (query) {
+      return A2($Http.get,
+      hotels,
+      "hotels.json");
+   };
+   var requests = Elm.Native.Task.make(_elm).performSignal("requests",
+   $Signal.map(function (task) {
+      return A2($Task.andThen,
+      $Task.toResult(task),
+      $Signal.send(results.address));
+   })(A2($Signal.map,
+   getHotels,
+   query.signal)));
    var Five = {ctor: "Five"};
    var Four = {ctor: "Four"};
    var Three = {ctor: "Three"};
@@ -147,6 +199,10 @@ Elm.TrpTest.make = function (_elm) {
                          ,NoOp: NoOp
                          ,update: update
                          ,view: view
-                         ,main: main};
+                         ,main: main
+                         ,query: query
+                         ,results: results
+                         ,getHotels: getHotels
+                         ,hotels: hotels};
    return _elm.TrpTest.values;
 };
