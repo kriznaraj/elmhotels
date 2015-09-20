@@ -14,12 +14,21 @@ Elm.HotelsList.make = function (_elm) {
    $Html$Attributes = Elm.Html.Attributes.make(_elm),
    $List = Elm.List.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
+   $Models = Elm.Models.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm);
    var hotelList = function (hotels) {
       return A2($Html.section,
       _L.fromArray([$Html$Attributes.$class("hotel-list")]),
-      _L.fromArray([$Html.text($Basics.toString($List.length(hotels)))]));
+      _L.fromArray([A2($Html.ul,
+      _L.fromArray([]),
+      A2($List.map,
+      function (hotel) {
+         return A2($Html.li,
+         _L.fromArray([]),
+         _L.fromArray([$Html.text(hotel.name)]));
+      },
+      hotels))]));
    };
    _elm.HotelsList.values = {_op: _op
                             ,hotelList: hotelList};

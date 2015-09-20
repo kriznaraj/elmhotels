@@ -1,0 +1,98 @@
+Elm.Models = Elm.Models || {};
+Elm.Models.make = function (_elm) {
+   "use strict";
+   _elm.Models = _elm.Models || {};
+   if (_elm.Models.values)
+   return _elm.Models.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Models",
+   $Basics = Elm.Basics.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
+   var Model = F2(function (a,b) {
+      return {_: {}
+             ,criteria: b
+             ,hotels: a};
+   });
+   var Criteria = F3(function (a,
+   b,
+   c) {
+      return {_: {}
+             ,filter: a
+             ,paging: c
+             ,sort: b};
+   });
+   var Filter = F4(function (a,
+   b,
+   c,
+   d) {
+      return {_: {}
+             ,hotelName: c
+             ,minPrice: d
+             ,minRating: b
+             ,stars: a};
+   });
+   var Price = function (a) {
+      return {ctor: "Price",_0: a};
+   };
+   var HotelName = function (a) {
+      return {ctor: "HotelName"
+             ,_0: a};
+   };
+   var Rating = function (a) {
+      return {ctor: "Rating"
+             ,_0: a};
+   };
+   var Stars = function (a) {
+      return {ctor: "Stars",_0: a};
+   };
+   var Desc = {ctor: "Desc"};
+   var Asc = {ctor: "Asc"};
+   var Paging = F2(function (a,b) {
+      return {_: {}
+             ,pageIndex: b
+             ,pageSize: a};
+   });
+   var Hotel = F6(function (a,
+   b,
+   c,
+   d,
+   e,
+   f) {
+      return {_: {}
+             ,image: c
+             ,name: a
+             ,price: f
+             ,rating: e
+             ,stars: d
+             ,thumbnail: b};
+   });
+   var Five = {ctor: "Five"};
+   var Four = {ctor: "Four"};
+   var Three = {ctor: "Three"};
+   var Two = {ctor: "Two"};
+   var One = {ctor: "One"};
+   _elm.Models.values = {_op: _op
+                        ,One: One
+                        ,Two: Two
+                        ,Three: Three
+                        ,Four: Four
+                        ,Five: Five
+                        ,Hotel: Hotel
+                        ,Paging: Paging
+                        ,Asc: Asc
+                        ,Desc: Desc
+                        ,Stars: Stars
+                        ,Rating: Rating
+                        ,HotelName: HotelName
+                        ,Price: Price
+                        ,Filter: Filter
+                        ,Criteria: Criteria
+                        ,Model: Model};
+   return _elm.Models.values;
+};

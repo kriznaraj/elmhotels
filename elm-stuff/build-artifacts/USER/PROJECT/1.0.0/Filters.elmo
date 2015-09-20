@@ -12,57 +12,86 @@ Elm.Filters.make = function (_elm) {
    $Basics = Elm.Basics.make(_elm),
    $Html = Elm.Html.make(_elm),
    $Html$Attributes = Elm.Html.Attributes.make(_elm),
+   $Html$Events = Elm.Html.Events.make(_elm),
    $List = Elm.List.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
+   $Models = Elm.Models.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm);
-   var filters = A2($Html.section,
-   _L.fromArray([$Html$Attributes.$class("filters")]),
-   _L.fromArray([A2($Html.div,
-                _L.fromArray([]),
-                _L.fromArray([A2($Html.label,
-                             _L.fromArray([]),
-                             _L.fromArray([$Html.text("Hotel Name: ")]))
-                             ,A2($Html.input,
-                             _L.fromArray([$Html$Attributes.type$("text")]),
-                             _L.fromArray([]))]))
-                ,A2($Html.hr,
-                _L.fromArray([]),
-                _L.fromArray([]))
-                ,A2($Html.div,
-                _L.fromArray([]),
-                _L.fromArray([A2($Html.label,
-                _L.fromArray([]),
-                _L.fromArray([$Html.text("Stars: ")]))]))
-                ,A2($Html.hr,
-                _L.fromArray([]),
-                _L.fromArray([]))
-                ,A2($Html.div,
-                _L.fromArray([]),
-                _L.fromArray([A2($Html.label,
-                             _L.fromArray([]),
-                             _L.fromArray([$Html.text("Minimum Rating: ")]))
-                             ,A2($Html.input,
-                             _L.fromArray([$Html$Attributes.type$("range")]),
-                             _L.fromArray([]))]))
-                ,A2($Html.hr,
-                _L.fromArray([]),
-                _L.fromArray([]))
-                ,A2($Html.div,
-                _L.fromArray([]),
-                _L.fromArray([A2($Html.label,
-                             _L.fromArray([]),
-                             _L.fromArray([$Html.text("Minimum Price: ")]))
-                             ,A2($Html.input,
-                             _L.fromArray([$Html$Attributes.type$("range")]),
-                             _L.fromArray([]))]))
-                ,A2($Html.hr,
-                _L.fromArray([]),
-                _L.fromArray([]))
-                ,A2($Html.button,
-                _L.fromArray([]),
-                _L.fromArray([$Html.text("Search")]))]));
+   var replaceFilter = F2(function (criteria,
+   filter) {
+      return _U.replace([["filter"
+                         ,filter]],
+      criteria);
+   });
+   var filters = F2(function (criteria,
+   address) {
+      return function () {
+         var filter = criteria.filter;
+         return A2($Html.section,
+         _L.fromArray([$Html$Attributes.$class("filters")]),
+         _L.fromArray([A2($Html.div,
+                      _L.fromArray([]),
+                      _L.fromArray([A2($Html.label,
+                                   _L.fromArray([]),
+                                   _L.fromArray([$Html.text("Hotel Name: ")]))
+                                   ,A2($Html.input,
+                                   _L.fromArray([$Html$Attributes.placeholder("Hotel Name")
+                                                ,$Html$Attributes.type$("text")
+                                                ,$Html$Attributes.value(criteria.filter.hotelName)
+                                                ,A3($Html$Events.on,
+                                                "input",
+                                                $Html$Events.targetValue,
+                                                function (str) {
+                                                   return A2($Signal.message,
+                                                   address,
+                                                   A2(replaceFilter,
+                                                   criteria,
+                                                   _U.replace([["hotelName"
+                                                               ,str]],
+                                                   filter)));
+                                                })]),
+                                   _L.fromArray([]))]))
+                      ,A2($Html.hr,
+                      _L.fromArray([]),
+                      _L.fromArray([]))
+                      ,A2($Html.div,
+                      _L.fromArray([]),
+                      _L.fromArray([A2($Html.label,
+                      _L.fromArray([]),
+                      _L.fromArray([$Html.text("Stars: ")]))]))
+                      ,A2($Html.hr,
+                      _L.fromArray([]),
+                      _L.fromArray([]))
+                      ,A2($Html.div,
+                      _L.fromArray([]),
+                      _L.fromArray([A2($Html.label,
+                                   _L.fromArray([]),
+                                   _L.fromArray([$Html.text("Minimum Rating: ")]))
+                                   ,A2($Html.input,
+                                   _L.fromArray([$Html$Attributes.type$("range")]),
+                                   _L.fromArray([]))]))
+                      ,A2($Html.hr,
+                      _L.fromArray([]),
+                      _L.fromArray([]))
+                      ,A2($Html.div,
+                      _L.fromArray([]),
+                      _L.fromArray([A2($Html.label,
+                                   _L.fromArray([]),
+                                   _L.fromArray([$Html.text("Minimum Price: ")]))
+                                   ,A2($Html.input,
+                                   _L.fromArray([$Html$Attributes.type$("range")]),
+                                   _L.fromArray([]))]))
+                      ,A2($Html.hr,
+                      _L.fromArray([]),
+                      _L.fromArray([]))
+                      ,A2($Html.button,
+                      _L.fromArray([]),
+                      _L.fromArray([$Html.text("Search")]))]));
+      }();
+   });
    _elm.Filters.values = {_op: _op
+                         ,replaceFilter: replaceFilter
                          ,filters: filters};
    return _elm.Filters.values;
 };

@@ -15,100 +15,28 @@ import Pager
 import Filters
 import HotelsList
 import Debug exposing (log)
-
---MODEL
-type Star = One | Two | Three | Four | Five
-
-type alias Hotel = {
-    name : String,
-    thumbnail : String,
-    image : String,
-    stars : Int,
-    rating : Float,
-    price : Float
-}
-
-type alias Paging = {
-    pageSize : Int,
-    pageIndex : Int
-}
-
-type Direction = Asc | Desc
-
-type Sort = 
-    Stars Direction 
-    | Rating Direction
-    | HotelName Direction
-    | Price Direction
-
-type alias Filter = {
-    stars : List Star,
-    minRating : Int,
-    hotelName : String,
-    minPrice : Float
-}
-
-type alias Criteria = {
-    filter : Filter,
-    sort : Sort,
-    paging : Paging
-}
-
-type alias Model = (List Hotel)
-
-initialModel : Model   
-initialModel = []
-
---UPDATE
-type Action = NoOp
-
-update: Action -> Model -> Model
-update action model = model
-
---VIEW
+import Models exposing (..)
+import Filtering exposing (..)
 
 view: Model -> Html
-view hotels = 
+view model = 
     div [] [
         section [ class "header" ] [
             Header.header
         ],
         section [ class "sidebar" ] [ 
-            Filters.filters,
+            (Filters.filters model.criteria query.address),
             SortBar.sortBar
         ],
         section [ class "content" ] [
             Pager.pager,
-            (HotelsList.hotelList hotels),
+            (HotelsList.hotelList model.hotels),
             Pager.pager
         ], 
         section [class "footer"] [ h3 [] [text "This is the footer"]]]
 
--- main : Signal Html
--- main = 
---     StartApp.start { model = initialModel, view =  view, update = update }
-
 main =
     Signal.map view restrictedResults
-
-page : Paging -> Model -> Model
-page paging hotels =
-    hotels
-
-sort : Sort -> Model -> Model
-sort sortOrder hotels =
-    hotels
-
-filter : Filter -> Model -> Model
-filter filterCriteria hotels =
-    hotels
-
-restrict : Model -> Criteria -> Model
-restrict hotels criteria =
-    hotels
-        |> filter criteria.filter
-        |> sort criteria.sort
-        |> page criteria.paging
 
 restrictedResults : Signal Model
 restrictedResults =
@@ -116,14 +44,14 @@ restrictedResults =
      
 query : Signal.Mailbox Criteria
 query = 
-    Signal.mailbox (Criteria (Filter [] 0 "" 0) (HotelName Asc) (Paging 10 0))
+    Signal.mailbox (Criteria (Filter [] 0 "" 0) (HotelName Asc) (Paging 25 0))
 
-results : Signal.Mailbox Model
+results : Signal.Mailbox HotelList
 results = 
     Signal.mailbox []
 
 --if we have any sort of error just return no results
-unwrapHotels : (Result Http.Error Model) -> (Task x ())
+unwrapHotels : (Result Http.Error HotelList) -> (Task x ())
 unwrapHotels result =
     case result of
         Err e -> 
@@ -136,11 +64,11 @@ port requests =
      Task.toResult getHotels 
          `andThen` unwrapHotels
 
-getHotels : Task Http.Error Model
+getHotels : Task Http.Error HotelList
 getHotels =
     Http.get hotels ("hotels.json")
 
-hotels : Json.Decoder Model
+hotels : Json.Decoder HotelList
 hotels = 
     let hotel =
         Json.object6 Hotel

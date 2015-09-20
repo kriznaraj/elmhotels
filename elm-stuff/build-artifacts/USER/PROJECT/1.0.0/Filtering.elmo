@@ -1,0 +1,59 @@
+Elm.Filtering = Elm.Filtering || {};
+Elm.Filtering.make = function (_elm) {
+   "use strict";
+   _elm.Filtering = _elm.Filtering || {};
+   if (_elm.Filtering.values)
+   return _elm.Filtering.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Filtering",
+   $Basics = Elm.Basics.make(_elm),
+   $Debug = Elm.Debug.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Models = Elm.Models.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $String = Elm.String.make(_elm);
+   var nameMatches = F2(function (query,
+   hotel) {
+      return A2($String.contains,
+      query,
+      hotel.name);
+   });
+   var filter = F2(function (criteria,
+   hotels) {
+      return A2($List.filter,
+      nameMatches(criteria.filter.hotelName),
+      hotels);
+   });
+   var sort = F2(function (criteria,
+   hotels) {
+      return hotels;
+   });
+   var page = F2(function (criteria,
+   hotels) {
+      return function () {
+         var paging = criteria.paging;
+         var page = $List.take(paging.pageSize)($List.drop(paging.pageIndex * paging.pageSize)(hotels));
+         return A4($Debug.log,
+         $Basics.toString($List.length(page)),
+         $Models.Model,
+         page,
+         criteria);
+      }();
+   });
+   var restrict = F2(function (hotels,
+   criteria) {
+      return page(criteria)(sort(criteria)(filter(criteria)(hotels)));
+   });
+   _elm.Filtering.values = {_op: _op
+                           ,page: page
+                           ,sort: sort
+                           ,nameMatches: nameMatches
+                           ,filter: filter
+                           ,restrict: restrict};
+   return _elm.Filtering.values;
+};
