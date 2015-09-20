@@ -12,45 +12,63 @@ Elm.SortBar.make = function (_elm) {
    $Basics = Elm.Basics.make(_elm),
    $Html = Elm.Html.make(_elm),
    $Html$Attributes = Elm.Html.Attributes.make(_elm),
+   $Html$Events = Elm.Html.Events.make(_elm),
    $List = Elm.List.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
+   $Models = Elm.Models.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm);
-   var sortBar = A2($Html.section,
-   _L.fromArray([$Html$Attributes.$class("sort-bar")]),
-   _L.fromArray([A2($Html.div,
-                _L.fromArray([]),
-                _L.fromArray([A2($Html.label,
-                             _L.fromArray([]),
-                             _L.fromArray([$Html.text("Sort by: ")]))
-                             ,A2($Html.select,
-                             _L.fromArray([]),
-                             _L.fromArray([A2($Html.option,
-                                          _L.fromArray([]),
-                                          _L.fromArray([$Html.text("Hotel Name")]))
-                                          ,A2($Html.option,
-                                          _L.fromArray([]),
-                                          _L.fromArray([$Html.text("Stars")]))
-                                          ,A2($Html.option,
-                                          _L.fromArray([]),
-                                          _L.fromArray([$Html.text("Rating")]))
-                                          ,A2($Html.option,
-                                          _L.fromArray([$Html$Attributes.selected(true)]),
-                                          _L.fromArray([$Html.text("Price")]))]))]))
-                ,A2($Html.div,
-                _L.fromArray([]),
-                _L.fromArray([A2($Html.label,
-                             _L.fromArray([]),
-                             _L.fromArray([$Html.text("Direction: ")]))
-                             ,A2($Html.select,
-                             _L.fromArray([]),
-                             _L.fromArray([A2($Html.option,
-                                          _L.fromArray([$Html$Attributes.selected(true)]),
-                                          _L.fromArray([$Html.text("Ascending")]))
-                                          ,A2($Html.option,
-                                          _L.fromArray([]),
-                                          _L.fromArray([$Html.text("Descending")]))]))]))]));
+   var replaceSort = F2(function (criteria,
+   sort) {
+      return _U.replace([["sort"
+                         ,sort]],
+      criteria);
+   });
+   var sortButton = F4(function (criteria,
+   sort,
+   label,
+   address) {
+      return function () {
+         var cls = _U.eq(criteria.sort,
+         sort) ? "button sort-bar-button sort-selected" : "button sort-bar-button";
+         return A2($Html.div,
+         _L.fromArray([$Html$Attributes.$class(cls)
+                      ,A2($Html$Events.onClick,
+                      address,
+                      A2(replaceSort,
+                      criteria,
+                      sort))]),
+         _L.fromArray([$Html.text(label)]));
+      }();
+   });
+   var sortBar = F2(function (criteria,
+   address) {
+      return A2($Html.section,
+      _L.fromArray([$Html$Attributes.$class("sort-bar")]),
+      _L.fromArray([A4(sortButton,
+                   criteria,
+                   $Models.HotelName,
+                   "Name",
+                   address)
+                   ,A4(sortButton,
+                   criteria,
+                   $Models.Stars,
+                   "Stars",
+                   address)
+                   ,A4(sortButton,
+                   criteria,
+                   $Models.Rating,
+                   "Rating",
+                   address)
+                   ,A4(sortButton,
+                   criteria,
+                   $Models.Price,
+                   "Price",
+                   address)]));
+   });
    _elm.SortBar.values = {_op: _op
+                         ,replaceSort: replaceSort
+                         ,sortButton: sortButton
                          ,sortBar: sortBar};
    return _elm.SortBar.values;
 };

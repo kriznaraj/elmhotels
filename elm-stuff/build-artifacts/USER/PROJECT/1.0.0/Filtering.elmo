@@ -19,9 +19,13 @@ Elm.Filtering.make = function (_elm) {
    $String = Elm.String.make(_elm);
    var nameMatches = F2(function (query,
    hotel) {
-      return A2($String.contains,
-      query,
-      hotel.name);
+      return function () {
+         var nameLower = $String.toLower(hotel.name);
+         var queryLower = $String.toLower(query);
+         return A2($String.contains,
+         queryLower,
+         nameLower);
+      }();
    });
    var filter = F2(function (criteria,
    hotels) {
@@ -31,7 +35,36 @@ Elm.Filtering.make = function (_elm) {
    });
    var sort = F2(function (criteria,
    hotels) {
-      return hotels;
+      return function () {
+         var _v0 = criteria.sort;
+         switch (_v0.ctor)
+         {case "HotelName":
+            return A2($List.sortBy,
+              function (_) {
+                 return _.name;
+              },
+              hotels);
+            case "Price":
+            return A2($List.sortBy,
+              function (_) {
+                 return _.price;
+              },
+              hotels);
+            case "Rating":
+            return A2($List.sortBy,
+              function (_) {
+                 return _.rating;
+              },
+              hotels);
+            case "Stars":
+            return A2($List.sortBy,
+              function (_) {
+                 return _.stars;
+              },
+              hotels);}
+         _U.badCase($moduleName,
+         "between lines 18 and 22");
+      }();
    });
    var page = F2(function (criteria,
    hotels) {

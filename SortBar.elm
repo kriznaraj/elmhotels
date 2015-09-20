@@ -2,23 +2,32 @@ module SortBar where
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Html.Events exposing (..)
+import Signal exposing (Address)
+import Models exposing (..)
 
-sortBar =
+replaceSort : Criteria -> Sort -> Criteria
+replaceSort criteria sort =
+    { criteria | sort <- sort }
+    
+sortButton : Criteria -> Sort -> String -> Address Criteria -> Html
+sortButton criteria sort label address =
+    let cls = if criteria.sort == sort then 
+                 "button sort-bar-button sort-selected" 
+              else 
+                 "button sort-bar-button"
+    in
+        div 
+            [ class cls,
+              onClick address (replaceSort criteria sort) ] 
+            [ text label ]
+
+
+sortBar : Criteria -> Address Criteria -> Html
+sortBar criteria address = 
     section [ class "sort-bar"] [ 
-        div [] [
-            label [] [ text "Sort by: " ],
-            select [] [
-                option [] [text "Hotel Name"],
-                option [] [text "Stars"],
-                option [] [text "Rating"],
-                option [selected True] [text "Price"]
-            ]
-        ],
-        div [] [
-            label [] [ text "Direction: " ],
-            select [] [
-                option [selected True] [text "Ascending"],
-                option [] [text "Descending"]
-            ]
-        ]
-    ] 
+        sortButton criteria HotelName "Name" address,
+        sortButton criteria Stars "Stars" address,
+        sortButton criteria Rating "Rating" address,
+        sortButton criteria Price "Price" address
+    ]

@@ -26,20 +26,16 @@ filters criteria address =
                         (\str -> Signal.message address (replaceFilter criteria {filter|hotelName <- str}))
                     ] []
             ],
-            hr [] [],
             div [] [
                 label [] [ text "Stars: " ]
             ],
-            hr [] [],
             div [] [
                 label [] [ text "Minimum Rating: " ],
                 input [type' "range"] []
             ],
-            hr [] [],
             div [] [
                 label [] [ text "Minimum Price: " ],
                 input [type' "range"] []
             ],
-            hr [][],
             button [] [ text "Search"]
         ] 

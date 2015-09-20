@@ -17,20 +17,22 @@ Elm.HotelsList.make = function (_elm) {
    $Models = Elm.Models.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm);
+   var hotelCard = function (hotel) {
+      return A2($Html.li,
+      _L.fromArray([]),
+      _L.fromArray([$Html.text(hotel.name)]));
+   };
    var hotelList = function (hotels) {
       return A2($Html.section,
       _L.fromArray([$Html$Attributes.$class("hotel-list")]),
       _L.fromArray([A2($Html.ul,
       _L.fromArray([]),
       A2($List.map,
-      function (hotel) {
-         return A2($Html.li,
-         _L.fromArray([]),
-         _L.fromArray([$Html.text(hotel.name)]));
-      },
+      hotelCard,
       hotels))]));
    };
    _elm.HotelsList.values = {_op: _op
+                            ,hotelCard: hotelCard
                             ,hotelList: hotelList};
    return _elm.HotelsList.values;
 };

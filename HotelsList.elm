@@ -5,9 +5,13 @@ import Html.Attributes exposing (..)
 import Debug exposing (log)
 import Models exposing (..)
 
-hotelList : Model -> Html
+hotelCard : Hotel -> Html
+hotelCard hotel =
+    li [] [ text hotel.name ]
+
+hotelList : HotelList -> Html
 hotelList hotels =
     section [ class "hotel-list"] [ 
-        ul [] (List.map (\hotel -> li [] [ text hotel.name ]) hotels)
+        ul [] (List.map hotelCard hotels)
     ]
 

@@ -15,11 +15,18 @@ page criteria hotels =
 
 sort : Criteria -> HotelList -> HotelList
 sort criteria hotels =
-    hotels
+    case criteria.sort of
+       HotelName -> List.sortBy .name hotels
+       Stars -> List.sortBy .stars hotels
+       Rating -> List.sortBy .rating hotels
+       Price -> List.sortBy .price hotels
 
 nameMatches : String -> Hotel -> Bool
 nameMatches query hotel =
-    (String.contains query hotel.name)
+    let queryLower = (String.toLower query)
+        nameLower = (String.toLower hotel.name)
+    in
+        (String.contains queryLower nameLower)
 
 filter : Criteria -> HotelList -> HotelList
 filter criteria hotels =

@@ -1821,9 +1821,13 @@ Elm.Filtering.make = function (_elm) {
    $String = Elm.String.make(_elm);
    var nameMatches = F2(function (query,
    hotel) {
-      return A2($String.contains,
-      query,
-      hotel.name);
+      return function () {
+         var nameLower = $String.toLower(hotel.name);
+         var queryLower = $String.toLower(query);
+         return A2($String.contains,
+         queryLower,
+         nameLower);
+      }();
    });
    var filter = F2(function (criteria,
    hotels) {
@@ -1833,7 +1837,36 @@ Elm.Filtering.make = function (_elm) {
    });
    var sort = F2(function (criteria,
    hotels) {
-      return hotels;
+      return function () {
+         var _v0 = criteria.sort;
+         switch (_v0.ctor)
+         {case "HotelName":
+            return A2($List.sortBy,
+              function (_) {
+                 return _.name;
+              },
+              hotels);
+            case "Price":
+            return A2($List.sortBy,
+              function (_) {
+                 return _.price;
+              },
+              hotels);
+            case "Rating":
+            return A2($List.sortBy,
+              function (_) {
+                 return _.rating;
+              },
+              hotels);
+            case "Stars":
+            return A2($List.sortBy,
+              function (_) {
+                 return _.stars;
+              },
+              hotels);}
+         _U.badCase($moduleName,
+         "between lines 18 and 22");
+      }();
    });
    var page = F2(function (criteria,
    hotels) {
@@ -1913,17 +1946,11 @@ Elm.Filters.make = function (_elm) {
                                                    filter)));
                                                 })]),
                                    _L.fromArray([]))]))
-                      ,A2($Html.hr,
-                      _L.fromArray([]),
-                      _L.fromArray([]))
                       ,A2($Html.div,
                       _L.fromArray([]),
                       _L.fromArray([A2($Html.label,
                       _L.fromArray([]),
                       _L.fromArray([$Html.text("Stars: ")]))]))
-                      ,A2($Html.hr,
-                      _L.fromArray([]),
-                      _L.fromArray([]))
                       ,A2($Html.div,
                       _L.fromArray([]),
                       _L.fromArray([A2($Html.label,
@@ -1932,9 +1959,6 @@ Elm.Filters.make = function (_elm) {
                                    ,A2($Html.input,
                                    _L.fromArray([$Html$Attributes.type$("range")]),
                                    _L.fromArray([]))]))
-                      ,A2($Html.hr,
-                      _L.fromArray([]),
-                      _L.fromArray([]))
                       ,A2($Html.div,
                       _L.fromArray([]),
                       _L.fromArray([A2($Html.label,
@@ -1943,9 +1967,6 @@ Elm.Filters.make = function (_elm) {
                                    ,A2($Html.input,
                                    _L.fromArray([$Html$Attributes.type$("range")]),
                                    _L.fromArray([]))]))
-                      ,A2($Html.hr,
-                      _L.fromArray([]),
-                      _L.fromArray([]))
                       ,A2($Html.button,
                       _L.fromArray([]),
                       _L.fromArray([$Html.text("Search")]))]));
@@ -2887,20 +2908,22 @@ Elm.HotelsList.make = function (_elm) {
    $Models = Elm.Models.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm);
+   var hotelCard = function (hotel) {
+      return A2($Html.li,
+      _L.fromArray([]),
+      _L.fromArray([$Html.text(hotel.name)]));
+   };
    var hotelList = function (hotels) {
       return A2($Html.section,
       _L.fromArray([$Html$Attributes.$class("hotel-list")]),
       _L.fromArray([A2($Html.ul,
       _L.fromArray([]),
       A2($List.map,
-      function (hotel) {
-         return A2($Html.li,
-         _L.fromArray([]),
-         _L.fromArray([$Html.text(hotel.name)]));
-      },
+      hotelCard,
       hotels))]));
    };
    _elm.HotelsList.values = {_op: _op
+                            ,hotelCard: hotelCard
                             ,hotelList: hotelList};
    return _elm.HotelsList.values;
 };
@@ -4769,20 +4792,10 @@ Elm.Models.make = function (_elm) {
              ,minRating: b
              ,stars: a};
    });
-   var Price = function (a) {
-      return {ctor: "Price",_0: a};
-   };
-   var HotelName = function (a) {
-      return {ctor: "HotelName"
-             ,_0: a};
-   };
-   var Rating = function (a) {
-      return {ctor: "Rating"
-             ,_0: a};
-   };
-   var Stars = function (a) {
-      return {ctor: "Stars",_0: a};
-   };
+   var Price = {ctor: "Price"};
+   var HotelName = {ctor: "HotelName"};
+   var Rating = {ctor: "Rating"};
+   var Stars = {ctor: "Stars"};
    var Desc = {ctor: "Desc"};
    var Asc = {ctor: "Asc"};
    var Paging = F2(function (a,b) {
@@ -12760,14 +12773,46 @@ Elm.Pager.make = function (_elm) {
    $Basics = Elm.Basics.make(_elm),
    $Html = Elm.Html.make(_elm),
    $Html$Attributes = Elm.Html.Attributes.make(_elm),
+   $Html$Events = Elm.Html.Events.make(_elm),
    $List = Elm.List.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
+   $Models = Elm.Models.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm);
-   var pager = A2($Html.section,
-   _L.fromArray([$Html$Attributes.$class("pager")]),
-   _L.fromArray([$Html.text("this is the pager")]));
+   var replacePageIndex = F2(function (criteria,
+   index) {
+      return function () {
+         var paging = criteria.paging;
+         return _U.replace([["paging"
+                            ,_U.replace([["pageIndex"
+                                         ,index]],
+                            paging)]],
+         criteria);
+      }();
+   });
+   var pager = F2(function (criteria,
+   address) {
+      return A2($Html.section,
+      _L.fromArray([$Html$Attributes.$class("pager")]),
+      _L.fromArray([A2($Html.div,
+                   _L.fromArray([$Html$Attributes.$class("button prev")
+                                ,A2($Html$Events.onClick,
+                                address,
+                                A2(replacePageIndex,
+                                criteria,
+                                criteria.paging.pageIndex - 1))]),
+                   _L.fromArray([$Html.text("Previous")]))
+                   ,A2($Html.div,
+                   _L.fromArray([$Html$Attributes.$class("button next")
+                                ,A2($Html$Events.onClick,
+                                address,
+                                A2(replacePageIndex,
+                                criteria,
+                                criteria.paging.pageIndex + 1))]),
+                   _L.fromArray([$Html.text("Next")]))]));
+   });
    _elm.Pager.values = {_op: _op
+                       ,replacePageIndex: replacePageIndex
                        ,pager: pager};
    return _elm.Pager.values;
 };
@@ -13173,45 +13218,63 @@ Elm.SortBar.make = function (_elm) {
    $Basics = Elm.Basics.make(_elm),
    $Html = Elm.Html.make(_elm),
    $Html$Attributes = Elm.Html.Attributes.make(_elm),
+   $Html$Events = Elm.Html.Events.make(_elm),
    $List = Elm.List.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
+   $Models = Elm.Models.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm);
-   var sortBar = A2($Html.section,
-   _L.fromArray([$Html$Attributes.$class("sort-bar")]),
-   _L.fromArray([A2($Html.div,
-                _L.fromArray([]),
-                _L.fromArray([A2($Html.label,
-                             _L.fromArray([]),
-                             _L.fromArray([$Html.text("Sort by: ")]))
-                             ,A2($Html.select,
-                             _L.fromArray([]),
-                             _L.fromArray([A2($Html.option,
-                                          _L.fromArray([]),
-                                          _L.fromArray([$Html.text("Hotel Name")]))
-                                          ,A2($Html.option,
-                                          _L.fromArray([]),
-                                          _L.fromArray([$Html.text("Stars")]))
-                                          ,A2($Html.option,
-                                          _L.fromArray([]),
-                                          _L.fromArray([$Html.text("Rating")]))
-                                          ,A2($Html.option,
-                                          _L.fromArray([$Html$Attributes.selected(true)]),
-                                          _L.fromArray([$Html.text("Price")]))]))]))
-                ,A2($Html.div,
-                _L.fromArray([]),
-                _L.fromArray([A2($Html.label,
-                             _L.fromArray([]),
-                             _L.fromArray([$Html.text("Direction: ")]))
-                             ,A2($Html.select,
-                             _L.fromArray([]),
-                             _L.fromArray([A2($Html.option,
-                                          _L.fromArray([$Html$Attributes.selected(true)]),
-                                          _L.fromArray([$Html.text("Ascending")]))
-                                          ,A2($Html.option,
-                                          _L.fromArray([]),
-                                          _L.fromArray([$Html.text("Descending")]))]))]))]));
+   var replaceSort = F2(function (criteria,
+   sort) {
+      return _U.replace([["sort"
+                         ,sort]],
+      criteria);
+   });
+   var sortButton = F4(function (criteria,
+   sort,
+   label,
+   address) {
+      return function () {
+         var cls = _U.eq(criteria.sort,
+         sort) ? "button sort-bar-button sort-selected" : "button sort-bar-button";
+         return A2($Html.div,
+         _L.fromArray([$Html$Attributes.$class(cls)
+                      ,A2($Html$Events.onClick,
+                      address,
+                      A2(replaceSort,
+                      criteria,
+                      sort))]),
+         _L.fromArray([$Html.text(label)]));
+      }();
+   });
+   var sortBar = F2(function (criteria,
+   address) {
+      return A2($Html.section,
+      _L.fromArray([$Html$Attributes.$class("sort-bar")]),
+      _L.fromArray([A4(sortButton,
+                   criteria,
+                   $Models.HotelName,
+                   "Name",
+                   address)
+                   ,A4(sortButton,
+                   criteria,
+                   $Models.Stars,
+                   "Stars",
+                   address)
+                   ,A4(sortButton,
+                   criteria,
+                   $Models.Rating,
+                   "Rating",
+                   address)
+                   ,A4(sortButton,
+                   criteria,
+                   $Models.Price,
+                   "Price",
+                   address)]));
+   });
    _elm.SortBar.values = {_op: _op
+                         ,replaceSort: replaceSort
+                         ,sortButton: sortButton
                          ,sortBar: sortBar};
    return _elm.SortBar.values;
 };
@@ -13912,8 +13975,8 @@ Elm.TrpTest.make = function (_elm) {
    0,
    "",
    0),
-   $Models.HotelName($Models.Asc),
-   A2($Models.Paging,25,0)));
+   $Models.HotelName,
+   A2($Models.Paging,20,0)));
    var restrictedResults = A3($Signal.map2,
    $Filtering.restrict,
    results.signal,
@@ -13927,14 +13990,20 @@ Elm.TrpTest.make = function (_elm) {
                    ,A2($Html.section,
                    _L.fromArray([$Html$Attributes.$class("sidebar")]),
                    _L.fromArray([A2($Filters.filters,
-                                model.criteria,
-                                query.address)
-                                ,$SortBar.sortBar]))
+                   model.criteria,
+                   query.address)]))
                    ,A2($Html.section,
                    _L.fromArray([$Html$Attributes.$class("content")]),
-                   _L.fromArray([$Pager.pager
+                   _L.fromArray([A2($SortBar.sortBar,
+                                model.criteria,
+                                query.address)
+                                ,A2($Pager.pager,
+                                model.criteria,
+                                query.address)
                                 ,$HotelsList.hotelList(model.hotels)
-                                ,$Pager.pager]))
+                                ,A2($Pager.pager,
+                                model.criteria,
+                                query.address)]))
                    ,A2($Html.section,
                    _L.fromArray([$Html$Attributes.$class("footer")]),
                    _L.fromArray([A2($Html.h3,

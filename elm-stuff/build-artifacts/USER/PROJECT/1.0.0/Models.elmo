@@ -37,20 +37,10 @@ Elm.Models.make = function (_elm) {
              ,minRating: b
              ,stars: a};
    });
-   var Price = function (a) {
-      return {ctor: "Price",_0: a};
-   };
-   var HotelName = function (a) {
-      return {ctor: "HotelName"
-             ,_0: a};
-   };
-   var Rating = function (a) {
-      return {ctor: "Rating"
-             ,_0: a};
-   };
-   var Stars = function (a) {
-      return {ctor: "Stars",_0: a};
-   };
+   var Price = {ctor: "Price"};
+   var HotelName = {ctor: "HotelName"};
+   var Rating = {ctor: "Rating"};
+   var Stars = {ctor: "Stars"};
    var Desc = {ctor: "Desc"};
    var Asc = {ctor: "Asc"};
    var Paging = F2(function (a,b) {

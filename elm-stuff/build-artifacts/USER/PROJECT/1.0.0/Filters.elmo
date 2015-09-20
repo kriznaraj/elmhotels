@@ -52,17 +52,11 @@ Elm.Filters.make = function (_elm) {
                                                    filter)));
                                                 })]),
                                    _L.fromArray([]))]))
-                      ,A2($Html.hr,
-                      _L.fromArray([]),
-                      _L.fromArray([]))
                       ,A2($Html.div,
                       _L.fromArray([]),
                       _L.fromArray([A2($Html.label,
                       _L.fromArray([]),
                       _L.fromArray([$Html.text("Stars: ")]))]))
-                      ,A2($Html.hr,
-                      _L.fromArray([]),
-                      _L.fromArray([]))
                       ,A2($Html.div,
                       _L.fromArray([]),
                       _L.fromArray([A2($Html.label,
@@ -71,9 +65,6 @@ Elm.Filters.make = function (_elm) {
                                    ,A2($Html.input,
                                    _L.fromArray([$Html$Attributes.type$("range")]),
                                    _L.fromArray([]))]))
-                      ,A2($Html.hr,
-                      _L.fromArray([]),
-                      _L.fromArray([]))
                       ,A2($Html.div,
                       _L.fromArray([]),
                       _L.fromArray([A2($Html.label,
@@ -82,9 +73,6 @@ Elm.Filters.make = function (_elm) {
                                    ,A2($Html.input,
                                    _L.fromArray([$Html$Attributes.type$("range")]),
                                    _L.fromArray([]))]))
-                      ,A2($Html.hr,
-                      _L.fromArray([]),
-                      _L.fromArray([]))
                       ,A2($Html.button,
                       _L.fromArray([]),
                       _L.fromArray([$Html.text("Search")]))]));

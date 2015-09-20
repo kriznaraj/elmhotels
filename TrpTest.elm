@@ -25,13 +25,13 @@ view model =
             Header.header
         ],
         section [ class "sidebar" ] [ 
-            (Filters.filters model.criteria query.address),
-            SortBar.sortBar
+            (Filters.filters model.criteria query.address)
         ],
         section [ class "content" ] [
-            Pager.pager,
+            (SortBar.sortBar model.criteria query.address),
+            (Pager.pager model.criteria query.address),
             (HotelsList.hotelList model.hotels),
-            Pager.pager
+            (Pager.pager model.criteria query.address)
         ], 
         section [class "footer"] [ h3 [] [text "This is the footer"]]]
 
@@ -44,7 +44,7 @@ restrictedResults =
      
 query : Signal.Mailbox Criteria
 query = 
-    Signal.mailbox (Criteria (Filter [] 0 "" 0) (HotelName Asc) (Paging 25 0))
+    Signal.mailbox (Criteria (Filter [] 0 "" 0) HotelName (Paging 20 0))
 
 results : Signal.Mailbox HotelList
 results = 

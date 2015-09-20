@@ -82,8 +82,8 @@ Elm.TrpTest.make = function (_elm) {
    0,
    "",
    0),
-   $Models.HotelName($Models.Asc),
-   A2($Models.Paging,25,0)));
+   $Models.HotelName,
+   A2($Models.Paging,20,0)));
    var restrictedResults = A3($Signal.map2,
    $Filtering.restrict,
    results.signal,
@@ -97,14 +97,20 @@ Elm.TrpTest.make = function (_elm) {
                    ,A2($Html.section,
                    _L.fromArray([$Html$Attributes.$class("sidebar")]),
                    _L.fromArray([A2($Filters.filters,
-                                model.criteria,
-                                query.address)
-                                ,$SortBar.sortBar]))
+                   model.criteria,
+                   query.address)]))
                    ,A2($Html.section,
                    _L.fromArray([$Html$Attributes.$class("content")]),
-                   _L.fromArray([$Pager.pager
+                   _L.fromArray([A2($SortBar.sortBar,
+                                model.criteria,
+                                query.address)
+                                ,A2($Pager.pager,
+                                model.criteria,
+                                query.address)
                                 ,$HotelsList.hotelList(model.hotels)
-                                ,$Pager.pager]))
+                                ,A2($Pager.pager,
+                                model.criteria,
+                                query.address)]))
                    ,A2($Html.section,
                    _L.fromArray([$Html$Attributes.$class("footer")]),
                    _L.fromArray([A2($Html.h3,

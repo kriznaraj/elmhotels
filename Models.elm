@@ -19,10 +19,10 @@ type alias Paging = {
 type Direction = Asc | Desc
 
 type Sort = 
-    Stars Direction 
-    | Rating Direction
-    | HotelName Direction
-    | Price Direction
+    Stars 
+    | Rating 
+    | HotelName 
+    | Price 
 
 type alias Filter = {
     stars : List Star,

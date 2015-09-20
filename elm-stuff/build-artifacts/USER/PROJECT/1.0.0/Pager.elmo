@@ -12,14 +12,46 @@ Elm.Pager.make = function (_elm) {
    $Basics = Elm.Basics.make(_elm),
    $Html = Elm.Html.make(_elm),
    $Html$Attributes = Elm.Html.Attributes.make(_elm),
+   $Html$Events = Elm.Html.Events.make(_elm),
    $List = Elm.List.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
+   $Models = Elm.Models.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm);
-   var pager = A2($Html.section,
-   _L.fromArray([$Html$Attributes.$class("pager")]),
-   _L.fromArray([$Html.text("this is the pager")]));
+   var replacePageIndex = F2(function (criteria,
+   index) {
+      return function () {
+         var paging = criteria.paging;
+         return _U.replace([["paging"
+                            ,_U.replace([["pageIndex"
+                                         ,index]],
+                            paging)]],
+         criteria);
+      }();
+   });
+   var pager = F2(function (criteria,
+   address) {
+      return A2($Html.section,
+      _L.fromArray([$Html$Attributes.$class("pager")]),
+      _L.fromArray([A2($Html.div,
+                   _L.fromArray([$Html$Attributes.$class("button prev")
+                                ,A2($Html$Events.onClick,
+                                address,
+                                A2(replacePageIndex,
+                                criteria,
+                                criteria.paging.pageIndex - 1))]),
+                   _L.fromArray([$Html.text("Previous")]))
+                   ,A2($Html.div,
+                   _L.fromArray([$Html$Attributes.$class("button next")
+                                ,A2($Html$Events.onClick,
+                                address,
+                                A2(replacePageIndex,
+                                criteria,
+                                criteria.paging.pageIndex + 1))]),
+                   _L.fromArray([$Html.text("Next")]))]));
+   });
    _elm.Pager.values = {_op: _op
+                       ,replacePageIndex: replacePageIndex
                        ,pager: pager};
    return _elm.Pager.values;
 };
