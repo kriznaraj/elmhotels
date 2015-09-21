@@ -39,5 +39,6 @@ type alias HotelList = (List Hotel)
 
 type alias Model = {
     hotels : HotelList,
+    total : Int,
     criteria : Criteria
 }

@@ -105,7 +105,7 @@ Elm.TrpTest.make = function (_elm) {
                                 model.criteria,
                                 query.address)
                                 ,A2($Pager.pager,
-                                model.criteria,
+                                model,
                                 query.address)
                                 ,$HotelsList.hotelList(model.hotels)]))
                    ,A2($Html.section,

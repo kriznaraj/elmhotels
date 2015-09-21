@@ -14,12 +14,16 @@ Elm.Repl.make = function (_elm) {
    $Maybe = Elm.Maybe.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm);
+   var z = 100 / 10;
+   var y = 100;
+   var x = 10;
    var tsol = {ctor: "_Tuple0"};
-   var deltron3030 = A2($Basics._op["++"],
-   "abc",
-   "xyz");
+   var deltron3030 = _U.eq(10,z);
    _elm.Repl.values = {_op: _op
                       ,deltron3030: deltron3030
-                      ,tsol: tsol};
+                      ,tsol: tsol
+                      ,x: x
+                      ,y: y
+                      ,z: z};
    return _elm.Repl.values;
 };

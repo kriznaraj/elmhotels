@@ -1812,7 +1812,6 @@ Elm.Filtering.make = function (_elm) {
    _L = _N.List.make(_elm),
    $moduleName = "Filtering",
    $Basics = Elm.Basics.make(_elm),
-   $Debug = Elm.Debug.make(_elm),
    $List = Elm.List.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
    $Models = Elm.Models.make(_elm),
@@ -1839,7 +1838,7 @@ Elm.Filtering.make = function (_elm) {
               starsFilter);
             case "[]": return true;}
          _U.badCase($moduleName,
-         "between lines 37 and 39");
+         "between lines 40 and 42");
       }();
    });
    var nameMatches = F2(function (query,
@@ -1852,73 +1851,82 @@ Elm.Filtering.make = function (_elm) {
          nameLower);
       }();
    });
-   var filter = F2(function (criteria,
-   hotels) {
+   var filter = function (model) {
       return function () {
          var filterFn = function (h) {
             return A2(ratingAtLeast,
-            criteria.filter.minRating,
+            model.criteria.filter.minRating,
             h) && (A2(priceLessThan,
-            criteria.filter.minPrice,
+            model.criteria.filter.minPrice,
             h) && (A2(starsMatch,
-            criteria.filter.stars,
+            model.criteria.filter.stars,
             h) && A2(nameMatches,
-            criteria.filter.hotelName,
+            model.criteria.filter.hotelName,
             h)));
          };
-         return A4($Debug.log,
-         A2($Basics._op["++"],
-         "stars",
-         $Basics.toString(criteria.filter.stars)),
-         $List.filter,
+         return A3($Models.Model,
+         A2($List.filter,
          filterFn,
-         hotels);
+         model.hotels),
+         model.total,
+         model.criteria);
       }();
-   });
-   var sort = F2(function (criteria,
-   hotels) {
+   };
+   var sort = function (model) {
       return function () {
-         var _v3 = criteria.sort;
-         switch (_v3.ctor)
-         {case "HotelName":
-            return A2($List.sortBy,
-              function (_) {
-                 return _.name;
-              },
-              hotels);
-            case "Price":
-            return A2($List.sortBy,
-              function (_) {
-                 return _.price;
-              },
-              hotels);
-            case "Rating":
-            return $List.reverse($List.sortBy(function (_) {
-                 return _.rating;
-              })(hotels));
-            case "Stars":
-            return $List.reverse($List.sortBy(function (_) {
-                 return _.stars;
-              })(hotels));}
-         _U.badCase($moduleName,
-         "between lines 18 and 26");
+         var sortFn = function (hotels) {
+            return function () {
+               var _v3 = model.criteria.sort;
+               switch (_v3.ctor)
+               {case "HotelName":
+                  return A2($List.sortBy,
+                    function (_) {
+                       return _.name;
+                    },
+                    hotels);
+                  case "Price":
+                  return A2($List.sortBy,
+                    function (_) {
+                       return _.price;
+                    },
+                    hotels);
+                  case "Rating":
+                  return $List.reverse($List.sortBy(function (_) {
+                       return _.rating;
+                    })(hotels));
+                  case "Stars":
+                  return $List.reverse($List.sortBy(function (_) {
+                       return _.stars;
+                    })(hotels));}
+               _U.badCase($moduleName,
+               "between lines 19 and 27");
+            }();
+         };
+         return A3($Models.Model,
+         sortFn(model.hotels),
+         model.total,
+         model.criteria);
       }();
-   });
-   var page = F2(function (criteria,
-   hotels) {
+   };
+   var page = function (model) {
       return function () {
-         var paging = criteria.paging;
-         var page = $List.take(paging.pageSize)($List.drop(paging.pageIndex * paging.pageSize)(hotels));
-         return A4($Debug.log,
-         $Basics.toString($List.length(page)),
-         $Models.Model,
+         var paging = model.criteria.paging;
+         var page = $List.take(paging.pageSize)($List.drop(paging.pageIndex * paging.pageSize)(model.hotels));
+         return A3($Models.Model,
          page,
-         criteria);
+         model.total,
+         model.criteria);
       }();
-   });
+   };
    var restrict = F2(function (hotels,
    criteria) {
-      return page(criteria)(sort(criteria)(filter(criteria)(hotels)));
+      return function () {
+         var model = A3($Models.Model,
+         hotels,
+         $List.length(hotels),
+         criteria);
+         return page(sort(filter(model)));
+      }();
    });
    _elm.Filtering.values = {_op: _op
                            ,page: page
@@ -4967,10 +4975,13 @@ Elm.Models.make = function (_elm) {
    $Maybe = Elm.Maybe.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm);
-   var Model = F2(function (a,b) {
+   var Model = F3(function (a,
+   b,
+   c) {
       return {_: {}
-             ,criteria: b
-             ,hotels: a};
+             ,criteria: c
+             ,hotels: a
+             ,total: b};
    });
    var Criteria = F3(function (a,
    b,
@@ -12978,26 +12989,36 @@ Elm.Pager.make = function (_elm) {
          criteria);
       }();
    });
-   var pager = F2(function (criteria,
+   var pager = F2(function (model,
    address) {
-      return A2($Html.section,
-      _L.fromArray([$Html$Attributes.$class("pager")]),
-      _L.fromArray([A2($Html.div,
-                   _L.fromArray([$Html$Attributes.$class("button prev")
-                                ,A2($Html$Events.onClick,
-                                address,
-                                A2(replacePageIndex,
-                                criteria,
-                                criteria.paging.pageIndex - 1))]),
-                   _L.fromArray([$Html.text("Previous")]))
-                   ,A2($Html.div,
-                   _L.fromArray([$Html$Attributes.$class("button next")
-                                ,A2($Html$Events.onClick,
-                                address,
-                                A2(replacePageIndex,
-                                criteria,
-                                criteria.paging.pageIndex + 1))]),
-                   _L.fromArray([$Html.text("Next")]))]));
+      return function () {
+         var hotelCount = $List.length(model.hotels);
+         var paging = model.criteria.paging;
+         var pageIndex = paging.pageIndex;
+         var firstPage = _U.eq(pageIndex,
+         0);
+         var lastPage = _U.eq(pageIndex,
+         hotelCount / paging.pageSize | 0);
+         var criteria = model.criteria;
+         return A2($Html.section,
+         _L.fromArray([$Html$Attributes.$class("pager")]),
+         _L.fromArray([A2($Html.div,
+                      _L.fromArray([$Html$Attributes.$class("button prev")
+                                   ,A2($Html$Events.onClick,
+                                   address,
+                                   A2(replacePageIndex,
+                                   criteria,
+                                   pageIndex - 1))]),
+                      _L.fromArray([$Html.text("Previous")]))
+                      ,A2($Html.div,
+                      _L.fromArray([$Html$Attributes.$class("button next")
+                                   ,A2($Html$Events.onClick,
+                                   address,
+                                   A2(replacePageIndex,
+                                   criteria,
+                                   pageIndex + 1))]),
+                      _L.fromArray([$Html.text("Next")]))]));
+      }();
    });
    _elm.Pager.values = {_op: _op
                        ,replacePageIndex: replacePageIndex
@@ -14186,7 +14207,7 @@ Elm.TrpTest.make = function (_elm) {
                                 model.criteria,
                                 query.address)
                                 ,A2($Pager.pager,
-                                model.criteria,
+                                model,
                                 query.address)
                                 ,$HotelsList.hotelList(model.hotels)]))
                    ,A2($Html.section,

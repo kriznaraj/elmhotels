@@ -4,26 +4,29 @@ import Models exposing (..)
 import String
 import Debug exposing (log)
 
-page : Criteria -> HotelList -> Model
-page criteria hotels =
-    let paging = criteria.paging
-        page = hotels
+page : Model -> Model
+page model =
+    let paging = model.criteria.paging
+        page = model.hotels
         |> List.drop (paging.pageIndex * paging.pageSize)
         |> List.take paging.pageSize
     in
-        log (toString (List.length page)) Model page criteria
+        Model page model.total model.criteria
 
-sort : Criteria -> HotelList -> HotelList
-sort criteria hotels =
-    case criteria.sort of
-       HotelName -> List.sortBy .name hotels
-       Stars -> hotels
-                    |> List.sortBy .stars
-                    |> List.reverse
-       Rating -> hotels
-                    |> List.sortBy .rating
-                    |> List.reverse
-       Price -> List.sortBy .price hotels
+sort : Model -> Model
+sort model =
+    let sortFn = (\hotels -> 
+        case model.criteria.sort of
+           HotelName -> List.sortBy .name hotels
+           Stars -> hotels
+                        |> List.sortBy .stars
+                        |> List.reverse
+           Rating -> hotels
+                        |> List.sortBy .rating
+                        |> List.reverse
+           Price -> List.sortBy .price hotels)
+    in
+       Model (sortFn model.hotels) model.total model.criteria
 
 nameMatches : String -> Hotel -> Bool
 nameMatches query hotel =
@@ -46,20 +49,21 @@ ratingAtLeast : Float -> Hotel -> Bool
 ratingAtLeast min hotel =
     hotel.rating >= min
 
-filter : Criteria -> HotelList -> HotelList
-filter criteria hotels =
+filter : Model -> Model
+filter model =
     let filterFn = (\h -> 
-        (ratingAtLeast criteria.filter.minRating h) &&
-        (priceLessThan criteria.filter.minPrice h) &&
-        (starsMatch criteria.filter.stars h) &&
-        (nameMatches criteria.filter.hotelName h))
+        (ratingAtLeast model.criteria.filter.minRating h) &&
+        (priceLessThan model.criteria.filter.minPrice h) &&
+        (starsMatch model.criteria.filter.stars h) &&
+        (nameMatches model.criteria.filter.hotelName h))
     in
-       log("stars" ++ (toString criteria.filter.stars))
-        List.filter filterFn hotels
+        Model (List.filter filterFn model.hotels) model.total model.criteria
 
 restrict : HotelList -> Criteria -> Model
 restrict hotels criteria =
-    hotels
-        |> filter criteria
-        |> sort criteria
-        |> page criteria
+    let model = Model hotels (List.length hotels) criteria
+    in
+        model
+            |> filter 
+            |> sort 
+            |> page

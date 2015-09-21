@@ -29,26 +29,36 @@ Elm.Pager.make = function (_elm) {
          criteria);
       }();
    });
-   var pager = F2(function (criteria,
+   var pager = F2(function (model,
    address) {
-      return A2($Html.section,
-      _L.fromArray([$Html$Attributes.$class("pager")]),
-      _L.fromArray([A2($Html.div,
-                   _L.fromArray([$Html$Attributes.$class("button prev")
-                                ,A2($Html$Events.onClick,
-                                address,
-                                A2(replacePageIndex,
-                                criteria,
-                                criteria.paging.pageIndex - 1))]),
-                   _L.fromArray([$Html.text("Previous")]))
-                   ,A2($Html.div,
-                   _L.fromArray([$Html$Attributes.$class("button next")
-                                ,A2($Html$Events.onClick,
-                                address,
-                                A2(replacePageIndex,
-                                criteria,
-                                criteria.paging.pageIndex + 1))]),
-                   _L.fromArray([$Html.text("Next")]))]));
+      return function () {
+         var hotelCount = $List.length(model.hotels);
+         var paging = model.criteria.paging;
+         var pageIndex = paging.pageIndex;
+         var firstPage = _U.eq(pageIndex,
+         0);
+         var lastPage = _U.eq(pageIndex,
+         hotelCount / paging.pageSize | 0);
+         var criteria = model.criteria;
+         return A2($Html.section,
+         _L.fromArray([$Html$Attributes.$class("pager")]),
+         _L.fromArray([A2($Html.div,
+                      _L.fromArray([$Html$Attributes.$class("button prev")
+                                   ,A2($Html$Events.onClick,
+                                   address,
+                                   A2(replacePageIndex,
+                                   criteria,
+                                   pageIndex - 1))]),
+                      _L.fromArray([$Html.text("Previous")]))
+                      ,A2($Html.div,
+                      _L.fromArray([$Html$Attributes.$class("button next")
+                                   ,A2($Html$Events.onClick,
+                                   address,
+                                   A2(replacePageIndex,
+                                   criteria,
+                                   pageIndex + 1))]),
+                      _L.fromArray([$Html.text("Next")]))]));
+      }();
    });
    _elm.Pager.values = {_op: _op
                        ,replacePageIndex: replacePageIndex

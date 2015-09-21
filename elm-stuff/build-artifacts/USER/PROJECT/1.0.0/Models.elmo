@@ -14,10 +14,13 @@ Elm.Models.make = function (_elm) {
    $Maybe = Elm.Maybe.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm);
-   var Model = F2(function (a,b) {
+   var Model = F3(function (a,
+   b,
+   c) {
       return {_: {}
-             ,criteria: b
-             ,hotels: a};
+             ,criteria: c
+             ,hotels: a
+             ,total: b};
    });
    var Criteria = F3(function (a,
    b,
