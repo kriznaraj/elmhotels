@@ -1920,28 +1920,28 @@ Elm.Filters.make = function (_elm) {
          var filter = criteria.filter;
          return A2($Html.section,
          _L.fromArray([$Html$Attributes.$class("filters")]),
-         _L.fromArray([A2($Html.div,
+         _L.fromArray([A2($Html.h3,
                       _L.fromArray([]),
-                      _L.fromArray([A2($Html.label,
-                                   _L.fromArray([]),
-                                   _L.fromArray([$Html.text("Hotel Name: ")]))
-                                   ,A2($Html.input,
-                                   _L.fromArray([$Html$Attributes.placeholder("Hotel Name")
-                                                ,$Html$Attributes.type$("text")
-                                                ,$Html$Attributes.value(criteria.filter.hotelName)
-                                                ,A3($Html$Events.on,
-                                                "input",
-                                                $Html$Events.targetValue,
-                                                function (str) {
-                                                   return A2($Signal.message,
-                                                   address,
-                                                   A2(replaceFilter,
-                                                   criteria,
-                                                   _U.replace([["hotelName"
-                                                               ,str]],
-                                                   filter)));
-                                                })]),
-                                   _L.fromArray([]))]))
+                      _L.fromArray([$Html.text("Filters")]))
+                      ,A2($Html.div,
+                      _L.fromArray([]),
+                      _L.fromArray([A2($Html.input,
+                      _L.fromArray([$Html$Attributes.placeholder("Hotel Name")
+                                   ,$Html$Attributes.autofocus(true)
+                                   ,$Html$Attributes.type$("text")
+                                   ,$Html$Attributes.value(criteria.filter.hotelName)
+                                   ,A3($Html$Events.on,
+                                   "input",
+                                   $Html$Events.targetValue,
+                                   function (str) {
+                                      return A2($Signal.message,
+                                      address,
+                                      A2(replaceFilter,
+                                      criteria,
+                                      _U.replace([["hotelName",str]],
+                                      filter)));
+                                   })]),
+                      _L.fromArray([]))]))
                       ,A2($Html.div,
                       _L.fromArray([]),
                       _L.fromArray([A2($Html.label,
@@ -13957,7 +13957,8 @@ Elm.TrpTest.make = function (_elm) {
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm),
    $SortBar = Elm.SortBar.make(_elm),
-   $Task = Elm.Task.make(_elm);
+   $Task = Elm.Task.make(_elm),
+   $Time = Elm.Time.make(_elm);
    var hotels = function () {
       var hotel = A7($Json$Decode.object6,
       $Models.Hotel,
@@ -14001,7 +14002,7 @@ Elm.TrpTest.make = function (_elm) {
               results.address,
               result._0);}
          _U.badCase($moduleName,
-         "between lines 55 and 59");
+         "between lines 62 and 66");
       }();
    };
    var requests = Elm.Native.Task.make(_elm).perform(A2($Task.andThen,
@@ -14015,10 +14016,13 @@ Elm.TrpTest.make = function (_elm) {
    0),
    $Models.HotelName,
    A2($Models.Paging,20,0)));
+   var debouncedQuery = A2($Signal.sampleOn,
+   $Time.fps(1),
+   query.signal);
    var restrictedResults = A3($Signal.map2,
    $Filtering.restrict,
    results.signal,
-   query.signal);
+   debouncedQuery);
    var view = function (model) {
       return A2($Html.div,
       _L.fromArray([]),
@@ -14051,6 +14055,7 @@ Elm.TrpTest.make = function (_elm) {
    _elm.TrpTest.values = {_op: _op
                          ,view: view
                          ,main: main
+                         ,debouncedQuery: debouncedQuery
                          ,restrictedResults: restrictedResults
                          ,query: query
                          ,results: results

@@ -30,28 +30,28 @@ Elm.Filters.make = function (_elm) {
          var filter = criteria.filter;
          return A2($Html.section,
          _L.fromArray([$Html$Attributes.$class("filters")]),
-         _L.fromArray([A2($Html.div,
+         _L.fromArray([A2($Html.h3,
                       _L.fromArray([]),
-                      _L.fromArray([A2($Html.label,
-                                   _L.fromArray([]),
-                                   _L.fromArray([$Html.text("Hotel Name: ")]))
-                                   ,A2($Html.input,
-                                   _L.fromArray([$Html$Attributes.placeholder("Hotel Name")
-                                                ,$Html$Attributes.type$("text")
-                                                ,$Html$Attributes.value(criteria.filter.hotelName)
-                                                ,A3($Html$Events.on,
-                                                "input",
-                                                $Html$Events.targetValue,
-                                                function (str) {
-                                                   return A2($Signal.message,
-                                                   address,
-                                                   A2(replaceFilter,
-                                                   criteria,
-                                                   _U.replace([["hotelName"
-                                                               ,str]],
-                                                   filter)));
-                                                })]),
-                                   _L.fromArray([]))]))
+                      _L.fromArray([$Html.text("Filters")]))
+                      ,A2($Html.div,
+                      _L.fromArray([]),
+                      _L.fromArray([A2($Html.input,
+                      _L.fromArray([$Html$Attributes.placeholder("Hotel Name")
+                                   ,$Html$Attributes.autofocus(true)
+                                   ,$Html$Attributes.type$("text")
+                                   ,$Html$Attributes.value(criteria.filter.hotelName)
+                                   ,A3($Html$Events.on,
+                                   "input",
+                                   $Html$Events.targetValue,
+                                   function (str) {
+                                      return A2($Signal.message,
+                                      address,
+                                      A2(replaceFilter,
+                                      criteria,
+                                      _U.replace([["hotelName",str]],
+                                      filter)));
+                                   })]),
+                      _L.fromArray([]))]))
                       ,A2($Html.div,
                       _L.fromArray([]),
                       _L.fromArray([A2($Html.label,

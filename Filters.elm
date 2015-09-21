@@ -16,10 +16,11 @@ filters criteria address =
         criteria.filter
     in
         section [ class "filters"] [ 
+            h3 [] [text "Filters"],
             div [] [
-                label [] [ text "Hotel Name: " ],
                 input 
                     [ placeholder "Hotel Name"
+                    , autofocus True
                     , type' "text"
                     , value criteria.filter.hotelName
                     , on "input" targetValue 
