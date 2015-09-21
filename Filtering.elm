@@ -38,9 +38,19 @@ starsMatch starsFilter hotel =
         hd::tl -> List.member hotel.stars starsFilter
         [] -> True
 
+priceLessThan : Float -> Hotel -> Bool
+priceLessThan min hotel =
+    True
+
+ratingAtLeast : Int -> Hotel -> Bool
+ratingAtLeast min hotel =
+    True
+
 filter : Criteria -> HotelList -> HotelList
 filter criteria hotels =
     let filterFn = (\h -> 
+        (ratingAtLeast criteria.filter.minRating h) &&
+        (priceLessThan criteria.filter.minPrice h) &&
         (starsMatch criteria.filter.stars h) &&
         (nameMatches criteria.filter.hotelName h))
     in

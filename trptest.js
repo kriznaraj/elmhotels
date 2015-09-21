@@ -1819,6 +1819,14 @@ Elm.Filtering.make = function (_elm) {
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm),
    $String = Elm.String.make(_elm);
+   var ratingAtLeast = F2(function (min,
+   hotel) {
+      return true;
+   });
+   var priceLessThan = F2(function (min,
+   hotel) {
+      return true;
+   });
    var starsMatch = F2(function (starsFilter,
    hotel) {
       return function () {
@@ -1846,11 +1854,15 @@ Elm.Filtering.make = function (_elm) {
    hotels) {
       return function () {
          var filterFn = function (h) {
-            return A2(starsMatch,
+            return A2(ratingAtLeast,
+            criteria.filter.minRating,
+            h) && (A2(priceLessThan,
+            criteria.filter.minPrice,
+            h) && (A2(starsMatch,
             criteria.filter.stars,
             h) && A2(nameMatches,
             criteria.filter.hotelName,
-            h);
+            h)));
          };
          return A4($Debug.log,
          A2($Basics._op["++"],
@@ -1911,6 +1923,8 @@ Elm.Filtering.make = function (_elm) {
                            ,sort: sort
                            ,nameMatches: nameMatches
                            ,starsMatch: starsMatch
+                           ,priceLessThan: priceLessThan
+                           ,ratingAtLeast: ratingAtLeast
                            ,filter: filter
                            ,restrict: restrict};
    return _elm.Filtering.values;
