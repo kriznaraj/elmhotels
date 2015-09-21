@@ -13957,8 +13957,7 @@ Elm.TrpTest.make = function (_elm) {
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm),
    $SortBar = Elm.SortBar.make(_elm),
-   $Task = Elm.Task.make(_elm),
-   $Time = Elm.Time.make(_elm);
+   $Task = Elm.Task.make(_elm);
    var hotels = function () {
       var hotel = A7($Json$Decode.object6,
       $Models.Hotel,
@@ -14016,13 +14015,10 @@ Elm.TrpTest.make = function (_elm) {
    0),
    $Models.HotelName,
    A2($Models.Paging,20,0)));
-   var debouncedQuery = A2($Signal.sampleOn,
-   $Time.fps(1),
-   query.signal);
    var restrictedResults = A3($Signal.map2,
    $Filtering.restrict,
    results.signal,
-   debouncedQuery);
+   query.signal);
    var view = function (model) {
       return A2($Html.div,
       _L.fromArray([]),
@@ -14055,7 +14051,6 @@ Elm.TrpTest.make = function (_elm) {
    _elm.TrpTest.values = {_op: _op
                          ,view: view
                          ,main: main
-                         ,debouncedQuery: debouncedQuery
                          ,restrictedResults: restrictedResults
                          ,query: query
                          ,results: results

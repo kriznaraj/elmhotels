@@ -40,13 +40,13 @@ main =
 
 --demo of how we can easily debounce the signal
 --although this isn't quite the same as debouncing the actual dom event
-debouncedQuery : Signal Criteria
-debouncedQuery = 
-    Signal.sampleOn (Time.fps 1) query.signal
+-- debouncedQuery : Signal Criteria
+-- debouncedQuery = 
+--     Signal.sampleOn (Time.fps 1) query.signal
 
 restrictedResults : Signal Model
 restrictedResults =
-    Signal.map2 restrict results.signal debouncedQuery
+    Signal.map2 restrict results.signal query.signal
      
 query : Signal.Mailbox Criteria
 query = 
