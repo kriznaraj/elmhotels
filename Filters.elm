@@ -6,6 +6,7 @@ import Html.Events exposing (..)
 import Signal exposing (Address)
 import Models exposing (..)
 import Debug exposing (log)
+import String
 
 addOrRemoveStar : Criteria -> Int -> Criteria
 addOrRemoveStar criteria star =
@@ -61,14 +62,38 @@ filters criteria address =
             ],
             div [class "clear"] [
                 label [] [ text "Minimum Rating: " ],
-                input [type' "range"] []
+                input 
+                    [ placeholder "Mininum Rating"
+                    , type' "range"
+                    , Html.Attributes.min "0"
+                    , Html.Attributes.max "10"
+                    , value (toString criteria.filter.minRating)
+                    , on "input" targetValue 
+                        (\str -> Signal.message address (replaceFilter criteria {filter|minRating <- (parseFloat str)}))
+                    ] []
             ],
             div [] [
                 label [] [ text "Minimum Price: " ],
-                input [type' "range"] []
+                input 
+                    [ placeholder "Mininum Price"
+                    , type' "range"
+                    , Html.Attributes.min "0"
+                    , Html.Attributes.max "7000"
+                    , value (toString criteria.filter.minPrice)
+                    , on "input" targetValue 
+                        (\str -> Signal.message address (replaceFilter criteria {filter|minPrice <- (parseFloat str)}))
+                    ] []
             ],
             div [] [
                 button [class "button",
                     onClick address (Criteria (Filter [] 0 "" 0) HotelName (Paging 20 0))] [ text "Clear Filters" ]
             ]
         ] 
+
+--return 0 if the string cannot be parsed
+parseFloat : String -> Float
+parseFloat str =
+    case String.toFloat str of
+        Err _ -> 0
+        Ok x -> x
+

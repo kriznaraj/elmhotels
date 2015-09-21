@@ -17,7 +17,18 @@ Elm.Filters.make = function (_elm) {
    $Maybe = Elm.Maybe.make(_elm),
    $Models = Elm.Models.make(_elm),
    $Result = Elm.Result.make(_elm),
-   $Signal = Elm.Signal.make(_elm);
+   $Signal = Elm.Signal.make(_elm),
+   $String = Elm.String.make(_elm);
+   var parseFloat = function (str) {
+      return function () {
+         var _v0 = $String.toFloat(str);
+         switch (_v0.ctor)
+         {case "Err": return 0;
+            case "Ok": return _v0._0;}
+         _U.badCase($moduleName,
+         "between lines 96 and 98");
+      }();
+   };
    var replaceFilter = F2(function (criteria,
    filter) {
       return _U.replace([["filter"
@@ -122,7 +133,23 @@ Elm.Filters.make = function (_elm) {
                                    _L.fromArray([]),
                                    _L.fromArray([$Html.text("Minimum Rating: ")]))
                                    ,A2($Html.input,
-                                   _L.fromArray([$Html$Attributes.type$("range")]),
+                                   _L.fromArray([$Html$Attributes.placeholder("Mininum Rating")
+                                                ,$Html$Attributes.type$("range")
+                                                ,$Html$Attributes.min("0")
+                                                ,$Html$Attributes.max("10")
+                                                ,$Html$Attributes.value($Basics.toString(criteria.filter.minRating))
+                                                ,A3($Html$Events.on,
+                                                "input",
+                                                $Html$Events.targetValue,
+                                                function (str) {
+                                                   return A2($Signal.message,
+                                                   address,
+                                                   A2(replaceFilter,
+                                                   criteria,
+                                                   _U.replace([["minRating"
+                                                               ,parseFloat(str)]],
+                                                   filter)));
+                                                })]),
                                    _L.fromArray([]))]))
                       ,A2($Html.div,
                       _L.fromArray([]),
@@ -130,7 +157,23 @@ Elm.Filters.make = function (_elm) {
                                    _L.fromArray([]),
                                    _L.fromArray([$Html.text("Minimum Price: ")]))
                                    ,A2($Html.input,
-                                   _L.fromArray([$Html$Attributes.type$("range")]),
+                                   _L.fromArray([$Html$Attributes.placeholder("Mininum Price")
+                                                ,$Html$Attributes.type$("range")
+                                                ,$Html$Attributes.min("0")
+                                                ,$Html$Attributes.max("7000")
+                                                ,$Html$Attributes.value($Basics.toString(criteria.filter.minPrice))
+                                                ,A3($Html$Events.on,
+                                                "input",
+                                                $Html$Events.targetValue,
+                                                function (str) {
+                                                   return A2($Signal.message,
+                                                   address,
+                                                   A2(replaceFilter,
+                                                   criteria,
+                                                   _U.replace([["minPrice"
+                                                               ,parseFloat(str)]],
+                                                   filter)));
+                                                })]),
                                    _L.fromArray([]))]))
                       ,A2($Html.div,
                       _L.fromArray([]),
@@ -153,6 +196,7 @@ Elm.Filters.make = function (_elm) {
                          ,addOrRemoveStar: addOrRemoveStar
                          ,stars: stars
                          ,replaceFilter: replaceFilter
-                         ,filters: filters};
+                         ,filters: filters
+                         ,parseFloat: parseFloat};
    return _elm.Filters.values;
 };

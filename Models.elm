@@ -24,7 +24,7 @@ type Sort =
 
 type alias Filter = {
     stars : List Int,
-    minRating : Int,
+    minRating : Float,
     hotelName : String,
     minPrice : Float
 }

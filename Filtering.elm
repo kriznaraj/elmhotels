@@ -40,11 +40,11 @@ starsMatch starsFilter hotel =
 
 priceLessThan : Float -> Hotel -> Bool
 priceLessThan min hotel =
-    True
+    hotel.price >= min
 
-ratingAtLeast : Int -> Hotel -> Bool
+ratingAtLeast : Float -> Hotel -> Bool
 ratingAtLeast min hotel =
-    True
+    hotel.rating >= min
 
 filter : Criteria -> HotelList -> HotelList
 filter criteria hotels =

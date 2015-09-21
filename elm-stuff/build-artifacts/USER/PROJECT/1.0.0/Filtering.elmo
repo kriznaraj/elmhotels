@@ -19,11 +19,13 @@ Elm.Filtering.make = function (_elm) {
    $String = Elm.String.make(_elm);
    var ratingAtLeast = F2(function (min,
    hotel) {
-      return true;
+      return _U.cmp(hotel.rating,
+      min) > -1;
    });
    var priceLessThan = F2(function (min,
    hotel) {
-      return true;
+      return _U.cmp(hotel.price,
+      min) > -1;
    });
    var starsMatch = F2(function (starsFilter,
    hotel) {
