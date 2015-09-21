@@ -55,8 +55,11 @@ Elm.Filters.make = function (_elm) {
                       ,A2($Html.div,
                       _L.fromArray([]),
                       _L.fromArray([A2($Html.label,
-                      _L.fromArray([]),
-                      _L.fromArray([$Html.text("Stars: ")]))]))
+                                   _L.fromArray([]),
+                                   _L.fromArray([$Html.text("Stars: ")]))
+                                   ,A2($Html.div,
+                                   _L.fromArray([]),
+                                   _L.fromArray([$Html.text("some list of stars")]))]))
                       ,A2($Html.div,
                       _L.fromArray([]),
                       _L.fromArray([A2($Html.label,
@@ -72,10 +75,7 @@ Elm.Filters.make = function (_elm) {
                                    _L.fromArray([$Html.text("Minimum Price: ")]))
                                    ,A2($Html.input,
                                    _L.fromArray([$Html$Attributes.type$("range")]),
-                                   _L.fromArray([]))]))
-                      ,A2($Html.button,
-                      _L.fromArray([]),
-                      _L.fromArray([$Html.text("Search")]))]));
+                                   _L.fromArray([]))]))]));
       }();
    });
    _elm.Filters.values = {_op: _op

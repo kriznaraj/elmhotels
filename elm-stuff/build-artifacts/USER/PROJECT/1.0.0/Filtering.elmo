@@ -51,19 +51,15 @@ Elm.Filtering.make = function (_elm) {
               },
               hotels);
             case "Rating":
-            return A2($List.sortBy,
-              function (_) {
+            return $List.reverse($List.sortBy(function (_) {
                  return _.rating;
-              },
-              hotels);
+              })(hotels));
             case "Stars":
-            return A2($List.sortBy,
-              function (_) {
+            return $List.reverse($List.sortBy(function (_) {
                  return _.stars;
-              },
-              hotels);}
+              })(hotels));}
          _U.badCase($moduleName,
-         "between lines 18 and 22");
+         "between lines 18 and 26");
       }();
    });
    var page = F2(function (criteria,

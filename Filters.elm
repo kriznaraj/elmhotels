@@ -27,7 +27,8 @@ filters criteria address =
                     ] []
             ],
             div [] [
-                label [] [ text "Stars: " ]
+                label [] [ text "Stars: " ],
+                div [][text "some list of stars"]
             ],
             div [] [
                 label [] [ text "Minimum Rating: " ],
@@ -36,6 +37,5 @@ filters criteria address =
             div [] [
                 label [] [ text "Minimum Price: " ],
                 input [type' "range"] []
-            ],
-            button [] [ text "Search"]
+            ]
         ] 

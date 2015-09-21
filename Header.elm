@@ -4,4 +4,4 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 
 header = 
-    h1 [] [ text "Travel Republic Hotel Search" ]
+    h1 [] [ text "Travel Republic" ]

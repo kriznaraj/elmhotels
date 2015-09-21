@@ -1853,19 +1853,15 @@ Elm.Filtering.make = function (_elm) {
               },
               hotels);
             case "Rating":
-            return A2($List.sortBy,
-              function (_) {
+            return $List.reverse($List.sortBy(function (_) {
                  return _.rating;
-              },
-              hotels);
+              })(hotels));
             case "Stars":
-            return A2($List.sortBy,
-              function (_) {
+            return $List.reverse($List.sortBy(function (_) {
                  return _.stars;
-              },
-              hotels);}
+              })(hotels));}
          _U.badCase($moduleName,
-         "between lines 18 and 22");
+         "between lines 18 and 26");
       }();
    });
    var page = F2(function (criteria,
@@ -1949,8 +1945,11 @@ Elm.Filters.make = function (_elm) {
                       ,A2($Html.div,
                       _L.fromArray([]),
                       _L.fromArray([A2($Html.label,
-                      _L.fromArray([]),
-                      _L.fromArray([$Html.text("Stars: ")]))]))
+                                   _L.fromArray([]),
+                                   _L.fromArray([$Html.text("Stars: ")]))
+                                   ,A2($Html.div,
+                                   _L.fromArray([]),
+                                   _L.fromArray([$Html.text("some list of stars")]))]))
                       ,A2($Html.div,
                       _L.fromArray([]),
                       _L.fromArray([A2($Html.label,
@@ -1966,10 +1965,7 @@ Elm.Filters.make = function (_elm) {
                                    _L.fromArray([$Html.text("Minimum Price: ")]))
                                    ,A2($Html.input,
                                    _L.fromArray([$Html$Attributes.type$("range")]),
-                                   _L.fromArray([]))]))
-                      ,A2($Html.button,
-                      _L.fromArray([]),
-                      _L.fromArray([$Html.text("Search")]))]));
+                                   _L.fromArray([]))]))]));
       }();
    });
    _elm.Filters.values = {_op: _op
@@ -2884,7 +2880,7 @@ Elm.Header.make = function (_elm) {
    $Signal = Elm.Signal.make(_elm);
    var header = A2($Html.h1,
    _L.fromArray([]),
-   _L.fromArray([$Html.text("Travel Republic Hotel Search")]));
+   _L.fromArray([$Html.text("Travel Republic")]));
    _elm.Header.values = {_op: _op
                         ,header: header};
    return _elm.Header.values;
@@ -2908,10 +2904,51 @@ Elm.HotelsList.make = function (_elm) {
    $Models = Elm.Models.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm);
+   var backgroundImage = function (url) {
+      return $Html$Attributes.style(_L.fromArray([{ctor: "_Tuple2"
+                                                  ,_0: "backgroundImage"
+                                                  ,_1: A2($Basics._op["++"],
+                                                  "url(",
+                                                  A2($Basics._op["++"],
+                                                  url,
+                                                  ")"))}
+                                                 ,{ctor: "_Tuple2"
+                                                  ,_0: "backgroundRepeat"
+                                                  ,_1: "no-repeat"}]));
+   };
    var hotelCard = function (hotel) {
       return A2($Html.li,
       _L.fromArray([]),
-      _L.fromArray([$Html.text(hotel.name)]));
+      _L.fromArray([A2($Html.div,
+      _L.fromArray([$Html$Attributes.$class("hotel-card")]),
+      _L.fromArray([A2($Html.div,
+      _L.fromArray([]),
+      _L.fromArray([A2($Html.div,
+                   _L.fromArray([$Html$Attributes.$class("hotel-image")
+                                ,backgroundImage(hotel.image)]),
+                   _L.fromArray([]))
+                   ,A2($Html.div,
+                   _L.fromArray([$Html$Attributes.$class("hotel-overlay")]),
+                   _L.fromArray([A2($Html.h3,
+                                _L.fromArray([$Html$Attributes.$class("truncate")]),
+                                _L.fromArray([$Html.text(hotel.name)]))
+                                ,A2($Html.div,
+                                _L.fromArray([$Html$Attributes.$class("hotel-text")]),
+                                _L.fromArray([A2($Html.p,
+                                             _L.fromArray([$Html$Attributes.$class("hotel-price")]),
+                                             _L.fromArray([$Html.text(A2($Basics._op["++"],
+                                             "Price: ",
+                                             $Basics.toString(hotel.price)))]))
+                                             ,A2($Html.p,
+                                             _L.fromArray([$Html$Attributes.$class("hotel-rating")]),
+                                             _L.fromArray([$Html.text(A2($Basics._op["++"],
+                                             "Rating: ",
+                                             $Basics.toString(hotel.rating)))]))
+                                             ,A2($Html.p,
+                                             _L.fromArray([$Html$Attributes.$class("hotel-stars")]),
+                                             _L.fromArray([$Html.text(A2($Basics._op["++"],
+                                             "Stars: ",
+                                             $Basics.toString(hotel.stars)))]))]))]))]))]))]));
    };
    var hotelList = function (hotels) {
       return A2($Html.section,
@@ -2923,6 +2960,7 @@ Elm.HotelsList.make = function (_elm) {
       hotels))]));
    };
    _elm.HotelsList.values = {_op: _op
+                            ,backgroundImage: backgroundImage
                             ,hotelCard: hotelCard
                             ,hotelList: hotelList};
    return _elm.HotelsList.values;
@@ -13963,7 +14001,7 @@ Elm.TrpTest.make = function (_elm) {
               results.address,
               result._0);}
          _U.badCase($moduleName,
-         "between lines 56 and 60");
+         "between lines 55 and 59");
       }();
    };
    var requests = Elm.Native.Task.make(_elm).perform(A2($Task.andThen,
@@ -14000,15 +14038,12 @@ Elm.TrpTest.make = function (_elm) {
                                 ,A2($Pager.pager,
                                 model.criteria,
                                 query.address)
-                                ,$HotelsList.hotelList(model.hotels)
-                                ,A2($Pager.pager,
-                                model.criteria,
-                                query.address)]))
+                                ,$HotelsList.hotelList(model.hotels)]))
                    ,A2($Html.section,
                    _L.fromArray([$Html$Attributes.$class("footer")]),
                    _L.fromArray([A2($Html.h3,
                    _L.fromArray([]),
-                   _L.fromArray([$Html.text("This is the footer")]))]))]));
+                   _L.fromArray([$Html.text("My beautiful footer section")]))]))]));
    };
    var main = A2($Signal.map,
    view,

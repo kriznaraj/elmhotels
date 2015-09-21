@@ -17,8 +17,12 @@ sort : Criteria -> HotelList -> HotelList
 sort criteria hotels =
     case criteria.sort of
        HotelName -> List.sortBy .name hotels
-       Stars -> List.sortBy .stars hotels
-       Rating -> List.sortBy .rating hotels
+       Stars -> hotels
+                    |> List.sortBy .stars
+                    |> List.reverse
+       Rating -> hotels
+                    |> List.sortBy .rating
+                    |> List.reverse
        Price -> List.sortBy .price hotels
 
 nameMatches : String -> Hotel -> Bool

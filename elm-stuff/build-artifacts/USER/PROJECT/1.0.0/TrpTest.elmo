@@ -70,7 +70,7 @@ Elm.TrpTest.make = function (_elm) {
               results.address,
               result._0);}
          _U.badCase($moduleName,
-         "between lines 56 and 60");
+         "between lines 55 and 59");
       }();
    };
    var requests = Elm.Native.Task.make(_elm).perform(A2($Task.andThen,
@@ -107,15 +107,12 @@ Elm.TrpTest.make = function (_elm) {
                                 ,A2($Pager.pager,
                                 model.criteria,
                                 query.address)
-                                ,$HotelsList.hotelList(model.hotels)
-                                ,A2($Pager.pager,
-                                model.criteria,
-                                query.address)]))
+                                ,$HotelsList.hotelList(model.hotels)]))
                    ,A2($Html.section,
                    _L.fromArray([$Html$Attributes.$class("footer")]),
                    _L.fromArray([A2($Html.h3,
                    _L.fromArray([]),
-                   _L.fromArray([$Html.text("This is the footer")]))]))]));
+                   _L.fromArray([$Html.text("My beautiful footer section")]))]))]));
    };
    var main = A2($Signal.map,
    view,

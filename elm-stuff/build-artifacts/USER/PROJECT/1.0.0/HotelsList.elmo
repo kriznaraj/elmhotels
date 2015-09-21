@@ -17,10 +17,51 @@ Elm.HotelsList.make = function (_elm) {
    $Models = Elm.Models.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm);
+   var backgroundImage = function (url) {
+      return $Html$Attributes.style(_L.fromArray([{ctor: "_Tuple2"
+                                                  ,_0: "backgroundImage"
+                                                  ,_1: A2($Basics._op["++"],
+                                                  "url(",
+                                                  A2($Basics._op["++"],
+                                                  url,
+                                                  ")"))}
+                                                 ,{ctor: "_Tuple2"
+                                                  ,_0: "backgroundRepeat"
+                                                  ,_1: "no-repeat"}]));
+   };
    var hotelCard = function (hotel) {
       return A2($Html.li,
       _L.fromArray([]),
-      _L.fromArray([$Html.text(hotel.name)]));
+      _L.fromArray([A2($Html.div,
+      _L.fromArray([$Html$Attributes.$class("hotel-card")]),
+      _L.fromArray([A2($Html.div,
+      _L.fromArray([]),
+      _L.fromArray([A2($Html.div,
+                   _L.fromArray([$Html$Attributes.$class("hotel-image")
+                                ,backgroundImage(hotel.image)]),
+                   _L.fromArray([]))
+                   ,A2($Html.div,
+                   _L.fromArray([$Html$Attributes.$class("hotel-overlay")]),
+                   _L.fromArray([A2($Html.h3,
+                                _L.fromArray([$Html$Attributes.$class("truncate")]),
+                                _L.fromArray([$Html.text(hotel.name)]))
+                                ,A2($Html.div,
+                                _L.fromArray([$Html$Attributes.$class("hotel-text")]),
+                                _L.fromArray([A2($Html.p,
+                                             _L.fromArray([$Html$Attributes.$class("hotel-price")]),
+                                             _L.fromArray([$Html.text(A2($Basics._op["++"],
+                                             "Price: ",
+                                             $Basics.toString(hotel.price)))]))
+                                             ,A2($Html.p,
+                                             _L.fromArray([$Html$Attributes.$class("hotel-rating")]),
+                                             _L.fromArray([$Html.text(A2($Basics._op["++"],
+                                             "Rating: ",
+                                             $Basics.toString(hotel.rating)))]))
+                                             ,A2($Html.p,
+                                             _L.fromArray([$Html$Attributes.$class("hotel-stars")]),
+                                             _L.fromArray([$Html.text(A2($Basics._op["++"],
+                                             "Stars: ",
+                                             $Basics.toString(hotel.stars)))]))]))]))]))]))]));
    };
    var hotelList = function (hotels) {
       return A2($Html.section,
@@ -32,6 +73,7 @@ Elm.HotelsList.make = function (_elm) {
       hotels))]));
    };
    _elm.HotelsList.values = {_op: _op
+                            ,backgroundImage: backgroundImage
                             ,hotelCard: hotelCard
                             ,hotelList: hotelList};
    return _elm.HotelsList.values;

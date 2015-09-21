@@ -30,10 +30,9 @@ view model =
         section [ class "content" ] [
             (SortBar.sortBar model.criteria query.address),
             (Pager.pager model.criteria query.address),
-            (HotelsList.hotelList model.hotels),
-            (Pager.pager model.criteria query.address)
+            (HotelsList.hotelList model.hotels)
         ], 
-        section [class "footer"] [ h3 [] [text "This is the footer"]]]
+        section [class "footer"] [ h3 [] [text "My beautiful footer section"]]]
 
 main =
     Signal.map view restrictedResults

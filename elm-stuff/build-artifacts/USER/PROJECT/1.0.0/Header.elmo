@@ -17,7 +17,7 @@ Elm.Header.make = function (_elm) {
    $Signal = Elm.Signal.make(_elm);
    var header = A2($Html.h1,
    _L.fromArray([]),
-   _L.fromArray([$Html.text("Travel Republic Hotel Search")]));
+   _L.fromArray([$Html.text("Travel Republic")]));
    _elm.Header.values = {_op: _op
                         ,header: header};
    return _elm.Header.values;
