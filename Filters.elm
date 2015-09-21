@@ -22,6 +22,7 @@ stars num criteria address =
     div [class "stars"] [
                  input [
                     type' "checkbox",
+                    checked (List.member num criteria.filter.stars),
                     onClick address (addOrRemoveStar criteria num)
                 ] [],
                 span [] [text ((toString num) ++ " Stars")]
@@ -65,5 +66,9 @@ filters criteria address =
             div [] [
                 label [] [ text "Minimum Price: " ],
                 input [type' "range"] []
+            ],
+            div [] [
+                button [class "button",
+                    onClick address (Criteria (Filter [] 0 "" 0) HotelName (Paging 20 0))] [ text "Clear Filters" ]
             ]
         ] 

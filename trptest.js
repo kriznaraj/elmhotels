@@ -1972,6 +1972,9 @@ Elm.Filters.make = function (_elm) {
       _L.fromArray([$Html$Attributes.$class("stars")]),
       _L.fromArray([A2($Html.input,
                    _L.fromArray([$Html$Attributes.type$("checkbox")
+                                ,$Html$Attributes.checked(A2($List.member,
+                                num,
+                                criteria.filter.stars))
                                 ,A2($Html$Events.onClick,
                                 address,
                                 A2(addOrRemoveStar,
@@ -2045,7 +2048,22 @@ Elm.Filters.make = function (_elm) {
                                    _L.fromArray([$Html.text("Minimum Price: ")]))
                                    ,A2($Html.input,
                                    _L.fromArray([$Html$Attributes.type$("range")]),
-                                   _L.fromArray([]))]))]));
+                                   _L.fromArray([]))]))
+                      ,A2($Html.div,
+                      _L.fromArray([]),
+                      _L.fromArray([A2($Html.button,
+                      _L.fromArray([$Html$Attributes.$class("button")
+                                   ,A2($Html$Events.onClick,
+                                   address,
+                                   A3($Models.Criteria,
+                                   A4($Models.Filter,
+                                   _L.fromArray([]),
+                                   0,
+                                   "",
+                                   0),
+                                   $Models.HotelName,
+                                   A2($Models.Paging,20,0)))]),
+                      _L.fromArray([$Html.text("Clear Filters")]))]))]));
       }();
    });
    _elm.Filters.values = {_op: _op
