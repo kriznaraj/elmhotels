@@ -1819,6 +1819,19 @@ Elm.Filtering.make = function (_elm) {
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm),
    $String = Elm.String.make(_elm);
+   var starsMatch = F2(function (starsFilter,
+   hotel) {
+      return function () {
+         switch (starsFilter.ctor)
+         {case "::":
+            return A2($List.member,
+              hotel.stars,
+              starsFilter);
+            case "[]": return true;}
+         _U.badCase($moduleName,
+         "between lines 37 and 39");
+      }();
+   });
    var nameMatches = F2(function (query,
    hotel) {
       return function () {
@@ -1831,15 +1844,28 @@ Elm.Filtering.make = function (_elm) {
    });
    var filter = F2(function (criteria,
    hotels) {
-      return A2($List.filter,
-      nameMatches(criteria.filter.hotelName),
-      hotels);
+      return function () {
+         var filterFn = function (h) {
+            return A2(starsMatch,
+            criteria.filter.stars,
+            h) && A2(nameMatches,
+            criteria.filter.hotelName,
+            h);
+         };
+         return A4($Debug.log,
+         A2($Basics._op["++"],
+         "stars",
+         $Basics.toString(criteria.filter.stars)),
+         $List.filter,
+         filterFn,
+         hotels);
+      }();
    });
    var sort = F2(function (criteria,
    hotels) {
       return function () {
-         var _v0 = criteria.sort;
-         switch (_v0.ctor)
+         var _v3 = criteria.sort;
+         switch (_v3.ctor)
          {case "HotelName":
             return A2($List.sortBy,
               function (_) {
@@ -1884,6 +1910,7 @@ Elm.Filtering.make = function (_elm) {
                            ,page: page
                            ,sort: sort
                            ,nameMatches: nameMatches
+                           ,starsMatch: starsMatch
                            ,filter: filter
                            ,restrict: restrict};
    return _elm.Filtering.values;
@@ -1913,6 +1940,49 @@ Elm.Filters.make = function (_elm) {
       return _U.replace([["filter"
                          ,filter]],
       criteria);
+   });
+   var addOrRemoveStar = F2(function (criteria,
+   star) {
+      return function () {
+         var filter = criteria.filter;
+         var inList = A2($List.member,
+         star,
+         filter.stars);
+         return inList ? _U.replace([["filter"
+                                     ,_U.replace([["stars"
+                                                  ,A2($List.filter,
+                                                  function (s) {
+                                                     return !_U.eq(s,star);
+                                                  },
+                                                  filter.stars)]],
+                                     filter)]],
+         criteria) : _U.replace([["filter"
+                                 ,_U.replace([["stars"
+                                              ,A2($List._op["::"],
+                                              star,
+                                              filter.stars)]],
+                                 filter)]],
+         criteria);
+      }();
+   });
+   var stars = F3(function (num,
+   criteria,
+   address) {
+      return A2($Html.div,
+      _L.fromArray([$Html$Attributes.$class("stars")]),
+      _L.fromArray([A2($Html.input,
+                   _L.fromArray([$Html$Attributes.type$("checkbox")
+                                ,A2($Html$Events.onClick,
+                                address,
+                                A2(addOrRemoveStar,
+                                criteria,
+                                num))]),
+                   _L.fromArray([]))
+                   ,A2($Html.span,
+                   _L.fromArray([]),
+                   _L.fromArray([$Html.text(A2($Basics._op["++"],
+                   $Basics.toString(num),
+                   " Stars"))]))]));
    });
    var filters = F2(function (criteria,
    address) {
@@ -1949,9 +2019,19 @@ Elm.Filters.make = function (_elm) {
                                    _L.fromArray([$Html.text("Stars: ")]))
                                    ,A2($Html.div,
                                    _L.fromArray([]),
-                                   _L.fromArray([$Html.text("some list of stars")]))]))
+                                   _L.fromArray([A3(stars,
+                                                5,
+                                                criteria,
+                                                address)
+                                                ,A3(stars,4,criteria,address)
+                                                ,A3(stars,3,criteria,address)
+                                                ,A3(stars,2,criteria,address)
+                                                ,A3(stars,
+                                                1,
+                                                criteria,
+                                                address)]))]))
                       ,A2($Html.div,
-                      _L.fromArray([]),
+                      _L.fromArray([$Html$Attributes.$class("clear")]),
                       _L.fromArray([A2($Html.label,
                                    _L.fromArray([]),
                                    _L.fromArray([$Html.text("Minimum Rating: ")]))
@@ -1969,6 +2049,8 @@ Elm.Filters.make = function (_elm) {
       }();
    });
    _elm.Filters.values = {_op: _op
+                         ,addOrRemoveStar: addOrRemoveStar
+                         ,stars: stars
                          ,replaceFilter: replaceFilter
                          ,filters: filters};
    return _elm.Filters.values;
@@ -4855,17 +4937,7 @@ Elm.Models.make = function (_elm) {
              ,stars: d
              ,thumbnail: b};
    });
-   var Five = {ctor: "Five"};
-   var Four = {ctor: "Four"};
-   var Three = {ctor: "Three"};
-   var Two = {ctor: "Two"};
-   var One = {ctor: "One"};
    _elm.Models.values = {_op: _op
-                        ,One: One
-                        ,Two: Two
-                        ,Three: Three
-                        ,Four: Four
-                        ,Five: Five
                         ,Hotel: Hotel
                         ,Paging: Paging
                         ,Asc: Asc

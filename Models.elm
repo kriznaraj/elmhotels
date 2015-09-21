@@ -1,7 +1,5 @@
 module Models where
 
-type Star = One | Two | Three | Four | Five
-
 type alias Hotel = {
     name : String,
     thumbnail : String,
@@ -25,7 +23,7 @@ type Sort =
     | Price 
 
 type alias Filter = {
-    stars : List Star,
+    stars : List Int,
     minRating : Int,
     hotelName : String,
     minPrice : Float

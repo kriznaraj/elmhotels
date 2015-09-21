@@ -17,6 +17,19 @@ Elm.Filtering.make = function (_elm) {
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm),
    $String = Elm.String.make(_elm);
+   var starsMatch = F2(function (starsFilter,
+   hotel) {
+      return function () {
+         switch (starsFilter.ctor)
+         {case "::":
+            return A2($List.member,
+              hotel.stars,
+              starsFilter);
+            case "[]": return true;}
+         _U.badCase($moduleName,
+         "between lines 37 and 39");
+      }();
+   });
    var nameMatches = F2(function (query,
    hotel) {
       return function () {
@@ -29,15 +42,28 @@ Elm.Filtering.make = function (_elm) {
    });
    var filter = F2(function (criteria,
    hotels) {
-      return A2($List.filter,
-      nameMatches(criteria.filter.hotelName),
-      hotels);
+      return function () {
+         var filterFn = function (h) {
+            return A2(starsMatch,
+            criteria.filter.stars,
+            h) && A2(nameMatches,
+            criteria.filter.hotelName,
+            h);
+         };
+         return A4($Debug.log,
+         A2($Basics._op["++"],
+         "stars",
+         $Basics.toString(criteria.filter.stars)),
+         $List.filter,
+         filterFn,
+         hotels);
+      }();
    });
    var sort = F2(function (criteria,
    hotels) {
       return function () {
-         var _v0 = criteria.sort;
-         switch (_v0.ctor)
+         var _v3 = criteria.sort;
+         switch (_v3.ctor)
          {case "HotelName":
             return A2($List.sortBy,
               function (_) {
@@ -82,6 +108,7 @@ Elm.Filtering.make = function (_elm) {
                            ,page: page
                            ,sort: sort
                            ,nameMatches: nameMatches
+                           ,starsMatch: starsMatch
                            ,filter: filter
                            ,restrict: restrict};
    return _elm.Filtering.values;

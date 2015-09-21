@@ -62,17 +62,7 @@ Elm.Models.make = function (_elm) {
              ,stars: d
              ,thumbnail: b};
    });
-   var Five = {ctor: "Five"};
-   var Four = {ctor: "Four"};
-   var Three = {ctor: "Three"};
-   var Two = {ctor: "Two"};
-   var One = {ctor: "One"};
    _elm.Models.values = {_op: _op
-                        ,One: One
-                        ,Two: Two
-                        ,Three: Three
-                        ,Four: Four
-                        ,Five: Five
                         ,Hotel: Hotel
                         ,Paging: Paging
                         ,Asc: Asc

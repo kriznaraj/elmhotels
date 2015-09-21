@@ -5,6 +5,27 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Signal exposing (Address)
 import Models exposing (..)
+import Debug exposing (log)
+
+addOrRemoveStar : Criteria -> Int -> Criteria
+addOrRemoveStar criteria star =
+    let filter = criteria.filter
+        inList = List.member star filter.stars
+    in
+       if(inList) then
+            { criteria | filter <- { filter | stars <- (List.filter (\s -> s /= star) filter.stars) } }
+       else 
+            { criteria | filter <- { filter | stars <- (star :: filter.stars) } }
+
+stars : Int -> Criteria -> Address Criteria -> Html
+stars num criteria address =
+    div [class "stars"] [
+                 input [
+                    type' "checkbox",
+                    onClick address (addOrRemoveStar criteria num)
+                ] [],
+                span [] [text ((toString num) ++ " Stars")]
+    ]
 
 replaceFilter : Criteria -> Filter -> Criteria
 replaceFilter criteria filter =
@@ -29,9 +50,15 @@ filters criteria address =
             ],
             div [] [
                 label [] [ text "Stars: " ],
-                div [][text "some list of stars"]
+                div [][
+                    (stars 5 criteria address), 
+                    (stars 4 criteria address), 
+                    (stars 3 criteria address), 
+                    (stars 2 criteria address), 
+                    (stars 1 criteria address)
+                ]
             ],
-            div [] [
+            div [class "clear"] [
                 label [] [ text "Minimum Rating: " ],
                 input [type' "range"] []
             ],

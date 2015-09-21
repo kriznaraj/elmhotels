@@ -153,3 +153,20 @@ input, select {
     overflow:hidden;
     text-overflow:ellipsis;
 }
+
+.star {
+    background-image:url(star.png);
+    background-repeat:no-repeat;
+    width:32px;
+    height:32px;
+    float:left;
+}
+
+.stars input {
+    height:24px;
+    width:24px;
+}
+
+.clear {
+    clear:both;
+}

@@ -32,9 +32,20 @@ nameMatches query hotel =
     in
         (String.contains queryLower nameLower)
 
+starsMatch : (List Int) -> Hotel -> Bool
+starsMatch starsFilter hotel =
+    case starsFilter of
+        hd::tl -> List.member hotel.stars starsFilter
+        [] -> True
+
 filter : Criteria -> HotelList -> HotelList
 filter criteria hotels =
-    List.filter (nameMatches criteria.filter.hotelName) hotels
+    let filterFn = (\h -> 
+        (starsMatch criteria.filter.stars h) &&
+        (nameMatches criteria.filter.hotelName h))
+    in
+       log("stars" ++ (toString criteria.filter.stars))
+        List.filter filterFn hotels
 
 restrict : HotelList -> Criteria -> Model
 restrict hotels criteria =
