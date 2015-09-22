@@ -26,7 +26,7 @@ Elm.Filters.make = function (_elm) {
          {case "Err": return 0;
             case "Ok": return _v0._0;}
          _U.badCase($moduleName,
-         "between lines 96 and 98");
+         "between lines 107 and 109");
       }();
    };
    var replaceFilter = F2(function (criteria,
@@ -59,6 +59,15 @@ Elm.Filters.make = function (_elm) {
          criteria);
       }();
    });
+   var resetPageIndex = function (criteria) {
+      return function () {
+         var paging = criteria.paging;
+         return _U.replace([["paging"
+                            ,_U.replace([["pageIndex",0]],
+                            paging)]],
+         criteria);
+      }();
+   };
    var stars = F3(function (num,
    criteria,
    address) {
@@ -71,15 +80,47 @@ Elm.Filters.make = function (_elm) {
                                 criteria.filter.stars))
                                 ,A2($Html$Events.onClick,
                                 address,
-                                A2(addOrRemoveStar,
+                                resetPageIndex(A2(addOrRemoveStar,
                                 criteria,
-                                num))]),
+                                num)))]),
                    _L.fromArray([]))
                    ,A2($Html.span,
                    _L.fromArray([]),
                    _L.fromArray([$Html.text(A2($Basics._op["++"],
                    $Basics.toString(num),
                    " Stars"))]))]));
+   });
+   var rangeInput = F7(function (name,
+   min,
+   max,
+   val,
+   address,
+   criteria,
+   updater) {
+      return A2($Html.div,
+      _L.fromArray([]),
+      _L.fromArray([A2($Html.label,
+                   _L.fromArray([]),
+                   _L.fromArray([$Html.text(A2($Basics._op["++"],
+                   name,
+                   ": "))]))
+                   ,A2($Html.input,
+                   _L.fromArray([$Html$Attributes.placeholder(name)
+                                ,$Html$Attributes.type$("range")
+                                ,$Html$Attributes.min(min)
+                                ,$Html$Attributes.max(max)
+                                ,$Html$Attributes.value($Basics.toString(val))
+                                ,A3($Html$Events.on,
+                                "input",
+                                $Html$Events.targetValue,
+                                function (str) {
+                                   return A2($Signal.message,
+                                   address,
+                                   resetPageIndex(A2(updater,
+                                   criteria,
+                                   str)));
+                                })]),
+                   _L.fromArray([]))]));
    });
    var filters = F2(function (criteria,
    address) {
@@ -103,10 +144,10 @@ Elm.Filters.make = function (_elm) {
                                    function (str) {
                                       return A2($Signal.message,
                                       address,
-                                      A2(replaceFilter,
+                                      resetPageIndex(A2(replaceFilter,
                                       criteria,
                                       _U.replace([["hotelName",str]],
-                                      filter)));
+                                      filter))));
                                    })]),
                       _L.fromArray([]))]))
                       ,A2($Html.div,
@@ -129,52 +170,34 @@ Elm.Filters.make = function (_elm) {
                                                 address)]))]))
                       ,A2($Html.div,
                       _L.fromArray([$Html$Attributes.$class("clear")]),
-                      _L.fromArray([A2($Html.label,
-                                   _L.fromArray([]),
-                                   _L.fromArray([$Html.text("Minimum Rating: ")]))
-                                   ,A2($Html.input,
-                                   _L.fromArray([$Html$Attributes.placeholder("Mininum Rating")
-                                                ,$Html$Attributes.type$("range")
-                                                ,$Html$Attributes.min("0")
-                                                ,$Html$Attributes.max("10")
-                                                ,$Html$Attributes.value($Basics.toString(criteria.filter.minRating))
-                                                ,A3($Html$Events.on,
-                                                "input",
-                                                $Html$Events.targetValue,
-                                                function (str) {
-                                                   return A2($Signal.message,
-                                                   address,
-                                                   A2(replaceFilter,
-                                                   criteria,
-                                                   _U.replace([["minRating"
-                                                               ,parseFloat(str)]],
-                                                   filter)));
-                                                })]),
-                                   _L.fromArray([]))]))
-                      ,A2($Html.div,
-                      _L.fromArray([]),
-                      _L.fromArray([A2($Html.label,
-                                   _L.fromArray([]),
-                                   _L.fromArray([$Html.text("Minimum Price: ")]))
-                                   ,A2($Html.input,
-                                   _L.fromArray([$Html$Attributes.placeholder("Mininum Price")
-                                                ,$Html$Attributes.type$("range")
-                                                ,$Html$Attributes.min("0")
-                                                ,$Html$Attributes.max("7000")
-                                                ,$Html$Attributes.value($Basics.toString(criteria.filter.minPrice))
-                                                ,A3($Html$Events.on,
-                                                "input",
-                                                $Html$Events.targetValue,
-                                                function (str) {
-                                                   return A2($Signal.message,
-                                                   address,
-                                                   A2(replaceFilter,
-                                                   criteria,
-                                                   _U.replace([["minPrice"
-                                                               ,parseFloat(str)]],
-                                                   filter)));
-                                                })]),
-                                   _L.fromArray([]))]))
+                      _L.fromArray([A7(rangeInput,
+                      "Minimum Rating",
+                      "0",
+                      "10",
+                      criteria.filter.minRating,
+                      address,
+                      criteria,
+                      F2(function (c,str) {
+                         return A2(replaceFilter,
+                         criteria,
+                         _U.replace([["minRating"
+                                     ,parseFloat(str)]],
+                         filter));
+                      }))]))
+                      ,A7(rangeInput,
+                      "Minimum Price",
+                      "0",
+                      "7000",
+                      criteria.filter.minPrice,
+                      address,
+                      criteria,
+                      F2(function (c,str) {
+                         return A2(replaceFilter,
+                         criteria,
+                         _U.replace([["minPrice"
+                                     ,parseFloat(str)]],
+                         filter));
+                      }))
                       ,A2($Html.div,
                       _L.fromArray([]),
                       _L.fromArray([A2($Html.button,
@@ -193,10 +216,12 @@ Elm.Filters.make = function (_elm) {
       }();
    });
    _elm.Filters.values = {_op: _op
+                         ,resetPageIndex: resetPageIndex
                          ,addOrRemoveStar: addOrRemoveStar
                          ,stars: stars
                          ,replaceFilter: replaceFilter
                          ,filters: filters
+                         ,rangeInput: rangeInput
                          ,parseFloat: parseFloat};
    return _elm.Filters.values;
 };
