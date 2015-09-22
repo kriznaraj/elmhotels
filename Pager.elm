@@ -20,12 +20,18 @@ pager model address =
     let criteria = model.criteria
         paging = model.criteria.paging
         pageIndex = paging.pageIndex
-        hotelCount = List.length model.hotels
+        pageNum = pageIndex + 1
+        hotelCount = toFloat (model.total)
+        pageCount = (ceiling (hotelCount / pageSize))
+        pageSize = toFloat paging.pageSize
         firstPage = pageIndex == 0
-        lastPage = pageIndex == (hotelCount // paging.pageSize)
+        lastPage = pageNum == log "pages:" pageCount
     in
         section [ class "pager"] [ 
-           div [class "button prev",
+           button [class "button prev",
+                disabled firstPage,
                onClick address (replacePageIndex criteria (pageIndex - 1))] [text "Previous"],
-           div [class "button next",
+           span [class "total-pages"] [ text ("Page " ++ (toString pageNum) ++ " of " ++ (toString pageCount)) ],    
+           button [class "button next",
+                disabled lastPage, 
                onClick address (replacePageIndex criteria (pageIndex + 1))] [text "Next"]]

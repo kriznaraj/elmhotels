@@ -56,8 +56,9 @@ filter model =
         (priceLessThan model.criteria.filter.minPrice h) &&
         (starsMatch model.criteria.filter.stars h) &&
         (nameMatches model.criteria.filter.hotelName h))
+        hotels = List.filter filterFn model.hotels
     in
-        Model (List.filter filterFn model.hotels) model.total model.criteria
+        Model hotels (List.length hotels) model.criteria
 
 restrict : HotelList -> Criteria -> Model
 restrict hotels criteria =

@@ -62,11 +62,12 @@ Elm.Filtering.make = function (_elm) {
             model.criteria.filter.hotelName,
             h)));
          };
-         return A3($Models.Model,
-         A2($List.filter,
+         var hotels = A2($List.filter,
          filterFn,
-         model.hotels),
-         model.total,
+         model.hotels);
+         return A3($Models.Model,
+         hotels,
+         $List.length(hotels),
          model.criteria);
       }();
    };

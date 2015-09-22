@@ -10,6 +10,7 @@ Elm.Pager.make = function (_elm) {
    _L = _N.List.make(_elm),
    $moduleName = "Pager",
    $Basics = Elm.Basics.make(_elm),
+   $Debug = Elm.Debug.make(_elm),
    $Html = Elm.Html.make(_elm),
    $Html$Attributes = Elm.Html.Attributes.make(_elm),
    $Html$Events = Elm.Html.Events.make(_elm),
@@ -32,26 +33,42 @@ Elm.Pager.make = function (_elm) {
    var pager = F2(function (model,
    address) {
       return function () {
-         var hotelCount = $List.length(model.hotels);
+         var hotelCount = $Basics.toFloat(model.total);
          var paging = model.criteria.paging;
          var pageIndex = paging.pageIndex;
+         var pageNum = pageIndex + 1;
          var firstPage = _U.eq(pageIndex,
          0);
-         var lastPage = _U.eq(pageIndex,
-         hotelCount / paging.pageSize | 0);
+         var pageSize = $Basics.toFloat(paging.pageSize);
+         var pageCount = $Basics.ceiling(hotelCount / pageSize);
+         var lastPage = _U.eq(pageNum,
+         A2($Debug.log,
+         "pages:",
+         pageCount));
          var criteria = model.criteria;
          return A2($Html.section,
          _L.fromArray([$Html$Attributes.$class("pager")]),
-         _L.fromArray([A2($Html.div,
+         _L.fromArray([A2($Html.button,
                       _L.fromArray([$Html$Attributes.$class("button prev")
+                                   ,$Html$Attributes.disabled(firstPage)
                                    ,A2($Html$Events.onClick,
                                    address,
                                    A2(replacePageIndex,
                                    criteria,
                                    pageIndex - 1))]),
                       _L.fromArray([$Html.text("Previous")]))
-                      ,A2($Html.div,
+                      ,A2($Html.span,
+                      _L.fromArray([$Html$Attributes.$class("total-pages")]),
+                      _L.fromArray([$Html.text(A2($Basics._op["++"],
+                      "Page ",
+                      A2($Basics._op["++"],
+                      $Basics.toString(pageNum),
+                      A2($Basics._op["++"],
+                      " of ",
+                      $Basics.toString(pageCount)))))]))
+                      ,A2($Html.button,
                       _L.fromArray([$Html$Attributes.$class("button next")
+                                   ,$Html$Attributes.disabled(lastPage)
                                    ,A2($Html$Events.onClick,
                                    address,
                                    A2(replacePageIndex,

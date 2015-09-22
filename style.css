@@ -68,6 +68,7 @@ label {
     border:1px solid #cccccc;
     border-radius:4px;
     cursor:pointer;
+    background-color:#ffffff;
 }
 
 .sort-bar-button {
@@ -89,10 +90,13 @@ label {
     clear:both;
 }
 
+.pager .total-pages {
+    display:inline-block;
+    width:230px;
+    text-align:center;
+}
 
 .pager .prev, .pager .next {
-    float : left;
-    margin-right:10px;
 }
 
 input, select {
