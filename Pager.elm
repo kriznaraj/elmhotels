@@ -1,4 +1,4 @@
-module Pager(signal, pager, address) where
+module Pager(signal, pager) where
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -14,10 +14,6 @@ mailbox =
 signal : Signal Paging
 signal =
     mailbox.signal
-
-address : Address Paging
-address = 
-    mailbox.address
 
 pager : Int -> Paging -> Html
 pager total paging =

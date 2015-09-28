@@ -23,7 +23,6 @@ Elm.Pager.make = function (_elm) {
    20,
    0));
    var signal = mailbox.signal;
-   var address = mailbox.address;
    var pager = F2(function (total,
    paging) {
       return function () {
@@ -71,7 +70,6 @@ Elm.Pager.make = function (_elm) {
    });
    _elm.Pager.values = {_op: _op
                        ,signal: signal
-                       ,pager: pager
-                       ,address: address};
+                       ,pager: pager};
    return _elm.Pager.values;
 };

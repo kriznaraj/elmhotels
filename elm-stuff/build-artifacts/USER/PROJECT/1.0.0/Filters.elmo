@@ -16,7 +16,6 @@ Elm.Filters.make = function (_elm) {
    $List = Elm.List.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
    $Models = Elm.Models.make(_elm),
-   $Pager = Elm.Pager.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm),
    $String = Elm.String.make(_elm);
@@ -27,7 +26,7 @@ Elm.Filters.make = function (_elm) {
          {case "Err": return 0;
             case "Ok": return _v0._0;}
          _U.badCase($moduleName,
-         "between lines 105 and 107");
+         "between lines 99 and 101");
       }();
    };
    var addOrRemoveStar = F2(function (filter,
@@ -49,14 +48,6 @@ Elm.Filters.make = function (_elm) {
          filter);
       }();
    });
-   var resetPageIndex = function (filter) {
-      return function () {
-         var q = A2($Signal.message,
-         $Pager.address,
-         A2($Models.Paging,20,0));
-         return filter;
-      }();
-   };
    var mailbox = $Signal.mailbox(A4($Models.Filter,
    _L.fromArray([]),
    0,
@@ -74,9 +65,9 @@ Elm.Filters.make = function (_elm) {
                                 filter.stars))
                                 ,A2($Html$Events.onClick,
                                 mailbox.address,
-                                resetPageIndex(A2(addOrRemoveStar,
+                                A2(addOrRemoveStar,
                                 filter,
-                                num)))]),
+                                num))]),
                    _L.fromArray([]))
                    ,A2($Html.span,
                    _L.fromArray([]),
@@ -132,9 +123,8 @@ Elm.Filters.make = function (_elm) {
                                 function (str) {
                                    return A2($Signal.message,
                                    mailbox.address,
-                                   resetPageIndex(_U.replace([["hotelName"
-                                                              ,str]],
-                                   filter)));
+                                   _U.replace([["hotelName",str]],
+                                   filter));
                                 })]),
                    _L.fromArray([]))]))
                    ,A2($Html.div,

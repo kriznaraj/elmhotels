@@ -1838,7 +1838,7 @@ Elm.Filtering.make = function (_elm) {
               starsFilter);
             case "[]": return true;}
          _U.badCase($moduleName,
-         "between lines 40 and 42");
+         "between lines 51 and 53");
       }();
    });
    var nameMatches = F2(function (query,
@@ -1900,7 +1900,7 @@ Elm.Filtering.make = function (_elm) {
                        return _.stars;
                     })(hotels));}
                _U.badCase($moduleName,
-               "between lines 19 and 27");
+               "between lines 30 and 38");
             }();
          };
          return A3($Models.Model,
@@ -1909,14 +1909,27 @@ Elm.Filtering.make = function (_elm) {
          model.criteria);
       }();
    };
+   var adjustPaging = F2(function (total,
+   criteria) {
+      return function () {
+         var paging = criteria.paging;
+         return _U.cmp(paging.pageIndex * paging.pageSize,
+         total) > 0 ? _U.replace([["paging"
+                                  ,A2($Models.Paging,20,0)]],
+         criteria) : criteria;
+      }();
+   });
    var page = function (model) {
       return function () {
-         var paging = model.criteria.paging;
+         var criteria = A2(adjustPaging,
+         model.total,
+         model.criteria);
+         var paging = criteria.paging;
          var page = $List.take(paging.pageSize)($List.drop(paging.pageIndex * paging.pageSize)(model.hotels));
          return A3($Models.Model,
          page,
          model.total,
-         model.criteria);
+         criteria);
       }();
    };
    var restrict = F2(function (hotels,
@@ -1930,6 +1943,7 @@ Elm.Filtering.make = function (_elm) {
       }();
    });
    _elm.Filtering.values = {_op: _op
+                           ,adjustPaging: adjustPaging
                            ,page: page
                            ,sort: sort
                            ,nameMatches: nameMatches
@@ -1958,7 +1972,6 @@ Elm.Filters.make = function (_elm) {
    $List = Elm.List.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
    $Models = Elm.Models.make(_elm),
-   $Pager = Elm.Pager.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm),
    $String = Elm.String.make(_elm);
@@ -1969,7 +1982,7 @@ Elm.Filters.make = function (_elm) {
          {case "Err": return 0;
             case "Ok": return _v0._0;}
          _U.badCase($moduleName,
-         "between lines 105 and 107");
+         "between lines 99 and 101");
       }();
    };
    var addOrRemoveStar = F2(function (filter,
@@ -1991,14 +2004,6 @@ Elm.Filters.make = function (_elm) {
          filter);
       }();
    });
-   var resetPageIndex = function (filter) {
-      return function () {
-         var q = A2($Signal.message,
-         $Pager.address,
-         A2($Models.Paging,20,0));
-         return filter;
-      }();
-   };
    var mailbox = $Signal.mailbox(A4($Models.Filter,
    _L.fromArray([]),
    0,
@@ -2016,9 +2021,9 @@ Elm.Filters.make = function (_elm) {
                                 filter.stars))
                                 ,A2($Html$Events.onClick,
                                 mailbox.address,
-                                resetPageIndex(A2(addOrRemoveStar,
+                                A2(addOrRemoveStar,
                                 filter,
-                                num)))]),
+                                num))]),
                    _L.fromArray([]))
                    ,A2($Html.span,
                    _L.fromArray([]),
@@ -2074,9 +2079,8 @@ Elm.Filters.make = function (_elm) {
                                 function (str) {
                                    return A2($Signal.message,
                                    mailbox.address,
-                                   resetPageIndex(_U.replace([["hotelName"
-                                                              ,str]],
-                                   filter)));
+                                   _U.replace([["hotelName",str]],
+                                   filter));
                                 })]),
                    _L.fromArray([]))]))
                    ,A2($Html.div,
@@ -12975,7 +12979,6 @@ Elm.Pager.make = function (_elm) {
    20,
    0));
    var signal = mailbox.signal;
-   var address = mailbox.address;
    var pager = F2(function (total,
    paging) {
       return function () {
@@ -13023,8 +13026,7 @@ Elm.Pager.make = function (_elm) {
    });
    _elm.Pager.values = {_op: _op
                        ,signal: signal
-                       ,pager: pager
-                       ,address: address};
+                       ,pager: pager};
    return _elm.Pager.values;
 };
 Elm.Result = Elm.Result || {};

@@ -7,7 +7,6 @@ import Signal exposing (Address)
 import Models exposing (..)
 import Debug exposing (log)
 import String
-import Pager exposing (address)
 
 mailbox : Signal.Mailbox Filter
 mailbox = 
@@ -16,11 +15,6 @@ mailbox =
 signal : Signal Filter
 signal = 
     mailbox.signal
-
-resetPageIndex : Filter -> Filter
-resetPageIndex filter =
-    let q = Signal.message Pager.address (Paging 20 0)
-    in filter
 
 addOrRemoveStar : Filter -> Int -> Filter
 addOrRemoveStar filter star =
@@ -37,7 +31,7 @@ stars num filter =
                  input [
                     type' "checkbox",
                     checked (List.member num filter.stars),
-                    onClick mailbox.address (resetPageIndex (addOrRemoveStar filter num))
+                    onClick mailbox.address (addOrRemoveStar filter num)
                 ] [],
                 span [] [text ((toString num) ++ " Stars")]
     ]
@@ -53,7 +47,7 @@ filters filter =
                 , type' "text"
                 , value filter.hotelName
                 , on "input" targetValue 
-                    (\str -> Signal.message mailbox.address (resetPageIndex {filter|hotelName <- str}))
+                    (\str -> Signal.message mailbox.address {filter|hotelName <- str})
                 ] []
         ],
         div [] [
