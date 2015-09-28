@@ -70,24 +70,28 @@ Elm.TrpTest.make = function (_elm) {
               results.address,
               result._0);}
          _U.badCase($moduleName,
-         "between lines 62 and 66");
+         "between lines 61 and 65");
       }();
    };
    var requests = Elm.Native.Task.make(_elm).perform(A2($Task.andThen,
    $Task.toResult(getHotels),
    unwrapHotels));
-   var query = $Signal.mailbox(A3($Models.Criteria,
-   A4($Models.Filter,
-   _L.fromArray([]),
-   0,
-   "",
-   0),
-   $Models.HotelName,
-   A2($Models.Paging,20,0)));
+   var criteria = A4($Signal.map3,
+   F3(function (pager,
+   sort,
+   filters) {
+      return A3($Models.Criteria,
+      filters,
+      sort,
+      pager);
+   }),
+   $Pager.signal,
+   $SortBar.signal,
+   $Filters.signal);
    var restrictedResults = A3($Signal.map2,
    $Filtering.restrict,
    results.signal,
-   query.signal);
+   criteria);
    var view = function (model) {
       return A2($Html.div,
       _L.fromArray([]),
@@ -96,17 +100,13 @@ Elm.TrpTest.make = function (_elm) {
                    _L.fromArray([$Header.header]))
                    ,A2($Html.section,
                    _L.fromArray([$Html$Attributes.$class("sidebar")]),
-                   _L.fromArray([A2($Filters.filters,
-                   model.criteria,
-                   query.address)]))
+                   _L.fromArray([$Filters.filters(model.criteria.filter)]))
                    ,A2($Html.section,
                    _L.fromArray([$Html$Attributes.$class("content")]),
-                   _L.fromArray([A2($SortBar.sortBar,
-                                model.criteria,
-                                query.address)
+                   _L.fromArray([$SortBar.sortBar(model.criteria.sort)
                                 ,A2($Pager.pager,
-                                model,
-                                query.address)
+                                model.total,
+                                model.criteria.paging)
                                 ,$HotelsList.hotelList(model.hotels)]))
                    ,A2($Html.section,
                    _L.fromArray([$Html$Attributes.$class("footer")]),
@@ -120,8 +120,8 @@ Elm.TrpTest.make = function (_elm) {
    _elm.TrpTest.values = {_op: _op
                          ,view: view
                          ,main: main
+                         ,criteria: criteria
                          ,restrictedResults: restrictedResults
-                         ,query: query
                          ,results: results
                          ,unwrapHotels: unwrapHotels
                          ,getHotels: getHotels

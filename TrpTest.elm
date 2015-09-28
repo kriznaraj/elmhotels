@@ -10,7 +10,7 @@ import String exposing (toUpper, repeat, trimRight, reverse)
 import StartApp.Simple as StartApp
 import Signal exposing (Address)
 import Header
-import SortBar
+import SortBar 
 import Pager
 import Filters
 import HotelsList
@@ -18,6 +18,7 @@ import Debug exposing (log)
 import Models exposing (..)
 import Filtering exposing (..)
 import Time
+import Debug exposing (watch)
 
 view: Model -> Html
 view model = 
@@ -26,11 +27,11 @@ view model =
             Header.header
         ],
         section [ class "sidebar" ] [ 
-            (Filters.filters model.criteria query.address)
+            (Filters.filters model.criteria.filter)
         ],
         section [ class "content" ] [
-            (SortBar.sortBar model.criteria query.address),
-            (Pager.pager model query.address),
+            (SortBar.sortBar model.criteria.sort),
+            (Pager.pager model.total model.criteria.paging),
             (HotelsList.hotelList model.hotels)
         ], 
         section [class "footer"] [ h3 [] [text "My beautiful footer section"]]]
@@ -38,20 +39,18 @@ view model =
 main =
     Signal.map view restrictedResults
 
---demo of how we can easily debounce the signal
---although this isn't quite the same as debouncing the actual dom event
--- debouncedQuery : Signal Criteria
--- debouncedQuery = 
---     Signal.sampleOn (Time.fps 1) query.signal
+criteria : Signal Criteria
+criteria =
+    Signal.map3 
+        (\pager sort filters -> Criteria filters sort pager) 
+        Pager.signal
+        SortBar.signal 
+        Filters.signal
 
 restrictedResults : Signal Model
 restrictedResults =
-    Signal.map2 restrict results.signal query.signal
+    Signal.map2 restrict results.signal criteria
      
-query : Signal.Mailbox Criteria
-query = 
-    Signal.mailbox (Criteria (Filter [] 0 "" 0) HotelName (Paging 20 0))
-
 results : Signal.Mailbox HotelList
 results = 
     Signal.mailbox []

@@ -18,57 +18,44 @@ Elm.SortBar.make = function (_elm) {
    $Models = Elm.Models.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm);
-   var replaceSort = F2(function (criteria,
-   sort) {
-      return _U.replace([["sort"
-                         ,sort]],
-      criteria);
-   });
-   var sortButton = F4(function (criteria,
+   var mailbox = $Signal.mailbox($Models.HotelName);
+   var signal = mailbox.signal;
+   var sortButton = F3(function (currentSort,
    sort,
-   label,
-   address) {
+   label) {
       return function () {
-         var cls = _U.eq(criteria.sort,
+         var cls = _U.eq(currentSort,
          sort) ? "button sort-bar-button sort-selected" : "button sort-bar-button";
          return A2($Html.div,
          _L.fromArray([$Html$Attributes.$class(cls)
                       ,A2($Html$Events.onClick,
-                      address,
-                      A2(replaceSort,
-                      criteria,
-                      sort))]),
+                      mailbox.address,
+                      sort)]),
          _L.fromArray([$Html.text(label)]));
       }();
    });
-   var sortBar = F2(function (criteria,
-   address) {
+   var sortBar = function (sort) {
       return A2($Html.section,
       _L.fromArray([$Html$Attributes.$class("sort-bar")]),
-      _L.fromArray([A4(sortButton,
-                   criteria,
+      _L.fromArray([A3(sortButton,
+                   sort,
                    $Models.HotelName,
-                   "Name",
-                   address)
-                   ,A4(sortButton,
-                   criteria,
+                   "Name")
+                   ,A3(sortButton,
+                   sort,
                    $Models.Stars,
-                   "Stars",
-                   address)
-                   ,A4(sortButton,
-                   criteria,
+                   "Stars")
+                   ,A3(sortButton,
+                   sort,
                    $Models.Rating,
-                   "Rating",
-                   address)
-                   ,A4(sortButton,
-                   criteria,
+                   "Rating")
+                   ,A3(sortButton,
+                   sort,
                    $Models.Price,
-                   "Price",
-                   address)]));
-   });
+                   "Price")]));
+   };
    _elm.SortBar.values = {_op: _op
-                         ,replaceSort: replaceSort
-                         ,sortButton: sortButton
+                         ,signal: signal
                          ,sortBar: sortBar};
    return _elm.SortBar.values;
 };

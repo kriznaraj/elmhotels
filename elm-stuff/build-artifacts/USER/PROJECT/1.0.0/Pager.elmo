@@ -19,50 +19,42 @@ Elm.Pager.make = function (_elm) {
    $Models = Elm.Models.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm);
-   var replacePageIndex = F2(function (criteria,
-   index) {
+   var mailbox = $Signal.mailbox(A2($Models.Paging,
+   20,
+   0));
+   var signal = mailbox.signal;
+   var address = mailbox.address;
+   var pager = F2(function (total,
+   paging) {
       return function () {
-         var paging = criteria.paging;
-         return _U.replace([["paging"
-                            ,_U.replace([["pageIndex"
-                                         ,index]],
-                            paging)]],
-         criteria);
-      }();
-   });
-   var pager = F2(function (model,
-   address) {
-      return function () {
-         var hotelCount = $Basics.toFloat(model.total);
-         var paging = model.criteria.paging;
+         var pageSize = $Basics.toFloat(paging.pageSize);
+         var hotelCount = $Basics.toFloat(total);
+         var pageCount = $Basics.ceiling(hotelCount / pageSize);
          var pageIndex = paging.pageIndex;
          var pageNum = pageIndex + 1;
+         var lastPage = _U.eq(pageNum,
+         pageCount);
          var firstPage = _U.eq(pageIndex,
          0);
-         var pageSize = $Basics.toFloat(paging.pageSize);
-         var pageCount = $Basics.ceiling(hotelCount / pageSize);
-         var lastPage = _U.eq(pageNum,
-         A2($Debug.log,
-         "pages:",
-         pageCount));
-         var criteria = model.criteria;
          return A2($Html.section,
          _L.fromArray([$Html$Attributes.$class("pager")]),
          _L.fromArray([A2($Html.button,
                       _L.fromArray([$Html$Attributes.$class("button prev")
                                    ,$Html$Attributes.disabled(firstPage)
                                    ,A2($Html$Events.onClick,
-                                   address,
-                                   A2(replacePageIndex,
-                                   criteria,
-                                   pageIndex - 1))]),
+                                   mailbox.address,
+                                   _U.replace([["pageIndex"
+                                               ,pageIndex - 1]],
+                                   paging))]),
                       _L.fromArray([$Html.text("Previous")]))
                       ,A2($Html.span,
                       _L.fromArray([$Html$Attributes.$class("total-pages")]),
                       _L.fromArray([$Html.text(A2($Basics._op["++"],
                       "Page ",
                       A2($Basics._op["++"],
-                      $Basics.toString(pageNum),
+                      $Basics.toString(A2($Debug.watch,
+                      "pageNum",
+                      pageNum)),
                       A2($Basics._op["++"],
                       " of ",
                       $Basics.toString(pageCount)))))]))
@@ -70,15 +62,16 @@ Elm.Pager.make = function (_elm) {
                       _L.fromArray([$Html$Attributes.$class("button next")
                                    ,$Html$Attributes.disabled(lastPage)
                                    ,A2($Html$Events.onClick,
-                                   address,
-                                   A2(replacePageIndex,
-                                   criteria,
-                                   pageIndex + 1))]),
+                                   mailbox.address,
+                                   _U.replace([["pageIndex"
+                                               ,pageIndex + 1]],
+                                   paging))]),
                       _L.fromArray([$Html.text("Next")]))]));
       }();
    });
    _elm.Pager.values = {_op: _op
-                       ,replacePageIndex: replacePageIndex
-                       ,pager: pager};
+                       ,signal: signal
+                       ,pager: pager
+                       ,address: address};
    return _elm.Pager.values;
 };
