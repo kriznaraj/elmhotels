@@ -1,4 +1,4 @@
-module Pager(signal, pager) where
+module Pager where
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -7,16 +7,8 @@ import Models exposing (..)
 import Signal exposing (Address)
 import Debug exposing (log, watch)
 
-mailbox : Signal.Mailbox Paging
-mailbox = 
-    Signal.mailbox (Paging 20 0)
-
-signal : Signal Paging
-signal =
-    mailbox.signal
-
-pager : Int -> Paging -> Html
-pager total paging =
+pager : Int -> Paging -> Address Paging -> Html
+pager total paging address =
     let pageIndex = paging.pageIndex
         pageNum = pageIndex + 1
         hotelCount = toFloat (total)
@@ -28,8 +20,8 @@ pager total paging =
         section [ class "pager"] [ 
            button [class "button prev",
                 disabled firstPage,
-               onClick mailbox.address { paging | pageIndex <- (pageIndex - 1) }] [text "Previous"],
+               onClick address { paging | pageIndex <- (pageIndex - 1) }] [text "Previous"],
            span [class "total-pages"] [ text ("Page " ++ (toString (watch "pageNum" pageNum)) ++ " of " ++ (toString pageCount)) ],    
            button [class "button next",
                 disabled lastPage, 
-               onClick mailbox.address { paging | pageIndex <- (pageIndex + 1) }] [text "Next"]]
+               onClick address { paging | pageIndex <- (pageIndex + 1) }] [text "Next"]]

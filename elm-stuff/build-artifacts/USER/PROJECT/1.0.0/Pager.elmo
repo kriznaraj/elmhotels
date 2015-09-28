@@ -19,12 +19,9 @@ Elm.Pager.make = function (_elm) {
    $Models = Elm.Models.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm);
-   var mailbox = $Signal.mailbox(A2($Models.Paging,
-   20,
-   0));
-   var signal = mailbox.signal;
-   var pager = F2(function (total,
-   paging) {
+   var pager = F3(function (total,
+   paging,
+   address) {
       return function () {
          var pageSize = $Basics.toFloat(paging.pageSize);
          var hotelCount = $Basics.toFloat(total);
@@ -41,7 +38,7 @@ Elm.Pager.make = function (_elm) {
                       _L.fromArray([$Html$Attributes.$class("button prev")
                                    ,$Html$Attributes.disabled(firstPage)
                                    ,A2($Html$Events.onClick,
-                                   mailbox.address,
+                                   address,
                                    _U.replace([["pageIndex"
                                                ,pageIndex - 1]],
                                    paging))]),
@@ -61,7 +58,7 @@ Elm.Pager.make = function (_elm) {
                       _L.fromArray([$Html$Attributes.$class("button next")
                                    ,$Html$Attributes.disabled(lastPage)
                                    ,A2($Html$Events.onClick,
-                                   mailbox.address,
+                                   address,
                                    _U.replace([["pageIndex"
                                                ,pageIndex + 1]],
                                    paging))]),
@@ -69,7 +66,6 @@ Elm.Pager.make = function (_elm) {
       }();
    });
    _elm.Pager.values = {_op: _op
-                       ,signal: signal
                        ,pager: pager};
    return _elm.Pager.values;
 };

@@ -1812,6 +1812,7 @@ Elm.Filtering.make = function (_elm) {
    _L = _N.List.make(_elm),
    $moduleName = "Filtering",
    $Basics = Elm.Basics.make(_elm),
+   $Debug = Elm.Debug.make(_elm),
    $List = Elm.List.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
    $Models = Elm.Models.make(_elm),
@@ -1942,6 +1943,13 @@ Elm.Filtering.make = function (_elm) {
          return page(sort(filter(model)));
       }();
    });
+   var restrict2 = function (model) {
+      return A2(restrict,
+      A2($Debug.log,
+      "hotels: ",
+      model.hotels),
+      model.criteria);
+   };
    _elm.Filtering.values = {_op: _op
                            ,adjustPaging: adjustPaging
                            ,page: page
@@ -1951,6 +1959,7 @@ Elm.Filtering.make = function (_elm) {
                            ,priceLessThan: priceLessThan
                            ,ratingAtLeast: ratingAtLeast
                            ,filter: filter
+                           ,restrict2: restrict2
                            ,restrict: restrict};
    return _elm.Filtering.values;
 };
@@ -12975,12 +12984,9 @@ Elm.Pager.make = function (_elm) {
    $Models = Elm.Models.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm);
-   var mailbox = $Signal.mailbox(A2($Models.Paging,
-   20,
-   0));
-   var signal = mailbox.signal;
-   var pager = F2(function (total,
-   paging) {
+   var pager = F3(function (total,
+   paging,
+   address) {
       return function () {
          var pageSize = $Basics.toFloat(paging.pageSize);
          var hotelCount = $Basics.toFloat(total);
@@ -12997,7 +13003,7 @@ Elm.Pager.make = function (_elm) {
                       _L.fromArray([$Html$Attributes.$class("button prev")
                                    ,$Html$Attributes.disabled(firstPage)
                                    ,A2($Html$Events.onClick,
-                                   mailbox.address,
+                                   address,
                                    _U.replace([["pageIndex"
                                                ,pageIndex - 1]],
                                    paging))]),
@@ -13017,7 +13023,7 @@ Elm.Pager.make = function (_elm) {
                       _L.fromArray([$Html$Attributes.$class("button next")
                                    ,$Html$Attributes.disabled(lastPage)
                                    ,A2($Html$Events.onClick,
-                                   mailbox.address,
+                                   address,
                                    _U.replace([["pageIndex"
                                                ,pageIndex + 1]],
                                    paging))]),
@@ -13025,7 +13031,6 @@ Elm.Pager.make = function (_elm) {
       }();
    });
    _elm.Pager.values = {_op: _op
-                       ,signal: signal
                        ,pager: pager};
    return _elm.Pager.values;
 };
@@ -13437,44 +13442,48 @@ Elm.SortBar.make = function (_elm) {
    $Models = Elm.Models.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm);
-   var mailbox = $Signal.mailbox($Models.HotelName);
-   var signal = mailbox.signal;
-   var sortButton = F3(function (currentSort,
+   var sortButton = F4(function (currentSort,
    sort,
-   label) {
+   label,
+   address) {
       return function () {
          var cls = _U.eq(currentSort,
          sort) ? "button sort-bar-button sort-selected" : "button sort-bar-button";
          return A2($Html.div,
          _L.fromArray([$Html$Attributes.$class(cls)
                       ,A2($Html$Events.onClick,
-                      mailbox.address,
+                      address,
                       sort)]),
          _L.fromArray([$Html.text(label)]));
       }();
    });
-   var sortBar = function (sort) {
+   var sortBar = F2(function (sort,
+   address) {
       return A2($Html.section,
       _L.fromArray([$Html$Attributes.$class("sort-bar")]),
-      _L.fromArray([A3(sortButton,
+      _L.fromArray([A4(sortButton,
                    sort,
                    $Models.HotelName,
-                   "Name")
-                   ,A3(sortButton,
+                   "Name",
+                   address)
+                   ,A4(sortButton,
                    sort,
                    $Models.Stars,
-                   "Stars")
-                   ,A3(sortButton,
+                   "Stars",
+                   address)
+                   ,A4(sortButton,
                    sort,
                    $Models.Rating,
-                   "Rating")
-                   ,A3(sortButton,
+                   "Rating",
+                   address)
+                   ,A4(sortButton,
                    sort,
                    $Models.Price,
-                   "Price")]));
-   };
+                   "Price",
+                   address)]));
+   });
    _elm.SortBar.values = {_op: _op
-                         ,signal: signal
+                         ,sortButton: sortButton
                          ,sortBar: sortBar};
    return _elm.SortBar.values;
 };
@@ -14148,7 +14157,113 @@ Elm.TrpTest.make = function (_elm) {
    var getHotels = A2($Http.get,
    hotels,
    "hotels.json");
-   var results = $Signal.mailbox(_L.fromArray([]));
+   var initialModel = A3($Models.Model,
+   _L.fromArray([]),
+   0,
+   A3($Models.Criteria,
+   A4($Models.Filter,
+   _L.fromArray([]),
+   0,
+   "",
+   0),
+   $Models.HotelName,
+   A2($Models.Paging,20,0)));
+   var updateCriteria = F2(function (model,
+   criteria) {
+      return _U.replace([["criteria"
+                         ,criteria]],
+      model);
+   });
+   var update = F2(function (action,
+   model) {
+      return function () {
+         var criteria = model.criteria;
+         return function () {
+            switch (action.ctor)
+            {case "FilterChange":
+               return A2(updateCriteria,
+                 model,
+                 _U.replace([["filter"
+                             ,action._0]],
+                 criteria));
+               case "LoadData":
+               return _U.replace([["hotels"
+                                  ,action._0]],
+                 model);
+               case "NoOp": return model;
+               case "PageChange":
+               return A2(updateCriteria,
+                 model,
+                 _U.replace([["paging"
+                             ,action._0]],
+                 criteria));
+               case "SortChange":
+               return A2(updateCriteria,
+                 model,
+                 _U.replace([["sort",action._0]],
+                 criteria));}
+            _U.badCase($moduleName,
+            "between lines 38 and 43");
+         }();
+      }();
+   });
+   var SortChange = function (a) {
+      return {ctor: "SortChange"
+             ,_0: a};
+   };
+   var FilterChange = function (a) {
+      return {ctor: "FilterChange"
+             ,_0: a};
+   };
+   var PageChange = function (a) {
+      return {ctor: "PageChange"
+             ,_0: a};
+   };
+   var LoadData = function (a) {
+      return {ctor: "LoadData"
+             ,_0: a};
+   };
+   var NoOp = {ctor: "NoOp"};
+   var actions = $Signal.mailbox(NoOp);
+   var view = function (model) {
+      return function () {
+         var filtered = $Filtering.restrict2(model);
+         return A2($Html.div,
+         _L.fromArray([]),
+         _L.fromArray([A2($Html.section,
+                      _L.fromArray([$Html$Attributes.$class("header")]),
+                      _L.fromArray([$Header.header]))
+                      ,A2($Html.section,
+                      _L.fromArray([$Html$Attributes.$class("sidebar")]),
+                      _L.fromArray([$Filters.filters(model.criteria.filter)]))
+                      ,A2($Html.section,
+                      _L.fromArray([$Html$Attributes.$class("content")]),
+                      _L.fromArray([A2($SortBar.sortBar,
+                                   model.criteria.sort,
+                                   A2($Signal.forwardTo,
+                                   actions.address,
+                                   SortChange))
+                                   ,A3($Pager.pager,
+                                   filtered.total,
+                                   model.criteria.paging,
+                                   A2($Signal.forwardTo,
+                                   actions.address,
+                                   PageChange))
+                                   ,$HotelsList.hotelList(filtered.hotels)]))
+                      ,A2($Html.section,
+                      _L.fromArray([$Html$Attributes.$class("footer")]),
+                      _L.fromArray([A2($Html.h3,
+                      _L.fromArray([]),
+                      _L.fromArray([$Html.text("My beautiful footer section")]))]))]));
+      }();
+   };
+   var model = A3($Signal.foldp,
+   update,
+   initialModel,
+   actions.signal);
+   var main = A2($Signal.map,
+   view,
+   model);
    var unwrapHotels = function (result) {
       return function () {
          switch (result.ctor)
@@ -14156,66 +14271,32 @@ Elm.TrpTest.make = function (_elm) {
             return A4($Debug.log,
               $Basics.toString(result._0),
               $Signal.send,
-              results.address,
-              _L.fromArray([]));
+              actions.address,
+              LoadData(_L.fromArray([])));
             case "Ok":
             return A2($Signal.send,
-              results.address,
-              result._0);}
+              actions.address,
+              LoadData(result._0));}
          _U.badCase($moduleName,
-         "between lines 61 and 65");
+         "between lines 99 and 106");
       }();
    };
    var requests = Elm.Native.Task.make(_elm).perform(A2($Task.andThen,
    $Task.toResult(getHotels),
    unwrapHotels));
-   var criteria = A4($Signal.map3,
-   F3(function (pager,
-   sort,
-   filters) {
-      return A3($Models.Criteria,
-      filters,
-      sort,
-      pager);
-   }),
-   $Pager.signal,
-   $SortBar.signal,
-   $Filters.signal);
-   var restrictedResults = A3($Signal.map2,
-   $Filtering.restrict,
-   results.signal,
-   criteria);
-   var view = function (model) {
-      return A2($Html.div,
-      _L.fromArray([]),
-      _L.fromArray([A2($Html.section,
-                   _L.fromArray([$Html$Attributes.$class("header")]),
-                   _L.fromArray([$Header.header]))
-                   ,A2($Html.section,
-                   _L.fromArray([$Html$Attributes.$class("sidebar")]),
-                   _L.fromArray([$Filters.filters(model.criteria.filter)]))
-                   ,A2($Html.section,
-                   _L.fromArray([$Html$Attributes.$class("content")]),
-                   _L.fromArray([$SortBar.sortBar(model.criteria.sort)
-                                ,A2($Pager.pager,
-                                model.total,
-                                model.criteria.paging)
-                                ,$HotelsList.hotelList(model.hotels)]))
-                   ,A2($Html.section,
-                   _L.fromArray([$Html$Attributes.$class("footer")]),
-                   _L.fromArray([A2($Html.h3,
-                   _L.fromArray([]),
-                   _L.fromArray([$Html.text("My beautiful footer section")]))]))]));
-   };
-   var main = A2($Signal.map,
-   view,
-   restrictedResults);
    _elm.TrpTest.values = {_op: _op
+                         ,NoOp: NoOp
+                         ,LoadData: LoadData
+                         ,PageChange: PageChange
+                         ,FilterChange: FilterChange
+                         ,SortChange: SortChange
+                         ,updateCriteria: updateCriteria
+                         ,update: update
                          ,view: view
+                         ,initialModel: initialModel
+                         ,model: model
+                         ,actions: actions
                          ,main: main
-                         ,criteria: criteria
-                         ,restrictedResults: restrictedResults
-                         ,results: results
                          ,unwrapHotels: unwrapHotels
                          ,getHotels: getHotels
                          ,hotels: hotels};

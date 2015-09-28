@@ -20,49 +20,90 @@ import Filtering exposing (..)
 import Time
 import Debug exposing (watch)
 
+type Action = 
+    NoOp 
+    | LoadData HotelList
+    | PageChange Paging
+    | FilterChange Filter
+    | SortChange Sort
+
+updateCriteria : Model -> Criteria -> Model
+updateCriteria model criteria =
+    { model | criteria <- criteria }
+
+update : Action -> Model -> Model
+update action model =
+    let criteria = model.criteria
+    in
+        case action of
+            NoOp -> model
+            PageChange paging -> updateCriteria model { criteria | paging <- paging }
+            FilterChange filter -> updateCriteria model { criteria | filter <- filter }
+            SortChange sort -> updateCriteria model { criteria | sort <- sort }
+            LoadData hotels -> {model | hotels <- hotels}
+
 view: Model -> Html
 view model = 
-    div [] [
-        section [ class "header" ] [
-            Header.header
-        ],
-        section [ class "sidebar" ] [ 
-            (Filters.filters model.criteria.filter)
-        ],
-        section [ class "content" ] [
-            (SortBar.sortBar model.criteria.sort),
-            (Pager.pager model.total model.criteria.paging),
-            (HotelsList.hotelList model.hotels)
-        ], 
-        section [class "footer"] [ h3 [] [text "My beautiful footer section"]]]
+    let filtered = restrict2 model
+    in
+        div [] [
+            section [ class "header" ] [
+                Header.header
+            ],
+            section [ class "sidebar" ] [ 
+                (Filters.filters model.criteria.filter)
+            ],
+            section [ class "content" ] [
+                (SortBar.sortBar model.criteria.sort (Signal.forwardTo actions.address SortChange)),
+                (Pager.pager filtered.total model.criteria.paging (Signal.forwardTo actions.address PageChange)),
+                (HotelsList.hotelList filtered.hotels)
+            ], 
+            section [class "footer"] [ h3 [] [text "My beautiful footer section"]]]
+
+initialModel : Model
+initialModel =
+    Model [] 0 (Criteria (Filter [] 0 "" 0) HotelName (Paging 20 0))
+
+model : Signal Model
+model =
+    Signal.foldp update initialModel actions.signal
+
+actions : Signal.Mailbox Action
+actions = 
+    Signal.mailbox NoOp
 
 main =
-    Signal.map view restrictedResults
+    Signal.map view model
+-- main =
+--     Signal.map view restrictedResults
 
-criteria : Signal Criteria
-criteria =
-    Signal.map3 
-        (\pager sort filters -> Criteria filters sort pager) 
-        Pager.signal
-        SortBar.signal 
-        Filters.signal
+-- criteria : Signal Criteria
+-- criteria =
+--     Signal.map3 
+--         (\pager sort filters -> Criteria filters sort pager) 
+--         Pager.signal
+--         SortBar.signal 
+--         Filters.signal
 
-restrictedResults : Signal Model
-restrictedResults =
-    Signal.map2 restrict results.signal criteria
+-- restrictedResults : Signal Model
+-- restrictedResults =
+--     Signal.map2 restrict results.signal criteria
      
-results : Signal.Mailbox HotelList
-results = 
-    Signal.mailbox []
+-- results : Signal.Mailbox HotelList
+-- results = 
+--     Signal.mailbox []
 
 --if we have any sort of error just return no results
 unwrapHotels : (Result Http.Error HotelList) -> (Task x ())
 unwrapHotels result =
     case result of
         Err e -> 
-            log (toString e) Signal.send results.address []
+            -- log (toString e) Signal.send results.address []
+            log (toString e) Signal.send actions.address (LoadData [])
+            
         Ok hotels -> 
-            Signal.send results.address hotels
+            -- Signal.send results.address hotels
+            Signal.send actions.address (LoadData hotels)
 
 port requests : (Task x ())
 port requests =

@@ -18,44 +18,48 @@ Elm.SortBar.make = function (_elm) {
    $Models = Elm.Models.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm);
-   var mailbox = $Signal.mailbox($Models.HotelName);
-   var signal = mailbox.signal;
-   var sortButton = F3(function (currentSort,
+   var sortButton = F4(function (currentSort,
    sort,
-   label) {
+   label,
+   address) {
       return function () {
          var cls = _U.eq(currentSort,
          sort) ? "button sort-bar-button sort-selected" : "button sort-bar-button";
          return A2($Html.div,
          _L.fromArray([$Html$Attributes.$class(cls)
                       ,A2($Html$Events.onClick,
-                      mailbox.address,
+                      address,
                       sort)]),
          _L.fromArray([$Html.text(label)]));
       }();
    });
-   var sortBar = function (sort) {
+   var sortBar = F2(function (sort,
+   address) {
       return A2($Html.section,
       _L.fromArray([$Html$Attributes.$class("sort-bar")]),
-      _L.fromArray([A3(sortButton,
+      _L.fromArray([A4(sortButton,
                    sort,
                    $Models.HotelName,
-                   "Name")
-                   ,A3(sortButton,
+                   "Name",
+                   address)
+                   ,A4(sortButton,
                    sort,
                    $Models.Stars,
-                   "Stars")
-                   ,A3(sortButton,
+                   "Stars",
+                   address)
+                   ,A4(sortButton,
                    sort,
                    $Models.Rating,
-                   "Rating")
-                   ,A3(sortButton,
+                   "Rating",
+                   address)
+                   ,A4(sortButton,
                    sort,
                    $Models.Price,
-                   "Price")]));
-   };
+                   "Price",
+                   address)]));
+   });
    _elm.SortBar.values = {_op: _op
-                         ,signal: signal
+                         ,sortButton: sortButton
                          ,sortBar: sortBar};
    return _elm.SortBar.values;
 };

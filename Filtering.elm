@@ -22,7 +22,7 @@ page model =
             |> List.drop (paging.pageIndex * paging.pageSize)
             |> List.take paging.pageSize
     in
-        Model page model.total criteria
+        (Model page model.total criteria)
 
 sort : Model -> Model
 sort model =
@@ -70,6 +70,10 @@ filter model =
         hotels = List.filter filterFn model.hotels
     in
         Model hotels (List.length hotels) model.criteria
+
+restrict2 : Model -> Model
+restrict2 model =
+    restrict (log "hotels: " model.hotels) model.criteria
 
 restrict : HotelList -> Criteria -> Model
 restrict hotels criteria =
