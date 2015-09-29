@@ -125,7 +125,7 @@ Elm.TrpTest.make = function (_elm) {
    var actions = $Signal.mailbox(NoOp);
    var view = function (model) {
       return function () {
-         var filtered = $Filtering.restrict2(model);
+         var filtered = $Filtering.restrict(model);
          return A2($Html.div,
          _L.fromArray([]),
          _L.fromArray([A2($Html.section,
@@ -133,17 +133,21 @@ Elm.TrpTest.make = function (_elm) {
                       _L.fromArray([$Header.header]))
                       ,A2($Html.section,
                       _L.fromArray([$Html$Attributes.$class("sidebar")]),
-                      _L.fromArray([$Filters.filters(model.criteria.filter)]))
+                      _L.fromArray([A2($Filters.filters,
+                      filtered.criteria.filter,
+                      A2($Signal.forwardTo,
+                      actions.address,
+                      FilterChange))]))
                       ,A2($Html.section,
                       _L.fromArray([$Html$Attributes.$class("content")]),
                       _L.fromArray([A2($SortBar.sortBar,
-                                   model.criteria.sort,
+                                   filtered.criteria.sort,
                                    A2($Signal.forwardTo,
                                    actions.address,
                                    SortChange))
                                    ,A3($Pager.pager,
                                    filtered.total,
-                                   model.criteria.paging,
+                                   filtered.criteria.paging,
                                    A2($Signal.forwardTo,
                                    actions.address,
                                    PageChange))
@@ -176,7 +180,7 @@ Elm.TrpTest.make = function (_elm) {
               actions.address,
               LoadData(result._0));}
          _U.badCase($moduleName,
-         "between lines 99 and 106");
+         "between lines 81 and 88");
       }();
    };
    var requests = Elm.Native.Task.make(_elm).perform(A2($Task.andThen,

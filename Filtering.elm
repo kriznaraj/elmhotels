@@ -71,15 +71,13 @@ filter model =
     in
         Model hotels (List.length hotels) model.criteria
 
-restrict2 : Model -> Model
-restrict2 model =
-    restrict (log "hotels: " model.hotels) model.criteria
-
-restrict : HotelList -> Criteria -> Model
-restrict hotels criteria =
-    let model = Model hotels (List.length hotels) criteria
+restrict : Model -> Model
+restrict model =
+    let hotels = model.hotels
+        criteria = model.criteria
+        newModel = Model hotels (List.length hotels) criteria
     in
-        model
-            |> filter 
-            |> sort 
-            |> page
+       newModel
+        |> filter
+        |> sort
+        |> page

@@ -26,9 +26,39 @@ Elm.Filters.make = function (_elm) {
          {case "Err": return 0;
             case "Ok": return _v0._0;}
          _U.badCase($moduleName,
-         "between lines 99 and 101");
+         "between lines 93 and 95");
       }();
    };
+   var rangeInput = F7(function (name,
+   min,
+   max,
+   val,
+   filter,
+   updater,
+   address) {
+      return A2($Html.div,
+      _L.fromArray([]),
+      _L.fromArray([A2($Html.label,
+                   _L.fromArray([]),
+                   _L.fromArray([$Html.text(A2($Basics._op["++"],
+                   name,
+                   ": "))]))
+                   ,A2($Html.input,
+                   _L.fromArray([$Html$Attributes.placeholder(name)
+                                ,$Html$Attributes.type$("range")
+                                ,$Html$Attributes.min(min)
+                                ,$Html$Attributes.max(max)
+                                ,$Html$Attributes.value($Basics.toString(val))
+                                ,A3($Html$Events.on,
+                                "input",
+                                $Html$Events.targetValue,
+                                function (str) {
+                                   return A2($Signal.message,
+                                   address,
+                                   A2(updater,filter,str));
+                                })]),
+                   _L.fromArray([]))]));
+   });
    var addOrRemoveStar = F2(function (filter,
    star) {
       return function () {
@@ -48,14 +78,9 @@ Elm.Filters.make = function (_elm) {
          filter);
       }();
    });
-   var mailbox = $Signal.mailbox(A4($Models.Filter,
-   _L.fromArray([]),
-   0,
-   "",
-   0));
-   var signal = mailbox.signal;
-   var stars = F2(function (num,
-   filter) {
+   var stars = F3(function (num,
+   filter,
+   address) {
       return A2($Html.div,
       _L.fromArray([$Html$Attributes.$class("stars")]),
       _L.fromArray([A2($Html.input,
@@ -64,7 +89,7 @@ Elm.Filters.make = function (_elm) {
                                 num,
                                 filter.stars))
                                 ,A2($Html$Events.onClick,
-                                mailbox.address,
+                                address,
                                 A2(addOrRemoveStar,
                                 filter,
                                 num))]),
@@ -75,36 +100,8 @@ Elm.Filters.make = function (_elm) {
                    $Basics.toString(num),
                    " Stars"))]))]));
    });
-   var rangeInput = F6(function (name,
-   min,
-   max,
-   val,
-   filter,
-   updater) {
-      return A2($Html.div,
-      _L.fromArray([]),
-      _L.fromArray([A2($Html.label,
-                   _L.fromArray([]),
-                   _L.fromArray([$Html.text(A2($Basics._op["++"],
-                   name,
-                   ": "))]))
-                   ,A2($Html.input,
-                   _L.fromArray([$Html$Attributes.placeholder(name)
-                                ,$Html$Attributes.type$("range")
-                                ,$Html$Attributes.min(min)
-                                ,$Html$Attributes.max(max)
-                                ,$Html$Attributes.value($Basics.toString(val))
-                                ,A3($Html$Events.on,
-                                "input",
-                                $Html$Events.targetValue,
-                                function (str) {
-                                   return A2($Signal.message,
-                                   mailbox.address,
-                                   A2(updater,filter,str));
-                                })]),
-                   _L.fromArray([]))]));
-   });
-   var filters = function (filter) {
+   var filters = F2(function (filter,
+   address) {
       return A2($Html.section,
       _L.fromArray([$Html$Attributes.$class("filters")]),
       _L.fromArray([A2($Html.h3,
@@ -122,7 +119,7 @@ Elm.Filters.make = function (_elm) {
                                 $Html$Events.targetValue,
                                 function (str) {
                                    return A2($Signal.message,
-                                   mailbox.address,
+                                   address,
                                    _U.replace([["hotelName",str]],
                                    filter));
                                 })]),
@@ -134,14 +131,20 @@ Elm.Filters.make = function (_elm) {
                                 _L.fromArray([$Html.text("Stars: ")]))
                                 ,A2($Html.div,
                                 _L.fromArray([]),
-                                _L.fromArray([A2(stars,5,filter)
-                                             ,A2(stars,4,filter)
-                                             ,A2(stars,3,filter)
-                                             ,A2(stars,2,filter)
-                                             ,A2(stars,1,filter)]))]))
+                                _L.fromArray([A3(stars,
+                                             5,
+                                             filter,
+                                             address)
+                                             ,A3(stars,4,filter,address)
+                                             ,A3(stars,3,filter,address)
+                                             ,A3(stars,2,filter,address)
+                                             ,A3(stars,
+                                             1,
+                                             filter,
+                                             address)]))]))
                    ,A2($Html.div,
                    _L.fromArray([$Html$Attributes.$class("clear")]),
-                   _L.fromArray([A6(rangeInput,
+                   _L.fromArray([A7(rangeInput,
                    "Minimum Rating",
                    "0",
                    "10",
@@ -151,8 +154,9 @@ Elm.Filters.make = function (_elm) {
                       return _U.replace([["minRating"
                                          ,parseFloat(str)]],
                       filter);
-                   }))]))
-                   ,A6(rangeInput,
+                   }),
+                   address)]))
+                   ,A7(rangeInput,
                    "Minimum Price",
                    "0",
                    "7000",
@@ -162,22 +166,26 @@ Elm.Filters.make = function (_elm) {
                       return _U.replace([["minPrice"
                                          ,parseFloat(str)]],
                       filter);
-                   }))
+                   }),
+                   address)
                    ,A2($Html.div,
                    _L.fromArray([]),
                    _L.fromArray([A2($Html.button,
                    _L.fromArray([$Html$Attributes.$class("button")
                                 ,A2($Html$Events.onClick,
-                                mailbox.address,
+                                address,
                                 A4($Models.Filter,
                                 _L.fromArray([]),
                                 0,
                                 "",
                                 0))]),
                    _L.fromArray([$Html.text("Clear Filters")]))]))]));
-   };
+   });
    _elm.Filters.values = {_op: _op
-                         ,signal: signal
-                         ,filters: filters};
+                         ,addOrRemoveStar: addOrRemoveStar
+                         ,stars: stars
+                         ,filters: filters
+                         ,rangeInput: rangeInput
+                         ,parseFloat: parseFloat};
    return _elm.Filters.values;
 };

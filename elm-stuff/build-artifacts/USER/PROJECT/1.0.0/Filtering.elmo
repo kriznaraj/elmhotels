@@ -10,7 +10,6 @@ Elm.Filtering.make = function (_elm) {
    _L = _N.List.make(_elm),
    $moduleName = "Filtering",
    $Basics = Elm.Basics.make(_elm),
-   $Debug = Elm.Debug.make(_elm),
    $List = Elm.List.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
    $Models = Elm.Models.make(_elm),
@@ -131,22 +130,16 @@ Elm.Filtering.make = function (_elm) {
          criteria);
       }();
    };
-   var restrict = F2(function (hotels,
-   criteria) {
+   var restrict = function (model) {
       return function () {
-         var model = A3($Models.Model,
+         var criteria = model.criteria;
+         var hotels = model.hotels;
+         var newModel = A3($Models.Model,
          hotels,
          $List.length(hotels),
          criteria);
-         return page(sort(filter(model)));
+         return page(sort(filter(newModel)));
       }();
-   });
-   var restrict2 = function (model) {
-      return A2(restrict,
-      A2($Debug.log,
-      "hotels: ",
-      model.hotels),
-      model.criteria);
    };
    _elm.Filtering.values = {_op: _op
                            ,adjustPaging: adjustPaging
@@ -157,7 +150,6 @@ Elm.Filtering.make = function (_elm) {
                            ,priceLessThan: priceLessThan
                            ,ratingAtLeast: ratingAtLeast
                            ,filter: filter
-                           ,restrict2: restrict2
                            ,restrict: restrict};
    return _elm.Filtering.values;
 };

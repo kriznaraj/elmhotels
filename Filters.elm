@@ -1,4 +1,4 @@
-module Filters (signal, filters) where
+module Filters where
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -7,14 +7,6 @@ import Signal exposing (Address)
 import Models exposing (..)
 import Debug exposing (log)
 import String
-
-mailbox : Signal.Mailbox Filter
-mailbox = 
-    Signal.mailbox (Filter [] 0 "" 0)
-
-signal : Signal Filter
-signal = 
-    mailbox.signal
 
 addOrRemoveStar : Filter -> Int -> Filter
 addOrRemoveStar filter star =
@@ -25,19 +17,19 @@ addOrRemoveStar filter star =
        else 
             { filter | stars <- (star :: filter.stars) }
 
-stars : Int -> Filter -> Html
-stars num filter =
+stars : Int -> Filter -> Address Filter -> Html
+stars num filter address =
     div [class "stars"] [
                  input [
                     type' "checkbox",
                     checked (List.member num filter.stars),
-                    onClick mailbox.address (addOrRemoveStar filter num)
+                    onClick address (addOrRemoveStar filter num)
                 ] [],
                 span [] [text ((toString num) ++ " Stars")]
     ]
 
-filters : Filter -> Html
-filters filter = 
+filters : Filter -> Address Filter -> Html
+filters filter address = 
     section [ class "filters"] [ 
         h3 [] [text "Filters"],
         div [] [
@@ -47,17 +39,17 @@ filters filter =
                 , type' "text"
                 , value filter.hotelName
                 , on "input" targetValue 
-                    (\str -> Signal.message mailbox.address {filter|hotelName <- str})
+                    (\str -> Signal.message address {filter|hotelName <- str})
                 ] []
         ],
         div [] [
             label [] [ text "Stars: " ],
             div [][
-                (stars 5 filter), 
-                (stars 4 filter), 
-                (stars 3 filter), 
-                (stars 2 filter), 
-                (stars 1 filter)
+                (stars 5 filter address), 
+                (stars 4 filter address), 
+                (stars 3 filter address), 
+                (stars 2 filter address), 
+                (stars 1 filter address)
             ]
         ],
         div [class "clear"] [
@@ -65,20 +57,22 @@ filters filter =
                 filter.minRating 
                 filter
                 (\c str -> {filter|minRating <- (parseFloat str)})
+                address
         ],
         rangeInput "Minimum Price" "0" "7000" 
             filter.minPrice 
             filter
-            (\c str -> {filter|minPrice <- (parseFloat str)}),
+            (\c str -> {filter|minPrice <- (parseFloat str)})
+            address,
         div [] [
             button [class "button",
-                onClick mailbox.address (Filter [] 0 "" 0)] [ text "Clear Filters" ]
+                onClick address (Filter [] 0 "" 0)] [ text "Clear Filters" ]
         ]
     ] 
 
 
-rangeInput : String -> String -> String -> Float -> Filter -> (Filter -> String -> Filter) -> Html
-rangeInput name min max val filter updater =
+rangeInput : String -> String -> String -> Float -> Filter -> (Filter -> String -> Filter) -> Address Filter -> Html
+rangeInput name min max val filter updater address =
     div [] [
         label [] [ text (name ++ ": ")],
         input 
@@ -88,7 +82,7 @@ rangeInput name min max val filter updater =
             , Html.Attributes.max max
             , value (toString val)
             , on "input" targetValue 
-                (\str -> Signal.message mailbox.address (updater filter str))
+                (\str -> Signal.message address (updater filter str))
             ] []
     ]
     

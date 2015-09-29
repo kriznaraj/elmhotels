@@ -44,18 +44,18 @@ update action model =
 
 view: Model -> Html
 view model = 
-    let filtered = restrict2 model
+    let filtered = restrict model
     in
         div [] [
             section [ class "header" ] [
                 Header.header
             ],
             section [ class "sidebar" ] [ 
-                (Filters.filters model.criteria.filter)
+                (Filters.filters filtered.criteria.filter (Signal.forwardTo actions.address FilterChange))
             ],
             section [ class "content" ] [
-                (SortBar.sortBar model.criteria.sort (Signal.forwardTo actions.address SortChange)),
-                (Pager.pager filtered.total model.criteria.paging (Signal.forwardTo actions.address PageChange)),
+                (SortBar.sortBar filtered.criteria.sort (Signal.forwardTo actions.address SortChange)),
+                (Pager.pager filtered.total filtered.criteria.paging (Signal.forwardTo actions.address PageChange)),
                 (HotelsList.hotelList filtered.hotels)
             ], 
             section [class "footer"] [ h3 [] [text "My beautiful footer section"]]]
@@ -74,24 +74,6 @@ actions =
 
 main =
     Signal.map view model
--- main =
---     Signal.map view restrictedResults
-
--- criteria : Signal Criteria
--- criteria =
---     Signal.map3 
---         (\pager sort filters -> Criteria filters sort pager) 
---         Pager.signal
---         SortBar.signal 
---         Filters.signal
-
--- restrictedResults : Signal Model
--- restrictedResults =
---     Signal.map2 restrict results.signal criteria
-     
--- results : Signal.Mailbox HotelList
--- results = 
---     Signal.mailbox []
 
 --if we have any sort of error just return no results
 unwrapHotels : (Result Http.Error HotelList) -> (Task x ())

@@ -1812,7 +1812,6 @@ Elm.Filtering.make = function (_elm) {
    _L = _N.List.make(_elm),
    $moduleName = "Filtering",
    $Basics = Elm.Basics.make(_elm),
-   $Debug = Elm.Debug.make(_elm),
    $List = Elm.List.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
    $Models = Elm.Models.make(_elm),
@@ -1933,22 +1932,16 @@ Elm.Filtering.make = function (_elm) {
          criteria);
       }();
    };
-   var restrict = F2(function (hotels,
-   criteria) {
+   var restrict = function (model) {
       return function () {
-         var model = A3($Models.Model,
+         var criteria = model.criteria;
+         var hotels = model.hotels;
+         var newModel = A3($Models.Model,
          hotels,
          $List.length(hotels),
          criteria);
-         return page(sort(filter(model)));
+         return page(sort(filter(newModel)));
       }();
-   });
-   var restrict2 = function (model) {
-      return A2(restrict,
-      A2($Debug.log,
-      "hotels: ",
-      model.hotels),
-      model.criteria);
    };
    _elm.Filtering.values = {_op: _op
                            ,adjustPaging: adjustPaging
@@ -1959,7 +1952,6 @@ Elm.Filtering.make = function (_elm) {
                            ,priceLessThan: priceLessThan
                            ,ratingAtLeast: ratingAtLeast
                            ,filter: filter
-                           ,restrict2: restrict2
                            ,restrict: restrict};
    return _elm.Filtering.values;
 };
@@ -1991,9 +1983,39 @@ Elm.Filters.make = function (_elm) {
          {case "Err": return 0;
             case "Ok": return _v0._0;}
          _U.badCase($moduleName,
-         "between lines 99 and 101");
+         "between lines 93 and 95");
       }();
    };
+   var rangeInput = F7(function (name,
+   min,
+   max,
+   val,
+   filter,
+   updater,
+   address) {
+      return A2($Html.div,
+      _L.fromArray([]),
+      _L.fromArray([A2($Html.label,
+                   _L.fromArray([]),
+                   _L.fromArray([$Html.text(A2($Basics._op["++"],
+                   name,
+                   ": "))]))
+                   ,A2($Html.input,
+                   _L.fromArray([$Html$Attributes.placeholder(name)
+                                ,$Html$Attributes.type$("range")
+                                ,$Html$Attributes.min(min)
+                                ,$Html$Attributes.max(max)
+                                ,$Html$Attributes.value($Basics.toString(val))
+                                ,A3($Html$Events.on,
+                                "input",
+                                $Html$Events.targetValue,
+                                function (str) {
+                                   return A2($Signal.message,
+                                   address,
+                                   A2(updater,filter,str));
+                                })]),
+                   _L.fromArray([]))]));
+   });
    var addOrRemoveStar = F2(function (filter,
    star) {
       return function () {
@@ -2013,14 +2035,9 @@ Elm.Filters.make = function (_elm) {
          filter);
       }();
    });
-   var mailbox = $Signal.mailbox(A4($Models.Filter,
-   _L.fromArray([]),
-   0,
-   "",
-   0));
-   var signal = mailbox.signal;
-   var stars = F2(function (num,
-   filter) {
+   var stars = F3(function (num,
+   filter,
+   address) {
       return A2($Html.div,
       _L.fromArray([$Html$Attributes.$class("stars")]),
       _L.fromArray([A2($Html.input,
@@ -2029,7 +2046,7 @@ Elm.Filters.make = function (_elm) {
                                 num,
                                 filter.stars))
                                 ,A2($Html$Events.onClick,
-                                mailbox.address,
+                                address,
                                 A2(addOrRemoveStar,
                                 filter,
                                 num))]),
@@ -2040,36 +2057,8 @@ Elm.Filters.make = function (_elm) {
                    $Basics.toString(num),
                    " Stars"))]))]));
    });
-   var rangeInput = F6(function (name,
-   min,
-   max,
-   val,
-   filter,
-   updater) {
-      return A2($Html.div,
-      _L.fromArray([]),
-      _L.fromArray([A2($Html.label,
-                   _L.fromArray([]),
-                   _L.fromArray([$Html.text(A2($Basics._op["++"],
-                   name,
-                   ": "))]))
-                   ,A2($Html.input,
-                   _L.fromArray([$Html$Attributes.placeholder(name)
-                                ,$Html$Attributes.type$("range")
-                                ,$Html$Attributes.min(min)
-                                ,$Html$Attributes.max(max)
-                                ,$Html$Attributes.value($Basics.toString(val))
-                                ,A3($Html$Events.on,
-                                "input",
-                                $Html$Events.targetValue,
-                                function (str) {
-                                   return A2($Signal.message,
-                                   mailbox.address,
-                                   A2(updater,filter,str));
-                                })]),
-                   _L.fromArray([]))]));
-   });
-   var filters = function (filter) {
+   var filters = F2(function (filter,
+   address) {
       return A2($Html.section,
       _L.fromArray([$Html$Attributes.$class("filters")]),
       _L.fromArray([A2($Html.h3,
@@ -2087,7 +2076,7 @@ Elm.Filters.make = function (_elm) {
                                 $Html$Events.targetValue,
                                 function (str) {
                                    return A2($Signal.message,
-                                   mailbox.address,
+                                   address,
                                    _U.replace([["hotelName",str]],
                                    filter));
                                 })]),
@@ -2099,14 +2088,20 @@ Elm.Filters.make = function (_elm) {
                                 _L.fromArray([$Html.text("Stars: ")]))
                                 ,A2($Html.div,
                                 _L.fromArray([]),
-                                _L.fromArray([A2(stars,5,filter)
-                                             ,A2(stars,4,filter)
-                                             ,A2(stars,3,filter)
-                                             ,A2(stars,2,filter)
-                                             ,A2(stars,1,filter)]))]))
+                                _L.fromArray([A3(stars,
+                                             5,
+                                             filter,
+                                             address)
+                                             ,A3(stars,4,filter,address)
+                                             ,A3(stars,3,filter,address)
+                                             ,A3(stars,2,filter,address)
+                                             ,A3(stars,
+                                             1,
+                                             filter,
+                                             address)]))]))
                    ,A2($Html.div,
                    _L.fromArray([$Html$Attributes.$class("clear")]),
-                   _L.fromArray([A6(rangeInput,
+                   _L.fromArray([A7(rangeInput,
                    "Minimum Rating",
                    "0",
                    "10",
@@ -2116,8 +2111,9 @@ Elm.Filters.make = function (_elm) {
                       return _U.replace([["minRating"
                                          ,parseFloat(str)]],
                       filter);
-                   }))]))
-                   ,A6(rangeInput,
+                   }),
+                   address)]))
+                   ,A7(rangeInput,
                    "Minimum Price",
                    "0",
                    "7000",
@@ -2127,23 +2123,27 @@ Elm.Filters.make = function (_elm) {
                       return _U.replace([["minPrice"
                                          ,parseFloat(str)]],
                       filter);
-                   }))
+                   }),
+                   address)
                    ,A2($Html.div,
                    _L.fromArray([]),
                    _L.fromArray([A2($Html.button,
                    _L.fromArray([$Html$Attributes.$class("button")
                                 ,A2($Html$Events.onClick,
-                                mailbox.address,
+                                address,
                                 A4($Models.Filter,
                                 _L.fromArray([]),
                                 0,
                                 "",
                                 0))]),
                    _L.fromArray([$Html.text("Clear Filters")]))]))]));
-   };
+   });
    _elm.Filters.values = {_op: _op
-                         ,signal: signal
-                         ,filters: filters};
+                         ,addOrRemoveStar: addOrRemoveStar
+                         ,stars: stars
+                         ,filters: filters
+                         ,rangeInput: rangeInput
+                         ,parseFloat: parseFloat};
    return _elm.Filters.values;
 };
 Elm.Graphics = Elm.Graphics || {};
@@ -14227,7 +14227,7 @@ Elm.TrpTest.make = function (_elm) {
    var actions = $Signal.mailbox(NoOp);
    var view = function (model) {
       return function () {
-         var filtered = $Filtering.restrict2(model);
+         var filtered = $Filtering.restrict(model);
          return A2($Html.div,
          _L.fromArray([]),
          _L.fromArray([A2($Html.section,
@@ -14235,17 +14235,21 @@ Elm.TrpTest.make = function (_elm) {
                       _L.fromArray([$Header.header]))
                       ,A2($Html.section,
                       _L.fromArray([$Html$Attributes.$class("sidebar")]),
-                      _L.fromArray([$Filters.filters(model.criteria.filter)]))
+                      _L.fromArray([A2($Filters.filters,
+                      filtered.criteria.filter,
+                      A2($Signal.forwardTo,
+                      actions.address,
+                      FilterChange))]))
                       ,A2($Html.section,
                       _L.fromArray([$Html$Attributes.$class("content")]),
                       _L.fromArray([A2($SortBar.sortBar,
-                                   model.criteria.sort,
+                                   filtered.criteria.sort,
                                    A2($Signal.forwardTo,
                                    actions.address,
                                    SortChange))
                                    ,A3($Pager.pager,
                                    filtered.total,
-                                   model.criteria.paging,
+                                   filtered.criteria.paging,
                                    A2($Signal.forwardTo,
                                    actions.address,
                                    PageChange))
@@ -14278,7 +14282,7 @@ Elm.TrpTest.make = function (_elm) {
               actions.address,
               LoadData(result._0));}
          _U.badCase($moduleName,
-         "between lines 99 and 106");
+         "between lines 81 and 88");
       }();
    };
    var requests = Elm.Native.Task.make(_elm).perform(A2($Task.andThen,
