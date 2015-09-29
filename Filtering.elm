@@ -4,14 +4,25 @@ import Models exposing (..)
 import String
 import Debug exposing (log)
 
+adjustPaging : Int -> Criteria -> Criteria
+adjustPaging total criteria =
+    let paging = criteria.paging
+    in
+        if(paging.pageIndex * paging.pageSize > total) then 
+            {criteria | paging <- (Paging 20 0)}
+        else
+            criteria
+
 page : Model -> Model
 page model =
-    let paging = model.criteria.paging
+    let 
+        criteria = adjustPaging model.total model.criteria
+        paging = criteria.paging
         page = model.hotels
-        |> List.drop (paging.pageIndex * paging.pageSize)
-        |> List.take paging.pageSize
+            |> List.drop (paging.pageIndex * paging.pageSize)
+            |> List.take paging.pageSize
     in
-        Model page model.total model.criteria
+        (Model page model.total criteria)
 
 sort : Model -> Model
 sort model =
@@ -60,11 +71,13 @@ filter model =
     in
         Model hotels (List.length hotels) model.criteria
 
-restrict : HotelList -> Criteria -> Model
-restrict hotels criteria =
-    let model = Model hotels (List.length hotels) criteria
+restrict : Model -> Model
+restrict model =
+    let hotels = model.hotels
+        criteria = model.criteria
+        newModel = Model hotels (List.length hotels) criteria
     in
-        model
-            |> filter 
-            |> sort 
-            |> page
+       newModel
+        |> filter
+        |> sort
+        |> page

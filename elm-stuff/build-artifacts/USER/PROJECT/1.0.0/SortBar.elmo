@@ -18,56 +18,47 @@ Elm.SortBar.make = function (_elm) {
    $Models = Elm.Models.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm);
-   var replaceSort = F2(function (criteria,
-   sort) {
-      return _U.replace([["sort"
-                         ,sort]],
-      criteria);
-   });
-   var sortButton = F4(function (criteria,
+   var sortButton = F4(function (currentSort,
    sort,
    label,
    address) {
       return function () {
-         var cls = _U.eq(criteria.sort,
+         var cls = _U.eq(currentSort,
          sort) ? "button sort-bar-button sort-selected" : "button sort-bar-button";
          return A2($Html.div,
          _L.fromArray([$Html$Attributes.$class(cls)
                       ,A2($Html$Events.onClick,
                       address,
-                      A2(replaceSort,
-                      criteria,
-                      sort))]),
+                      sort)]),
          _L.fromArray([$Html.text(label)]));
       }();
    });
-   var sortBar = F2(function (criteria,
+   var sortBar = F2(function (sort,
    address) {
       return A2($Html.section,
       _L.fromArray([$Html$Attributes.$class("sort-bar")]),
       _L.fromArray([A4(sortButton,
-                   criteria,
+                   sort,
                    $Models.HotelName,
                    "Name",
                    address)
                    ,A4(sortButton,
-                   criteria,
+                   sort,
                    $Models.Stars,
                    "Stars",
                    address)
                    ,A4(sortButton,
-                   criteria,
+                   sort,
                    $Models.Rating,
                    "Rating",
                    address)
                    ,A4(sortButton,
-                   criteria,
+                   sort,
                    $Models.Price,
                    "Price",
                    address)]));
    });
    _elm.SortBar.values = {_op: _op
-                         ,replaceSort: replaceSort
                          ,sortButton: sortButton
                          ,sortBar: sortBar};
    return _elm.SortBar.values;

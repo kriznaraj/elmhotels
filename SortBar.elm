@@ -6,28 +6,24 @@ import Html.Events exposing (..)
 import Signal exposing (Address)
 import Models exposing (..)
 
-replaceSort : Criteria -> Sort -> Criteria
-replaceSort criteria sort =
-    { criteria | sort <- sort }
-    
-sortButton : Criteria -> Sort -> String -> Address Criteria -> Html
-sortButton criteria sort label address =
-    let cls = if criteria.sort == sort then 
+sortButton : Sort -> Sort -> String -> Address Sort -> Html
+sortButton currentSort sort label address =
+    let cls = if currentSort == sort then 
                  "button sort-bar-button sort-selected" 
               else 
                  "button sort-bar-button"
     in
         div 
             [ class cls,
-              onClick address (replaceSort criteria sort) ] 
+              onClick address sort ] 
             [ text label ]
 
 
-sortBar : Criteria -> Address Criteria -> Html
-sortBar criteria address = 
+sortBar : Sort -> Address Sort -> Html
+sortBar sort address = 
     section [ class "sort-bar"] [ 
-        sortButton criteria HotelName "Name" address,
-        sortButton criteria Stars "Stars" address,
-        sortButton criteria Rating "Rating" address,
-        sortButton criteria Price "Price" address
+        sortButton sort HotelName "Name" address,
+        sortButton sort Stars "Stars" address,
+        sortButton sort Rating "Rating" address,
+        sortButton sort Price "Price" address 
     ]

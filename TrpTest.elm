@@ -10,7 +10,7 @@ import String exposing (toUpper, repeat, trimRight, reverse)
 import StartApp.Simple as StartApp
 import Signal exposing (Address)
 import Header
-import SortBar
+import SortBar 
 import Pager
 import Filters
 import HotelsList
@@ -18,52 +18,74 @@ import Debug exposing (log)
 import Models exposing (..)
 import Filtering exposing (..)
 import Time
+import Debug exposing (watch)
+
+type Action = 
+    NoOp 
+    | LoadData HotelList
+    | PageChange Paging
+    | FilterChange Filter
+    | SortChange Sort
+
+updateCriteria : Model -> Criteria -> Model
+updateCriteria model criteria =
+    { model | criteria <- criteria }
+
+update : Action -> Model -> Model
+update action model =
+    let criteria = model.criteria
+    in
+        case action of
+            NoOp -> model
+            PageChange paging -> updateCriteria model { criteria | paging <- paging }
+            FilterChange filter -> updateCriteria model { criteria | filter <- filter }
+            SortChange sort -> updateCriteria model { criteria | sort <- sort }
+            LoadData hotels -> {model | hotels <- hotels}
 
 view: Model -> Html
 view model = 
-    div [] [
-        section [ class "header" ] [
-            Header.header
-        ],
-        section [ class "sidebar" ] [ 
-            (Filters.filters model.criteria query.address)
-        ],
-        section [ class "content" ] [
-            (SortBar.sortBar model.criteria query.address),
-            (Pager.pager model query.address),
-            (HotelsList.hotelList model.hotels)
-        ], 
-        section [class "footer"] [ h3 [] [text "My beautiful footer section"]]]
+    let filtered = restrict model
+    in
+        div [] [
+            section [ class "header" ] [
+                Header.header
+            ],
+            section [ class "sidebar" ] [ 
+                (Filters.filters filtered.criteria.filter (Signal.forwardTo actions.address FilterChange))
+            ],
+            section [ class "content" ] [
+                (SortBar.sortBar filtered.criteria.sort (Signal.forwardTo actions.address SortChange)),
+                (Pager.pager filtered.total filtered.criteria.paging (Signal.forwardTo actions.address PageChange)),
+                (HotelsList.hotelList filtered.hotels)
+            ], 
+            section [class "footer"] [ h3 [] [text "My beautiful footer section"]]]
+
+initialModel : Model
+initialModel =
+    Model [] 0 (Criteria (Filter [] 0 "" 0) HotelName (Paging 20 0))
+
+model : Signal Model
+model =
+    Signal.foldp update initialModel actions.signal
+
+actions : Signal.Mailbox Action
+actions = 
+    Signal.mailbox NoOp
 
 main =
-    Signal.map view restrictedResults
-
---demo of how we can easily debounce the signal
---although this isn't quite the same as debouncing the actual dom event
--- debouncedQuery : Signal Criteria
--- debouncedQuery = 
---     Signal.sampleOn (Time.fps 1) query.signal
-
-restrictedResults : Signal Model
-restrictedResults =
-    Signal.map2 restrict results.signal query.signal
-     
-query : Signal.Mailbox Criteria
-query = 
-    Signal.mailbox (Criteria (Filter [] 0 "" 0) HotelName (Paging 20 0))
-
-results : Signal.Mailbox HotelList
-results = 
-    Signal.mailbox []
+    Signal.map view model
 
 --if we have any sort of error just return no results
 unwrapHotels : (Result Http.Error HotelList) -> (Task x ())
 unwrapHotels result =
     case result of
         Err e -> 
-            log (toString e) Signal.send results.address []
+            -- log (toString e) Signal.send results.address []
+            log (toString e) Signal.send actions.address (LoadData [])
+            
         Ok hotels -> 
-            Signal.send results.address hotels
+            -- Signal.send results.address hotels
+            Signal.send actions.address (LoadData hotels)
 
 port requests : (Task x ())
 port requests =

@@ -55,28 +55,10 @@ Elm.TrpTest.make = function (_elm) {
    var getHotels = A2($Http.get,
    hotels,
    "hotels.json");
-   var results = $Signal.mailbox(_L.fromArray([]));
-   var unwrapHotels = function (result) {
-      return function () {
-         switch (result.ctor)
-         {case "Err":
-            return A4($Debug.log,
-              $Basics.toString(result._0),
-              $Signal.send,
-              results.address,
-              _L.fromArray([]));
-            case "Ok":
-            return A2($Signal.send,
-              results.address,
-              result._0);}
-         _U.badCase($moduleName,
-         "between lines 62 and 66");
-      }();
-   };
-   var requests = Elm.Native.Task.make(_elm).perform(A2($Task.andThen,
-   $Task.toResult(getHotels),
-   unwrapHotels));
-   var query = $Signal.mailbox(A3($Models.Criteria,
+   var initialModel = A3($Models.Model,
+   _L.fromArray([]),
+   0,
+   A3($Models.Criteria,
    A4($Models.Filter,
    _L.fromArray([]),
    0,
@@ -84,45 +66,139 @@ Elm.TrpTest.make = function (_elm) {
    0),
    $Models.HotelName,
    A2($Models.Paging,20,0)));
-   var restrictedResults = A3($Signal.map2,
-   $Filtering.restrict,
-   results.signal,
-   query.signal);
-   var view = function (model) {
-      return A2($Html.div,
-      _L.fromArray([]),
-      _L.fromArray([A2($Html.section,
-                   _L.fromArray([$Html$Attributes.$class("header")]),
-                   _L.fromArray([$Header.header]))
-                   ,A2($Html.section,
-                   _L.fromArray([$Html$Attributes.$class("sidebar")]),
-                   _L.fromArray([A2($Filters.filters,
-                   model.criteria,
-                   query.address)]))
-                   ,A2($Html.section,
-                   _L.fromArray([$Html$Attributes.$class("content")]),
-                   _L.fromArray([A2($SortBar.sortBar,
-                                model.criteria,
-                                query.address)
-                                ,A2($Pager.pager,
-                                model,
-                                query.address)
-                                ,$HotelsList.hotelList(model.hotels)]))
-                   ,A2($Html.section,
-                   _L.fromArray([$Html$Attributes.$class("footer")]),
-                   _L.fromArray([A2($Html.h3,
-                   _L.fromArray([]),
-                   _L.fromArray([$Html.text("My beautiful footer section")]))]))]));
+   var updateCriteria = F2(function (model,
+   criteria) {
+      return _U.replace([["criteria"
+                         ,criteria]],
+      model);
+   });
+   var update = F2(function (action,
+   model) {
+      return function () {
+         var criteria = model.criteria;
+         return function () {
+            switch (action.ctor)
+            {case "FilterChange":
+               return A2(updateCriteria,
+                 model,
+                 _U.replace([["filter"
+                             ,action._0]],
+                 criteria));
+               case "LoadData":
+               return _U.replace([["hotels"
+                                  ,action._0]],
+                 model);
+               case "NoOp": return model;
+               case "PageChange":
+               return A2(updateCriteria,
+                 model,
+                 _U.replace([["paging"
+                             ,action._0]],
+                 criteria));
+               case "SortChange":
+               return A2(updateCriteria,
+                 model,
+                 _U.replace([["sort",action._0]],
+                 criteria));}
+            _U.badCase($moduleName,
+            "between lines 38 and 43");
+         }();
+      }();
+   });
+   var SortChange = function (a) {
+      return {ctor: "SortChange"
+             ,_0: a};
    };
+   var FilterChange = function (a) {
+      return {ctor: "FilterChange"
+             ,_0: a};
+   };
+   var PageChange = function (a) {
+      return {ctor: "PageChange"
+             ,_0: a};
+   };
+   var LoadData = function (a) {
+      return {ctor: "LoadData"
+             ,_0: a};
+   };
+   var NoOp = {ctor: "NoOp"};
+   var actions = $Signal.mailbox(NoOp);
+   var view = function (model) {
+      return function () {
+         var filtered = $Filtering.restrict(model);
+         return A2($Html.div,
+         _L.fromArray([]),
+         _L.fromArray([A2($Html.section,
+                      _L.fromArray([$Html$Attributes.$class("header")]),
+                      _L.fromArray([$Header.header]))
+                      ,A2($Html.section,
+                      _L.fromArray([$Html$Attributes.$class("sidebar")]),
+                      _L.fromArray([A2($Filters.filters,
+                      filtered.criteria.filter,
+                      A2($Signal.forwardTo,
+                      actions.address,
+                      FilterChange))]))
+                      ,A2($Html.section,
+                      _L.fromArray([$Html$Attributes.$class("content")]),
+                      _L.fromArray([A2($SortBar.sortBar,
+                                   filtered.criteria.sort,
+                                   A2($Signal.forwardTo,
+                                   actions.address,
+                                   SortChange))
+                                   ,A3($Pager.pager,
+                                   filtered.total,
+                                   filtered.criteria.paging,
+                                   A2($Signal.forwardTo,
+                                   actions.address,
+                                   PageChange))
+                                   ,$HotelsList.hotelList(filtered.hotels)]))
+                      ,A2($Html.section,
+                      _L.fromArray([$Html$Attributes.$class("footer")]),
+                      _L.fromArray([A2($Html.h3,
+                      _L.fromArray([]),
+                      _L.fromArray([$Html.text("My beautiful footer section")]))]))]));
+      }();
+   };
+   var model = A3($Signal.foldp,
+   update,
+   initialModel,
+   actions.signal);
    var main = A2($Signal.map,
    view,
-   restrictedResults);
+   model);
+   var unwrapHotels = function (result) {
+      return function () {
+         switch (result.ctor)
+         {case "Err":
+            return A4($Debug.log,
+              $Basics.toString(result._0),
+              $Signal.send,
+              actions.address,
+              LoadData(_L.fromArray([])));
+            case "Ok":
+            return A2($Signal.send,
+              actions.address,
+              LoadData(result._0));}
+         _U.badCase($moduleName,
+         "between lines 81 and 88");
+      }();
+   };
+   var requests = Elm.Native.Task.make(_elm).perform(A2($Task.andThen,
+   $Task.toResult(getHotels),
+   unwrapHotels));
    _elm.TrpTest.values = {_op: _op
+                         ,NoOp: NoOp
+                         ,LoadData: LoadData
+                         ,PageChange: PageChange
+                         ,FilterChange: FilterChange
+                         ,SortChange: SortChange
+                         ,updateCriteria: updateCriteria
+                         ,update: update
                          ,view: view
+                         ,initialModel: initialModel
+                         ,model: model
+                         ,actions: actions
                          ,main: main
-                         ,restrictedResults: restrictedResults
-                         ,query: query
-                         ,results: results
                          ,unwrapHotels: unwrapHotels
                          ,getHotels: getHotels
                          ,hotels: hotels};

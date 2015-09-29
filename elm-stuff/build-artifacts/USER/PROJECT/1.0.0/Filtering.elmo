@@ -36,7 +36,7 @@ Elm.Filtering.make = function (_elm) {
               starsFilter);
             case "[]": return true;}
          _U.badCase($moduleName,
-         "between lines 40 and 42");
+         "between lines 51 and 53");
       }();
    });
    var nameMatches = F2(function (query,
@@ -98,7 +98,7 @@ Elm.Filtering.make = function (_elm) {
                        return _.stars;
                     })(hotels));}
                _U.badCase($moduleName,
-               "between lines 19 and 27");
+               "between lines 30 and 38");
             }();
          };
          return A3($Models.Model,
@@ -107,27 +107,42 @@ Elm.Filtering.make = function (_elm) {
          model.criteria);
       }();
    };
+   var adjustPaging = F2(function (total,
+   criteria) {
+      return function () {
+         var paging = criteria.paging;
+         return _U.cmp(paging.pageIndex * paging.pageSize,
+         total) > 0 ? _U.replace([["paging"
+                                  ,A2($Models.Paging,20,0)]],
+         criteria) : criteria;
+      }();
+   });
    var page = function (model) {
       return function () {
-         var paging = model.criteria.paging;
+         var criteria = A2(adjustPaging,
+         model.total,
+         model.criteria);
+         var paging = criteria.paging;
          var page = $List.take(paging.pageSize)($List.drop(paging.pageIndex * paging.pageSize)(model.hotels));
          return A3($Models.Model,
          page,
          model.total,
-         model.criteria);
+         criteria);
       }();
    };
-   var restrict = F2(function (hotels,
-   criteria) {
+   var restrict = function (model) {
       return function () {
-         var model = A3($Models.Model,
+         var criteria = model.criteria;
+         var hotels = model.hotels;
+         var newModel = A3($Models.Model,
          hotels,
          $List.length(hotels),
          criteria);
-         return page(sort(filter(model)));
+         return page(sort(filter(newModel)));
       }();
-   });
+   };
    _elm.Filtering.values = {_op: _op
+                           ,adjustPaging: adjustPaging
                            ,page: page
                            ,sort: sort
                            ,nameMatches: nameMatches

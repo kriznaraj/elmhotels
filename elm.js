@@ -1838,7 +1838,7 @@ Elm.Filtering.make = function (_elm) {
               starsFilter);
             case "[]": return true;}
          _U.badCase($moduleName,
-         "between lines 51 and 53");
+         "between lines 40 and 42");
       }();
    });
    var nameMatches = F2(function (query,
@@ -1900,7 +1900,7 @@ Elm.Filtering.make = function (_elm) {
                        return _.stars;
                     })(hotels));}
                _U.badCase($moduleName,
-               "between lines 30 and 38");
+               "between lines 19 and 27");
             }();
          };
          return A3($Models.Model,
@@ -1909,42 +1909,27 @@ Elm.Filtering.make = function (_elm) {
          model.criteria);
       }();
    };
-   var adjustPaging = F2(function (total,
-   criteria) {
-      return function () {
-         var paging = criteria.paging;
-         return _U.cmp(paging.pageIndex * paging.pageSize,
-         total) > 0 ? _U.replace([["paging"
-                                  ,A2($Models.Paging,20,0)]],
-         criteria) : criteria;
-      }();
-   });
    var page = function (model) {
       return function () {
-         var criteria = A2(adjustPaging,
-         model.total,
-         model.criteria);
-         var paging = criteria.paging;
+         var paging = model.criteria.paging;
          var page = $List.take(paging.pageSize)($List.drop(paging.pageIndex * paging.pageSize)(model.hotels));
          return A3($Models.Model,
          page,
          model.total,
-         criteria);
+         model.criteria);
       }();
    };
-   var restrict = function (model) {
+   var restrict = F2(function (hotels,
+   criteria) {
       return function () {
-         var criteria = model.criteria;
-         var hotels = model.hotels;
-         var newModel = A3($Models.Model,
+         var model = A3($Models.Model,
          hotels,
          $List.length(hotels),
          criteria);
-         return page(sort(filter(newModel)));
+         return page(sort(filter(model)));
       }();
-   };
+   });
    _elm.Filtering.values = {_op: _op
-                           ,adjustPaging: adjustPaging
                            ,page: page
                            ,sort: sort
                            ,nameMatches: nameMatches
@@ -1983,16 +1968,77 @@ Elm.Filters.make = function (_elm) {
          {case "Err": return 0;
             case "Ok": return _v0._0;}
          _U.badCase($moduleName,
-         "between lines 93 and 95");
+         "between lines 107 and 109");
       }();
    };
+   var replaceFilter = F2(function (criteria,
+   filter) {
+      return _U.replace([["filter"
+                         ,filter]],
+      criteria);
+   });
+   var addOrRemoveStar = F2(function (criteria,
+   star) {
+      return function () {
+         var filter = criteria.filter;
+         var inList = A2($List.member,
+         star,
+         filter.stars);
+         return inList ? _U.replace([["filter"
+                                     ,_U.replace([["stars"
+                                                  ,A2($List.filter,
+                                                  function (s) {
+                                                     return !_U.eq(s,star);
+                                                  },
+                                                  filter.stars)]],
+                                     filter)]],
+         criteria) : _U.replace([["filter"
+                                 ,_U.replace([["stars"
+                                              ,A2($List._op["::"],
+                                              star,
+                                              filter.stars)]],
+                                 filter)]],
+         criteria);
+      }();
+   });
+   var resetPageIndex = function (criteria) {
+      return function () {
+         var paging = criteria.paging;
+         return _U.replace([["paging"
+                            ,_U.replace([["pageIndex",0]],
+                            paging)]],
+         criteria);
+      }();
+   };
+   var stars = F3(function (num,
+   criteria,
+   address) {
+      return A2($Html.div,
+      _L.fromArray([$Html$Attributes.$class("stars")]),
+      _L.fromArray([A2($Html.input,
+                   _L.fromArray([$Html$Attributes.type$("checkbox")
+                                ,$Html$Attributes.checked(A2($List.member,
+                                num,
+                                criteria.filter.stars))
+                                ,A2($Html$Events.onClick,
+                                address,
+                                resetPageIndex(A2(addOrRemoveStar,
+                                criteria,
+                                num)))]),
+                   _L.fromArray([]))
+                   ,A2($Html.span,
+                   _L.fromArray([]),
+                   _L.fromArray([$Html.text(A2($Basics._op["++"],
+                   $Basics.toString(num),
+                   " Stars"))]))]));
+   });
    var rangeInput = F7(function (name,
    min,
    max,
    val,
-   filter,
-   updater,
-   address) {
+   address,
+   criteria,
+   updater) {
       return A2($Html.div,
       _L.fromArray([]),
       _L.fromArray([A2($Html.label,
@@ -2012,135 +2058,110 @@ Elm.Filters.make = function (_elm) {
                                 function (str) {
                                    return A2($Signal.message,
                                    address,
-                                   A2(updater,filter,str));
+                                   resetPageIndex(A2(updater,
+                                   criteria,
+                                   str)));
                                 })]),
                    _L.fromArray([]))]));
    });
-   var addOrRemoveStar = F2(function (filter,
-   star) {
+   var filters = F2(function (criteria,
+   address) {
       return function () {
-         var inList = A2($List.member,
-         star,
-         filter.stars);
-         return inList ? _U.replace([["stars"
-                                     ,A2($List.filter,
-                                     function (s) {
-                                        return !_U.eq(s,star);
-                                     },
-                                     filter.stars)]],
-         filter) : _U.replace([["stars"
-                               ,A2($List._op["::"],
-                               star,
-                               filter.stars)]],
-         filter);
+         var filter = criteria.filter;
+         return A2($Html.section,
+         _L.fromArray([$Html$Attributes.$class("filters")]),
+         _L.fromArray([A2($Html.h3,
+                      _L.fromArray([]),
+                      _L.fromArray([$Html.text("Filters")]))
+                      ,A2($Html.div,
+                      _L.fromArray([]),
+                      _L.fromArray([A2($Html.input,
+                      _L.fromArray([$Html$Attributes.placeholder("Hotel Name")
+                                   ,$Html$Attributes.autofocus(true)
+                                   ,$Html$Attributes.type$("text")
+                                   ,$Html$Attributes.value(criteria.filter.hotelName)
+                                   ,A3($Html$Events.on,
+                                   "input",
+                                   $Html$Events.targetValue,
+                                   function (str) {
+                                      return A2($Signal.message,
+                                      address,
+                                      resetPageIndex(A2(replaceFilter,
+                                      criteria,
+                                      _U.replace([["hotelName",str]],
+                                      filter))));
+                                   })]),
+                      _L.fromArray([]))]))
+                      ,A2($Html.div,
+                      _L.fromArray([]),
+                      _L.fromArray([A2($Html.label,
+                                   _L.fromArray([]),
+                                   _L.fromArray([$Html.text("Stars: ")]))
+                                   ,A2($Html.div,
+                                   _L.fromArray([]),
+                                   _L.fromArray([A3(stars,
+                                                5,
+                                                criteria,
+                                                address)
+                                                ,A3(stars,4,criteria,address)
+                                                ,A3(stars,3,criteria,address)
+                                                ,A3(stars,2,criteria,address)
+                                                ,A3(stars,
+                                                1,
+                                                criteria,
+                                                address)]))]))
+                      ,A2($Html.div,
+                      _L.fromArray([$Html$Attributes.$class("clear")]),
+                      _L.fromArray([A7(rangeInput,
+                      "Minimum Rating",
+                      "0",
+                      "10",
+                      criteria.filter.minRating,
+                      address,
+                      criteria,
+                      F2(function (c,str) {
+                         return A2(replaceFilter,
+                         criteria,
+                         _U.replace([["minRating"
+                                     ,parseFloat(str)]],
+                         filter));
+                      }))]))
+                      ,A7(rangeInput,
+                      "Minimum Price",
+                      "0",
+                      "7000",
+                      criteria.filter.minPrice,
+                      address,
+                      criteria,
+                      F2(function (c,str) {
+                         return A2(replaceFilter,
+                         criteria,
+                         _U.replace([["minPrice"
+                                     ,parseFloat(str)]],
+                         filter));
+                      }))
+                      ,A2($Html.div,
+                      _L.fromArray([]),
+                      _L.fromArray([A2($Html.button,
+                      _L.fromArray([$Html$Attributes.$class("button")
+                                   ,A2($Html$Events.onClick,
+                                   address,
+                                   A3($Models.Criteria,
+                                   A4($Models.Filter,
+                                   _L.fromArray([]),
+                                   0,
+                                   "",
+                                   0),
+                                   $Models.HotelName,
+                                   A2($Models.Paging,20,0)))]),
+                      _L.fromArray([$Html.text("Clear Filters")]))]))]));
       }();
    });
-   var stars = F3(function (num,
-   filter,
-   address) {
-      return A2($Html.div,
-      _L.fromArray([$Html$Attributes.$class("stars")]),
-      _L.fromArray([A2($Html.input,
-                   _L.fromArray([$Html$Attributes.type$("checkbox")
-                                ,$Html$Attributes.checked(A2($List.member,
-                                num,
-                                filter.stars))
-                                ,A2($Html$Events.onClick,
-                                address,
-                                A2(addOrRemoveStar,
-                                filter,
-                                num))]),
-                   _L.fromArray([]))
-                   ,A2($Html.span,
-                   _L.fromArray([]),
-                   _L.fromArray([$Html.text(A2($Basics._op["++"],
-                   $Basics.toString(num),
-                   " Stars"))]))]));
-   });
-   var filters = F2(function (filter,
-   address) {
-      return A2($Html.section,
-      _L.fromArray([$Html$Attributes.$class("filters")]),
-      _L.fromArray([A2($Html.h3,
-                   _L.fromArray([]),
-                   _L.fromArray([$Html.text("Filters")]))
-                   ,A2($Html.div,
-                   _L.fromArray([]),
-                   _L.fromArray([A2($Html.input,
-                   _L.fromArray([$Html$Attributes.placeholder("Hotel Name")
-                                ,$Html$Attributes.autofocus(true)
-                                ,$Html$Attributes.type$("text")
-                                ,$Html$Attributes.value(filter.hotelName)
-                                ,A3($Html$Events.on,
-                                "input",
-                                $Html$Events.targetValue,
-                                function (str) {
-                                   return A2($Signal.message,
-                                   address,
-                                   _U.replace([["hotelName",str]],
-                                   filter));
-                                })]),
-                   _L.fromArray([]))]))
-                   ,A2($Html.div,
-                   _L.fromArray([]),
-                   _L.fromArray([A2($Html.label,
-                                _L.fromArray([]),
-                                _L.fromArray([$Html.text("Stars: ")]))
-                                ,A2($Html.div,
-                                _L.fromArray([]),
-                                _L.fromArray([A3(stars,
-                                             5,
-                                             filter,
-                                             address)
-                                             ,A3(stars,4,filter,address)
-                                             ,A3(stars,3,filter,address)
-                                             ,A3(stars,2,filter,address)
-                                             ,A3(stars,
-                                             1,
-                                             filter,
-                                             address)]))]))
-                   ,A2($Html.div,
-                   _L.fromArray([$Html$Attributes.$class("clear")]),
-                   _L.fromArray([A7(rangeInput,
-                   "Minimum Rating",
-                   "0",
-                   "10",
-                   filter.minRating,
-                   filter,
-                   F2(function (c,str) {
-                      return _U.replace([["minRating"
-                                         ,parseFloat(str)]],
-                      filter);
-                   }),
-                   address)]))
-                   ,A7(rangeInput,
-                   "Minimum Price",
-                   "0",
-                   "7000",
-                   filter.minPrice,
-                   filter,
-                   F2(function (c,str) {
-                      return _U.replace([["minPrice"
-                                         ,parseFloat(str)]],
-                      filter);
-                   }),
-                   address)
-                   ,A2($Html.div,
-                   _L.fromArray([]),
-                   _L.fromArray([A2($Html.button,
-                   _L.fromArray([$Html$Attributes.$class("button")
-                                ,A2($Html$Events.onClick,
-                                address,
-                                A4($Models.Filter,
-                                _L.fromArray([]),
-                                0,
-                                "",
-                                0))]),
-                   _L.fromArray([$Html.text("Clear Filters")]))]))]));
-   });
    _elm.Filters.values = {_op: _op
+                         ,resetPageIndex: resetPageIndex
                          ,addOrRemoveStar: addOrRemoveStar
                          ,stars: stars
+                         ,replaceFilter: replaceFilter
                          ,filters: filters
                          ,rangeInput: rangeInput
                          ,parseFloat: parseFloat};
@@ -12984,19 +13005,35 @@ Elm.Pager.make = function (_elm) {
    $Models = Elm.Models.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm);
-   var pager = F3(function (total,
-   paging,
+   var replacePageIndex = F2(function (criteria,
+   index) {
+      return function () {
+         var paging = criteria.paging;
+         return _U.replace([["paging"
+                            ,_U.replace([["pageIndex"
+                                         ,index]],
+                            paging)]],
+         criteria);
+      }();
+   });
+   var pager = F2(function (model,
    address) {
       return function () {
-         var pageSize = $Basics.toFloat(paging.pageSize);
-         var hotelCount = $Basics.toFloat(total);
-         var pageCount = $Basics.ceiling(hotelCount / pageSize);
+         var hotelCount = $Basics.toFloat(model.total);
+         var paging = model.criteria.paging;
          var pageIndex = paging.pageIndex;
          var pageNum = pageIndex + 1;
-         var lastPage = _U.eq(pageNum,
-         pageCount);
          var firstPage = _U.eq(pageIndex,
          0);
+         var pageSize = $Basics.toFloat(paging.pageSize);
+         var pageCount = $Basics.ceiling(hotelCount / pageSize);
+         var lastPage = _U.eq(pageNum,
+         A2($Debug.log,
+         "pages:",
+         pageCount));
+         var criteria = A2($Debug.watch,
+         "criteria",
+         model.criteria);
          return A2($Html.section,
          _L.fromArray([$Html$Attributes.$class("pager")]),
          _L.fromArray([A2($Html.button,
@@ -13004,9 +13041,9 @@ Elm.Pager.make = function (_elm) {
                                    ,$Html$Attributes.disabled(firstPage)
                                    ,A2($Html$Events.onClick,
                                    address,
-                                   _U.replace([["pageIndex"
-                                               ,pageIndex - 1]],
-                                   paging))]),
+                                   A2(replacePageIndex,
+                                   criteria,
+                                   pageIndex - 1))]),
                       _L.fromArray([$Html.text("Previous")]))
                       ,A2($Html.span,
                       _L.fromArray([$Html$Attributes.$class("total-pages")]),
@@ -13024,13 +13061,14 @@ Elm.Pager.make = function (_elm) {
                                    ,$Html$Attributes.disabled(lastPage)
                                    ,A2($Html$Events.onClick,
                                    address,
-                                   _U.replace([["pageIndex"
-                                               ,pageIndex + 1]],
-                                   paging))]),
+                                   A2(replacePageIndex,
+                                   criteria,
+                                   pageIndex + 1))]),
                       _L.fromArray([$Html.text("Next")]))]));
       }();
    });
    _elm.Pager.values = {_op: _op
+                       ,replacePageIndex: replacePageIndex
                        ,pager: pager};
    return _elm.Pager.values;
 };
@@ -13442,47 +13480,56 @@ Elm.SortBar.make = function (_elm) {
    $Models = Elm.Models.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm);
-   var sortButton = F4(function (currentSort,
+   var replaceSort = F2(function (criteria,
+   sort) {
+      return _U.replace([["sort"
+                         ,sort]],
+      criteria);
+   });
+   var sortButton = F4(function (criteria,
    sort,
    label,
    address) {
       return function () {
-         var cls = _U.eq(currentSort,
+         var cls = _U.eq(criteria.sort,
          sort) ? "button sort-bar-button sort-selected" : "button sort-bar-button";
          return A2($Html.div,
          _L.fromArray([$Html$Attributes.$class(cls)
                       ,A2($Html$Events.onClick,
                       address,
-                      sort)]),
+                      A2(replaceSort,
+                      criteria,
+                      sort))]),
          _L.fromArray([$Html.text(label)]));
       }();
    });
-   var sortBar = F2(function (sort,
+   var sortBar = F2(function (criteria,
    address) {
       return A2($Html.section,
       _L.fromArray([$Html$Attributes.$class("sort-bar")]),
       _L.fromArray([A4(sortButton,
-                   sort,
+                   criteria,
                    $Models.HotelName,
                    "Name",
                    address)
                    ,A4(sortButton,
-                   sort,
+                   criteria,
                    $Models.Stars,
                    "Stars",
                    address)
                    ,A4(sortButton,
-                   sort,
+                   criteria,
                    $Models.Rating,
                    "Rating",
                    address)
                    ,A4(sortButton,
-                   sort,
+                   criteria,
                    $Models.Price,
                    "Price",
                    address)]));
    });
    _elm.SortBar.values = {_op: _op
+                         ,replaceSort: replaceSort
                          ,sortButton: sortButton
                          ,sortBar: sortBar};
    return _elm.SortBar.values;
@@ -14157,117 +14204,7 @@ Elm.TrpTest.make = function (_elm) {
    var getHotels = A2($Http.get,
    hotels,
    "hotels.json");
-   var initialModel = A3($Models.Model,
-   _L.fromArray([]),
-   0,
-   A3($Models.Criteria,
-   A4($Models.Filter,
-   _L.fromArray([]),
-   0,
-   "",
-   0),
-   $Models.HotelName,
-   A2($Models.Paging,20,0)));
-   var updateCriteria = F2(function (model,
-   criteria) {
-      return _U.replace([["criteria"
-                         ,criteria]],
-      model);
-   });
-   var update = F2(function (action,
-   model) {
-      return function () {
-         var criteria = model.criteria;
-         return function () {
-            switch (action.ctor)
-            {case "FilterChange":
-               return A2(updateCriteria,
-                 model,
-                 _U.replace([["filter"
-                             ,action._0]],
-                 criteria));
-               case "LoadData":
-               return _U.replace([["hotels"
-                                  ,action._0]],
-                 model);
-               case "NoOp": return model;
-               case "PageChange":
-               return A2(updateCriteria,
-                 model,
-                 _U.replace([["paging"
-                             ,action._0]],
-                 criteria));
-               case "SortChange":
-               return A2(updateCriteria,
-                 model,
-                 _U.replace([["sort",action._0]],
-                 criteria));}
-            _U.badCase($moduleName,
-            "between lines 38 and 43");
-         }();
-      }();
-   });
-   var SortChange = function (a) {
-      return {ctor: "SortChange"
-             ,_0: a};
-   };
-   var FilterChange = function (a) {
-      return {ctor: "FilterChange"
-             ,_0: a};
-   };
-   var PageChange = function (a) {
-      return {ctor: "PageChange"
-             ,_0: a};
-   };
-   var LoadData = function (a) {
-      return {ctor: "LoadData"
-             ,_0: a};
-   };
-   var NoOp = {ctor: "NoOp"};
-   var actions = $Signal.mailbox(NoOp);
-   var view = function (model) {
-      return function () {
-         var filtered = $Filtering.restrict(model);
-         return A2($Html.div,
-         _L.fromArray([]),
-         _L.fromArray([A2($Html.section,
-                      _L.fromArray([$Html$Attributes.$class("header")]),
-                      _L.fromArray([$Header.header]))
-                      ,A2($Html.section,
-                      _L.fromArray([$Html$Attributes.$class("sidebar")]),
-                      _L.fromArray([A2($Filters.filters,
-                      filtered.criteria.filter,
-                      A2($Signal.forwardTo,
-                      actions.address,
-                      FilterChange))]))
-                      ,A2($Html.section,
-                      _L.fromArray([$Html$Attributes.$class("content")]),
-                      _L.fromArray([A2($SortBar.sortBar,
-                                   filtered.criteria.sort,
-                                   A2($Signal.forwardTo,
-                                   actions.address,
-                                   SortChange))
-                                   ,A3($Pager.pager,
-                                   filtered.total,
-                                   filtered.criteria.paging,
-                                   A2($Signal.forwardTo,
-                                   actions.address,
-                                   PageChange))
-                                   ,$HotelsList.hotelList(filtered.hotels)]))
-                      ,A2($Html.section,
-                      _L.fromArray([$Html$Attributes.$class("footer")]),
-                      _L.fromArray([A2($Html.h3,
-                      _L.fromArray([]),
-                      _L.fromArray([$Html.text("My beautiful footer section")]))]))]));
-      }();
-   };
-   var model = A3($Signal.foldp,
-   update,
-   initialModel,
-   actions.signal);
-   var main = A2($Signal.map,
-   view,
-   model);
+   var results = $Signal.mailbox(_L.fromArray([]));
    var unwrapHotels = function (result) {
       return function () {
          switch (result.ctor)
@@ -14275,32 +14212,68 @@ Elm.TrpTest.make = function (_elm) {
             return A4($Debug.log,
               $Basics.toString(result._0),
               $Signal.send,
-              actions.address,
-              LoadData(_L.fromArray([])));
+              results.address,
+              _L.fromArray([]));
             case "Ok":
             return A2($Signal.send,
-              actions.address,
-              LoadData(result._0));}
+              results.address,
+              result._0);}
          _U.badCase($moduleName,
-         "between lines 81 and 88");
+         "between lines 63 and 67");
       }();
    };
    var requests = Elm.Native.Task.make(_elm).perform(A2($Task.andThen,
    $Task.toResult(getHotels),
    unwrapHotels));
+   var query = $Signal.mailbox(A3($Models.Criteria,
+   A4($Models.Filter,
+   _L.fromArray([]),
+   0,
+   "",
+   0),
+   $Models.HotelName,
+   A2($Models.Paging,20,0)));
+   var restrictedResults = A3($Signal.map2,
+   $Filtering.restrict,
+   results.signal,
+   query.signal);
+   var view = function (model) {
+      return A2($Html.div,
+      _L.fromArray([]),
+      _L.fromArray([A2($Html.section,
+                   _L.fromArray([$Html$Attributes.$class("header")]),
+                   _L.fromArray([$Header.header]))
+                   ,A2($Html.section,
+                   _L.fromArray([$Html$Attributes.$class("sidebar")]),
+                   _L.fromArray([A2($Filters.filters,
+                   model.criteria,
+                   query.address)]))
+                   ,A2($Html.section,
+                   _L.fromArray([$Html$Attributes.$class("content")]),
+                   _L.fromArray([A2($SortBar.sortBar,
+                                model.criteria,
+                                query.address)
+                                ,A2($Pager.pager,
+                                model,
+                                query.address)
+                                ,$HotelsList.hotelList(model.hotels)]))
+                   ,A2($Html.section,
+                   _L.fromArray([$Html$Attributes.$class("footer")]),
+                   _L.fromArray([A2($Html.h3,
+                   _L.fromArray([]),
+                   _L.fromArray([$Html.text("My beautiful footer section")]))]))]));
+   };
+   var main = A2($Signal.map,
+   view,
+   A2($Debug.watch,
+   "results",
+   restrictedResults));
    _elm.TrpTest.values = {_op: _op
-                         ,NoOp: NoOp
-                         ,LoadData: LoadData
-                         ,PageChange: PageChange
-                         ,FilterChange: FilterChange
-                         ,SortChange: SortChange
-                         ,updateCriteria: updateCriteria
-                         ,update: update
                          ,view: view
-                         ,initialModel: initialModel
-                         ,model: model
-                         ,actions: actions
                          ,main: main
+                         ,restrictedResults: restrictedResults
+                         ,query: query
+                         ,results: results
                          ,unwrapHotels: unwrapHotels
                          ,getHotels: getHotels
                          ,hotels: hotels};
