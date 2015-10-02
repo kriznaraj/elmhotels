@@ -65,7 +65,29 @@ Elm.Models.make = function (_elm) {
              ,stars: d
              ,thumbnail: b};
    });
+   var SortChange = function (a) {
+      return {ctor: "SortChange"
+             ,_0: a};
+   };
+   var FilterChange = function (a) {
+      return {ctor: "FilterChange"
+             ,_0: a};
+   };
+   var PageChange = function (a) {
+      return {ctor: "PageChange"
+             ,_0: a};
+   };
+   var LoadData = function (a) {
+      return {ctor: "LoadData"
+             ,_0: a};
+   };
+   var NoOp = {ctor: "NoOp"};
    _elm.Models.values = {_op: _op
+                        ,NoOp: NoOp
+                        ,LoadData: LoadData
+                        ,PageChange: PageChange
+                        ,FilterChange: FilterChange
+                        ,SortChange: SortChange
                         ,Hotel: Hotel
                         ,Paging: Paging
                         ,Asc: Asc

@@ -1,0 +1,65 @@
+Elm.Api = Elm.Api || {};
+Elm.Api.make = function (_elm) {
+   "use strict";
+   _elm.Api = _elm.Api || {};
+   if (_elm.Api.values)
+   return _elm.Api.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Api",
+   $Basics = Elm.Basics.make(_elm),
+   $Effects = Elm.Effects.make(_elm),
+   $Http = Elm.Http.make(_elm),
+   $Json$Decode = Elm.Json.Decode.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Models = Elm.Models.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $Task = Elm.Task.make(_elm);
+   var hotels = function () {
+      var hotel = A7($Json$Decode.object6,
+      $Models.Hotel,
+      A2($Json$Decode._op[":="],
+      "Name",
+      $Json$Decode.string),
+      A2($Json$Decode._op[":="],
+      "ThumbnailUrl",
+      $Json$Decode.string),
+      A2($Json$Decode._op[":="],
+      "ImageUrl",
+      $Json$Decode.string),
+      A2($Json$Decode._op[":="],
+      "Stars",
+      $Json$Decode.$int),
+      A2($Json$Decode._op[":="],
+      "UserRating",
+      $Json$Decode.$float),
+      A2($Json$Decode._op[":="],
+      "MinCost",
+      $Json$Decode.$float));
+      return A2($Json$Decode._op[":="],
+      "Establishments",
+      $Json$Decode.list(hotel));
+   }();
+   var getHotels = function () {
+      var req = A2($Task.map,
+      function (hl) {
+         return $Models.LoadData(hl);
+      },
+      A2($Http.get,
+      hotels,
+      "hotels.json"));
+      return A2($Task.onError,
+      req,
+      function (err) {
+         return $Task.succeed($Models.LoadData(_L.fromArray([])));
+      });
+   }();
+   _elm.Api.values = {_op: _op
+                     ,getHotels: getHotels
+                     ,hotels: hotels};
+   return _elm.Api.values;
+};
