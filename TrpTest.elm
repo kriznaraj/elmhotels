@@ -1,49 +1,50 @@
 module TrpTest where
 
-import Http
-import Json.Decode as Json exposing ((:=))
 import Task exposing (..)
+import Effects exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (..)
-import String exposing (toUpper, repeat, trimRight, reverse)
-import StartApp.Simple as StartApp
+import StartApp as StartApp
 import Signal exposing (Address)
+import Api exposing (getHotels)
 import Header
 import SortBar 
 import Pager
 import Filters
 import HotelsList
-import Debug exposing (log)
 import Models exposing (..)
 import Filtering exposing (..)
-import Time
-import Debug exposing (watch)
 
-type Action = 
-    NoOp 
-    | LoadData HotelList
-    | PageChange Paging
-    | FilterChange Filter
-    | SortChange Sort
+--MODEL
+initialModel : Model
+initialModel =
+    Model [] 0 (Criteria (Filter [] 0 "" 0) HotelName (Paging 20 0))
 
-updateCriteria : Model -> Criteria -> Model
-updateCriteria model criteria =
-    { model | criteria <- criteria }
-
-update : Action -> Model -> Model
+--UPDATE
+update : Action -> Model -> (Model, Effects Action)
 update action model =
     let criteria = model.criteria
+        updateCriteria = (\model criteria -> { model | criteria <- criteria })
     in
         case action of
-            NoOp -> model
-            PageChange paging -> updateCriteria model { criteria | paging <- paging }
-            FilterChange filter -> updateCriteria model { criteria | filter <- filter }
-            SortChange sort -> updateCriteria model { criteria | sort <- sort }
-            LoadData hotels -> {model | hotels <- hotels}
+            NoOp ->
+                (model, Effects.none)
 
-view: Model -> Html
-view model = 
+            PageChange paging ->
+                (updateCriteria model { criteria | paging <- paging }, Effects.none)
+
+            FilterChange filter ->
+                (updateCriteria model { criteria | filter <- filter }, Effects.none)
+
+            SortChange sort ->
+                (updateCriteria model { criteria | sort <- sort }, Effects.none)
+
+            LoadData hotels ->
+                ({model | hotels <- hotels}, Effects.none)
+
+--VIEW
+view: Address Action -> Model -> Html
+view address model =
     let filtered = restrict model
     in
         div [] [
@@ -51,61 +52,27 @@ view model =
                 Header.header
             ],
             section [ class "sidebar" ] [ 
-                (Filters.filters filtered.criteria.filter (Signal.forwardTo actions.address FilterChange))
+                (Filters.filters filtered.criteria.filter (Signal.forwardTo address FilterChange))
             ],
             section [ class "content" ] [
-                (SortBar.sortBar filtered.criteria.sort (Signal.forwardTo actions.address SortChange)),
-                (Pager.pager filtered.total filtered.criteria.paging (Signal.forwardTo actions.address PageChange)),
+                (SortBar.sortBar filtered.criteria.sort (Signal.forwardTo address SortChange)),
+                (Pager.pager filtered.total filtered.criteria.paging (Signal.forwardTo address PageChange)),
                 (HotelsList.hotelList filtered.hotels)
             ], 
-            section [class "footer"] [ h3 [] [text "My beautiful footer section"]]]
+            section [class "footer"] [
+                h3 [] [text "My beautiful footer section"]]
+            ]
 
-initialModel : Model
-initialModel =
-    Model [] 0 (Criteria (Filter [] 0 "" 0) HotelName (Paging 20 0))
+--WIRING
+app =
+    StartApp.start
+       {init = (initialModel, Effects.task getHotels),
+        view = view,
+        update = update,
+        inputs = [] }
 
-model : Signal Model
-model =
-    Signal.foldp update initialModel actions.signal
+main = app.html
 
-actions : Signal.Mailbox Action
-actions = 
-    Signal.mailbox NoOp
-
-main =
-    Signal.map view model
-
---if we have any sort of error just return no results
-unwrapHotels : (Result Http.Error HotelList) -> (Task x ())
-unwrapHotels result =
-    case result of
-        Err e -> 
-            -- log (toString e) Signal.send results.address []
-            log (toString e) Signal.send actions.address (LoadData [])
-            
-        Ok hotels -> 
-            -- Signal.send results.address hotels
-            Signal.send actions.address (LoadData hotels)
-
-port requests : (Task x ())
-port requests =
-     Task.toResult getHotels 
-         `andThen` unwrapHotels
-
-getHotels : Task Http.Error HotelList
-getHotels =
-    Http.get hotels ("hotels.json")
-
-hotels : Json.Decoder HotelList
-hotels = 
-    let hotel =
-        Json.object6 Hotel
-           ("Name" := Json.string)
-           ("ThumbnailUrl" := Json.string)
-           ("ImageUrl" := Json.string)
-           ("Stars" := Json.int)
-           ("UserRating" := Json.float)
-           ("MinCost" := Json.float)
-    in
-       "Establishments" := Json.list hotel
+port tasks : Signal (Task.Task Never ())
+port tasks = app.tasks
 

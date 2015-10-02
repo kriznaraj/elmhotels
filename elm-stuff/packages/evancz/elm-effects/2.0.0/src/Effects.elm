@@ -7,8 +7,8 @@ module Effects
     where
 {-| This module provides all the tools necessary to create modular components
 that manage their own effects. **It is very important that you go through
-[this tutorial](https://github.com/evancz/elm-components).** It describes a
-pattern that is crucial for any of these functions to make sense.
+[this tutorial](https://github.com/evancz/elm-architecture-tutorial/).** It
+describes a pattern that is crucial for any of these functions to make sense.
 
 # Basic Effects
 @docs Effects, none, task, tick
@@ -42,7 +42,7 @@ experience in an issue.
 
 import Native.Effects
 import Task
-
+import Time exposing (Time)
 
 -- EFFECTS
 
@@ -51,7 +51,7 @@ arbitrary effects and clock ticks for animations.
 -}
 type Effects a
     = Task (Task.Task Never a)
-    | Tick (Float -> a)
+    | Tick (Time -> a)
     | None
     | Batch (List (Effects a))
 
@@ -96,7 +96,7 @@ the current time into an `a` value that can be handled by the relevant component
 Example 8 in [elm-architecture-tutorial](https://github.com/evancz/elm-architecture-tutorial/)
 has a nice example of this with further explanation in the tutorial itself.
 -}
-tick : (Float -> a) -> Effects a
+tick : (Time -> a) -> Effects a
 tick =
     Tick
 
@@ -148,7 +148,8 @@ map func effect =
 
 
 {-| Convert an `Effects` into a task that cannot fail. When run, the resulting
-task will send a bunch of messages to the given `Address`.
+task will send a bunch of message lists to the given `Address`. As an invariant,
+no empty list will ever be sent.
 
 Generally speaking, you should not need this function, particularly if you are
 using [start-app](http://package.elm-lang.org/packages/evancz/start-app/latest).
@@ -158,34 +159,30 @@ function 0 times per project, and if you are doing very special things for
 expert reasons, you should probably have either 0 or 1 uses of this per
 project.
 -}
-toTask : Signal.Address a -> Effects a -> Task.Task Never ()
+toTask : Signal.Address (List a) -> Effects a -> Task.Task Never ()
 toTask address effect =
     let
         (combinedTask, tickMessages) =
-            toTaskHelp address (Task.succeed (), []) effect
-
-        animationReport time =
-            tickMessages
-                |> List.map (\f -> Signal.send address (f time))
-                |> sequence_
-
-        animationRequests =
-            requestAnimationFrame animationReport
+            toTaskHelp address effect (Task.succeed (), [])
     in
-        combinedTask `Task.andThen` always animationRequests
+        if List.isEmpty tickMessages then
+            combinedTask
+
+        else
+            combinedTask `Task.andThen` always (requestTickSending address tickMessages)
 
 
 toTaskHelp
-    : Signal.Address a
-    -> (Task.Task Never (), List (Float -> a))
+    : Signal.Address (List a)
     -> Effects a
-    -> (Task.Task Never (), List (Float -> a))
-toTaskHelp address ((combinedTask, tickMessages) as intermediateResult) effect =
+    -> (Task.Task Never (), List (Time -> a))
+    -> (Task.Task Never (), List (Time -> a))
+toTaskHelp address effect ((combinedTask, tickMessages) as intermediateResult) =
     case effect of
         Task task ->
             let
                 reporter =
-                    task `Task.andThen` Signal.send address
+                    task `Task.andThen` (\answer -> Signal.send address [answer])
             in
                 ( combinedTask `Task.andThen` always (ignore (Task.spawn reporter))
                 , tickMessages
@@ -200,25 +197,14 @@ toTaskHelp address ((combinedTask, tickMessages) as intermediateResult) effect =
             intermediateResult
 
         Batch effectList ->
-            let
-                (tasks, toMsgLists) =
-                    List.unzip <| List.map (toTaskHelp address intermediateResult) effectList
-            in
-                ( sequence_ tasks
-                , List.concat toMsgLists
-                )
+            List.foldl (toTaskHelp address) intermediateResult effectList
 
 
-requestAnimationFrame : (Float -> Task.Task Never ()) -> Task.Task Never ()
-requestAnimationFrame =
-    Native.Effects.requestAnimationFrame
+requestTickSending : Signal.Address (List a) -> List (Time -> a) -> Task.Task Never ()
+requestTickSending =
+    Native.Effects.requestTickSending
 
 
 ignore : Task.Task x a -> Task.Task x ()
 ignore task =
-  task `Task.andThen` always (Task.succeed ())
-
-
-sequence_ : List (Task.Task x a) -> Task.Task x ()
-sequence_ tasks =
-  ignore (Task.sequence tasks)
+  Task.map (always ()) task

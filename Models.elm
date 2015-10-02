@@ -1,5 +1,12 @@
 module Models where
 
+type Action =
+    NoOp
+    | LoadData HotelList
+    | PageChange Paging
+    | FilterChange Filter
+    | SortChange Sort
+
 type alias Hotel = {
     name : String,
     thumbnail : String,

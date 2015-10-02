@@ -9,16 +9,15 @@ Elm.TrpTest.make = function (_elm) {
    _U = _N.Utils.make(_elm),
    _L = _N.List.make(_elm),
    $moduleName = "TrpTest",
+   $Api = Elm.Api.make(_elm),
    $Basics = Elm.Basics.make(_elm),
-   $Debug = Elm.Debug.make(_elm),
+   $Effects = Elm.Effects.make(_elm),
    $Filtering = Elm.Filtering.make(_elm),
    $Filters = Elm.Filters.make(_elm),
    $Header = Elm.Header.make(_elm),
    $HotelsList = Elm.HotelsList.make(_elm),
    $Html = Elm.Html.make(_elm),
    $Html$Attributes = Elm.Html.Attributes.make(_elm),
-   $Http = Elm.Http.make(_elm),
-   $Json$Decode = Elm.Json.Decode.make(_elm),
    $List = Elm.List.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
    $Models = Elm.Models.make(_elm),
@@ -26,104 +25,10 @@ Elm.TrpTest.make = function (_elm) {
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm),
    $SortBar = Elm.SortBar.make(_elm),
+   $StartApp = Elm.StartApp.make(_elm),
    $Task = Elm.Task.make(_elm);
-   var hotels = function () {
-      var hotel = A7($Json$Decode.object6,
-      $Models.Hotel,
-      A2($Json$Decode._op[":="],
-      "Name",
-      $Json$Decode.string),
-      A2($Json$Decode._op[":="],
-      "ThumbnailUrl",
-      $Json$Decode.string),
-      A2($Json$Decode._op[":="],
-      "ImageUrl",
-      $Json$Decode.string),
-      A2($Json$Decode._op[":="],
-      "Stars",
-      $Json$Decode.$int),
-      A2($Json$Decode._op[":="],
-      "UserRating",
-      $Json$Decode.$float),
-      A2($Json$Decode._op[":="],
-      "MinCost",
-      $Json$Decode.$float));
-      return A2($Json$Decode._op[":="],
-      "Establishments",
-      $Json$Decode.list(hotel));
-   }();
-   var getHotels = A2($Http.get,
-   hotels,
-   "hotels.json");
-   var initialModel = A3($Models.Model,
-   _L.fromArray([]),
-   0,
-   A3($Models.Criteria,
-   A4($Models.Filter,
-   _L.fromArray([]),
-   0,
-   "",
-   0),
-   $Models.HotelName,
-   A2($Models.Paging,20,0)));
-   var updateCriteria = F2(function (model,
-   criteria) {
-      return _U.replace([["criteria"
-                         ,criteria]],
-      model);
-   });
-   var update = F2(function (action,
+   var view = F2(function (address,
    model) {
-      return function () {
-         var criteria = model.criteria;
-         return function () {
-            switch (action.ctor)
-            {case "FilterChange":
-               return A2(updateCriteria,
-                 model,
-                 _U.replace([["filter"
-                             ,action._0]],
-                 criteria));
-               case "LoadData":
-               return _U.replace([["hotels"
-                                  ,action._0]],
-                 model);
-               case "NoOp": return model;
-               case "PageChange":
-               return A2(updateCriteria,
-                 model,
-                 _U.replace([["paging"
-                             ,action._0]],
-                 criteria));
-               case "SortChange":
-               return A2(updateCriteria,
-                 model,
-                 _U.replace([["sort",action._0]],
-                 criteria));}
-            _U.badCase($moduleName,
-            "between lines 38 and 43");
-         }();
-      }();
-   });
-   var SortChange = function (a) {
-      return {ctor: "SortChange"
-             ,_0: a};
-   };
-   var FilterChange = function (a) {
-      return {ctor: "FilterChange"
-             ,_0: a};
-   };
-   var PageChange = function (a) {
-      return {ctor: "PageChange"
-             ,_0: a};
-   };
-   var LoadData = function (a) {
-      return {ctor: "LoadData"
-             ,_0: a};
-   };
-   var NoOp = {ctor: "NoOp"};
-   var actions = $Signal.mailbox(NoOp);
-   var view = function (model) {
       return function () {
          var filtered = $Filtering.restrict(model);
          return A2($Html.div,
@@ -136,21 +41,21 @@ Elm.TrpTest.make = function (_elm) {
                       _L.fromArray([A2($Filters.filters,
                       filtered.criteria.filter,
                       A2($Signal.forwardTo,
-                      actions.address,
-                      FilterChange))]))
+                      address,
+                      $Models.FilterChange))]))
                       ,A2($Html.section,
                       _L.fromArray([$Html$Attributes.$class("content")]),
                       _L.fromArray([A2($SortBar.sortBar,
                                    filtered.criteria.sort,
                                    A2($Signal.forwardTo,
-                                   actions.address,
-                                   SortChange))
+                                   address,
+                                   $Models.SortChange))
                                    ,A3($Pager.pager,
                                    filtered.total,
                                    filtered.criteria.paging,
                                    A2($Signal.forwardTo,
-                                   actions.address,
-                                   PageChange))
+                                   address,
+                                   $Models.PageChange))
                                    ,$HotelsList.hotelList(filtered.hotels)]))
                       ,A2($Html.section,
                       _L.fromArray([$Html$Attributes.$class("footer")]),
@@ -158,49 +63,83 @@ Elm.TrpTest.make = function (_elm) {
                       _L.fromArray([]),
                       _L.fromArray([$Html.text("My beautiful footer section")]))]))]));
       }();
-   };
-   var model = A3($Signal.foldp,
-   update,
-   initialModel,
-   actions.signal);
-   var main = A2($Signal.map,
-   view,
-   model);
-   var unwrapHotels = function (result) {
+   });
+   var update = F2(function (action,
+   model) {
       return function () {
-         switch (result.ctor)
-         {case "Err":
-            return A4($Debug.log,
-              $Basics.toString(result._0),
-              $Signal.send,
-              actions.address,
-              LoadData(_L.fromArray([])));
-            case "Ok":
-            return A2($Signal.send,
-              actions.address,
-              LoadData(result._0));}
-         _U.badCase($moduleName,
-         "between lines 81 and 88");
+         var updateCriteria = F2(function (model,
+         criteria) {
+            return _U.replace([["criteria"
+                               ,criteria]],
+            model);
+         });
+         var criteria = model.criteria;
+         return function () {
+            switch (action.ctor)
+            {case "FilterChange":
+               return {ctor: "_Tuple2"
+                      ,_0: A2(updateCriteria,
+                      model,
+                      _U.replace([["filter"
+                                  ,action._0]],
+                      criteria))
+                      ,_1: $Effects.none};
+               case "LoadData":
+               return {ctor: "_Tuple2"
+                      ,_0: _U.replace([["hotels"
+                                       ,action._0]],
+                      model)
+                      ,_1: $Effects.none};
+               case "NoOp":
+               return {ctor: "_Tuple2"
+                      ,_0: model
+                      ,_1: $Effects.none};
+               case "PageChange":
+               return {ctor: "_Tuple2"
+                      ,_0: A2(updateCriteria,
+                      model,
+                      _U.replace([["paging"
+                                  ,action._0]],
+                      criteria))
+                      ,_1: $Effects.none};
+               case "SortChange":
+               return {ctor: "_Tuple2"
+                      ,_0: A2(updateCriteria,
+                      model,
+                      _U.replace([["sort",action._0]],
+                      criteria))
+                      ,_1: $Effects.none};}
+            _U.badCase($moduleName,
+            "between lines 29 and 43");
+         }();
       }();
-   };
-   var requests = Elm.Native.Task.make(_elm).perform(A2($Task.andThen,
-   $Task.toResult(getHotels),
-   unwrapHotels));
+   });
+   var initialModel = A3($Models.Model,
+   _L.fromArray([]),
+   0,
+   A3($Models.Criteria,
+   A4($Models.Filter,
+   _L.fromArray([]),
+   0,
+   "",
+   0),
+   $Models.HotelName,
+   A2($Models.Paging,20,0)));
+   var app = $StartApp.start({_: {}
+                             ,init: {ctor: "_Tuple2"
+                                    ,_0: initialModel
+                                    ,_1: $Effects.task($Api.getHotels)}
+                             ,inputs: _L.fromArray([])
+                             ,update: update
+                             ,view: view});
+   var main = app.html;
+   var tasks = Elm.Native.Task.make(_elm).performSignal("tasks",
+   app.tasks);
    _elm.TrpTest.values = {_op: _op
-                         ,NoOp: NoOp
-                         ,LoadData: LoadData
-                         ,PageChange: PageChange
-                         ,FilterChange: FilterChange
-                         ,SortChange: SortChange
-                         ,updateCriteria: updateCriteria
+                         ,initialModel: initialModel
                          ,update: update
                          ,view: view
-                         ,initialModel: initialModel
-                         ,model: model
-                         ,actions: actions
-                         ,main: main
-                         ,unwrapHotels: unwrapHotels
-                         ,getHotels: getHotels
-                         ,hotels: hotels};
+                         ,app: app
+                         ,main: main};
    return _elm.TrpTest.values;
 };
