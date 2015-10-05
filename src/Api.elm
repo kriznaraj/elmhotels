@@ -8,7 +8,7 @@ import Http
 
 getHotels : Task Never Action
 getHotels =
-    let req = Task.map (\hl -> LoadData hl) (Http.get hotels ("hotels.json"))
+    let req = Task.map (\hl -> LoadData hl) (Http.get hotels ("data/hotels.json"))
     in
         Task.onError req (\err -> Task.succeed (LoadData []))
 

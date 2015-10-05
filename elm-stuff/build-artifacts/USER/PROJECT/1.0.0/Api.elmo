@@ -51,7 +51,7 @@ Elm.Api.make = function (_elm) {
       },
       A2($Http.get,
       hotels,
-      "hotels.json"));
+      "data/hotels.json"));
       return A2($Task.onError,
       req,
       function (err) {
