@@ -20,6 +20,31 @@ Elm.Api.make = function (_elm) {
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm),
    $Task = Elm.Task.make(_elm);
+   var hotels2 = function () {
+      var hotel = A7($Json$Decode.object6,
+      $Models.Hotel,
+      A2($Json$Decode._op[":="],
+      "Name",
+      $Json$Decode.string),
+      A2($Json$Decode._op[":="],
+      "ThumbnailUrl",
+      $Json$Decode.string),
+      A2($Json$Decode._op[":="],
+      "ImageUrl",
+      $Json$Decode.string),
+      A2($Json$Decode._op[":="],
+      "Stars",
+      $Json$Decode.$int),
+      A2($Json$Decode._op[":="],
+      "UserRating",
+      $Json$Decode.$float),
+      A2($Json$Decode._op[":="],
+      "TeaserPricePerNight",
+      $Json$Decode.$float));
+      return A2($Json$Decode._op[":="],
+      "Establishments",
+      $Json$Decode.list(hotel));
+   }();
    var hotels = function () {
       var hotel = A7($Json$Decode.object6,
       $Models.Hotel,
@@ -59,9 +84,28 @@ Elm.Api.make = function (_elm) {
          return $Task.succeed($Models.LoadData(_L.fromArray([])));
       });
    }();
+   var body = $Http.string("{\"CultureCode\":\"en-gb\",\"DomainId\":1,\"TradingGroupId\":1,\"CurrencyCode\":\"GBP\",\"Paging\":{\"PageIndex\":0,\"PageSize\":10000},\"FilterCriteria\":{\"AirportCode\":null,\"Stars\":[],\"PropertyType\":[],\"BoardTypeCode\":[],\"FacilityCodes\":[],\"PriceRange\":null,\"RatingRange\":null,\"EstabGroupIds\":[],\"EstabGroupName\":null,\"FilterByEstabGroup\":false,\"ChildDestinations\":[]},\"SortCriterion\":1,\"Destination\":{\"CountryId\":0,\"ProvinceId\":0,\"LocationId\":0,\"PlaceId\":0,\"EstablishmentId\":0,\"PolygonId\":3125,}}");
+   var getHotelsLive = function () {
+      var req = A2($Task.map,
+      function (hl) {
+         return $Models.LoadData(hl);
+      },
+      A3($Http.post,
+      hotels2,
+      "api/hotels",
+      body));
+      return A2($Task.onError,
+      req,
+      function (err) {
+         return $Task.succeed($Models.LoadData(_L.fromArray([])));
+      });
+   }();
    _elm.Api.values = {_op: _op
+                     ,body: body
+                     ,getHotelsLive: getHotelsLive
                      ,getHotels: getHotels
-                     ,hotels: hotels};
+                     ,hotels: hotels
+                     ,hotels2: hotels2};
    return _elm.Api.values;
 };
 Elm.Array = Elm.Array || {};

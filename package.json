@@ -18,7 +18,8 @@
   "homepage": "https://github.com/julianjelfs/elmhotels",
   "dependencies": {
     "express": "2.5.8",
-    "jade": ">= 0.0.1"
+    "jade": ">= 0.0.1",
+    "proxy-middleware": "^0.14.0"
   },
   "devDependencies": {
     "gulp": "^3.9.0",

@@ -4,9 +4,13 @@
  */
 
 var express = require('express')
-  , routes = require('./routes');
+  , routes = require('./routes')
+  , url = require('url')
+  , proxy = require('proxy-middleware');
 
 var app = module.exports = express.createServer();
+
+app.use('/api/hotels', proxy(url.parse('https://m.travelrepublic.co.uk/api2/hotels/static/gethotelsbydestination')));
 
 // Configuration
 
