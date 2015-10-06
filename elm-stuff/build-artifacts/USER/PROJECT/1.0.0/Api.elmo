@@ -18,7 +18,27 @@ Elm.Api.make = function (_elm) {
    $Models = Elm.Models.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm),
+   $String = Elm.String.make(_elm),
    $Task = Elm.Task.make(_elm);
+   var imageUrl = function (estabPart) {
+      return A2($Basics._op["++"],
+      "https://d23wf1heedwns1.cloudfront.net/ei/",
+      A2($Basics._op["++"],
+      estabPart,
+      "/0_260_260.jpg"));
+   };
+   var estabIdToImageUrl = function (estabId) {
+      return imageUrl(A3($String.foldl,
+      F2(function (c,str) {
+         return A2($String.append,
+         str,
+         A2($Basics._op["++"],
+         "/",
+         $String.fromChar(c)));
+      }),
+      "",
+      $Basics.toString(estabId)));
+   };
    var hotels2 = function () {
       var hotel = A7($Json$Decode.object6,
       $Models.Hotel,
@@ -26,7 +46,11 @@ Elm.Api.make = function (_elm) {
       "Name",
       $Json$Decode.string),
       $Json$Decode.succeed(""),
-      $Json$Decode.succeed(""),
+      A2($Json$Decode.map,
+      estabIdToImageUrl,
+      A2($Json$Decode._op[":="],
+      "EstablishmentId",
+      $Json$Decode.$int)),
       A2($Json$Decode._op[":="],
       "Stars",
       $Json$Decode.$int),
@@ -95,7 +119,7 @@ Elm.Api.make = function (_elm) {
          });
       }();
    };
-   var body = $Http.string("{\"CultureCode\":\"en-gb\",\"DomainId\":1,\"TradingGroupId\":1,\"CurrencyCode\":\"GBP\",\"Paging\":{\"PageIndex\":0,\"PageSize\":1000},\"FilterCriteria\":{\"AirportCode\":null,\"Stars\":[],\"PropertyType\":[],\"BoardTypeCode\":[],\"FacilityCodes\":[],\"PriceRange\":null,\"RatingRange\":null,\"EstabGroupIds\":[],\"EstabGroupName\":null,\"FilterByEstabGroup\":false,\"ChildDestinations\":[]},\"SortCriterion\":1,\"Destination\":{\"PageStrand\":1,\"CountryId\":3522,\"ProvinceId\":54875,\"LocationId\":0,\"PlaceId\":0,\"EstablishmentId\":0,\"PolygonId\":0,\"HolidayEnabled\":true,\"Searchable\":true,\"BreadcrumbTrail\":[{\"Title\":\"Spain\",\"PagePath\":\"/hotels/hotels_spain.html\",\"ObjectId\":3522,\"ObjectTypeId\":4},{\"Title\":\"Tenerife\",\"PagePath\":\"/hotels/spain/hotels_in_tenerife.html\",\"ObjectId\":54875,\"ObjectTypeId\":3}],\"Title\":\"Tenerife, Spain\",\"SummaryTitle\":\"Tenerife\",\"ShortTitle\":\"Tenerife\",\"DestinationAirports\":null,\"AirportCount\":2,\"HotelCount\":558,\"Longitude\":-16.5921020507813,\"Latitude\":28.25963451165,\"ZoomLevel\":10,\"IsPOI\":false,\"PagePath\":\"/hotels/spain/hotels_in_tenerife.html\",\"TagIds\":[]}}");
+   var body = $Http.string("{\"CultureCode\":\"en-gb\",\"DomainId\":1,\"TradingGroupId\":1,\"CurrencyCode\":\"GBP\",\"Paging\":{\"PageIndex\":0,\"PageSize\":1000},\"FilterCriteria\":{\"AirportCode\":null,\"Stars\":[],\"PropertyType\":[],\"BoardTypeCode\":[],\"FacilityCodes\":[],\"PriceRange\":null,\"RatingRange\":null,\"EstabGroupIds\":[],\"EstabGroupName\":null,\"FilterByEstabGroup\":false,\"ChildDestinations\":[]},\"SortCriterion\":1,\"Destination\":{\"PageStrand\":1,\"CountryId\":3522,\"ProvinceId\":54875,\"LocationId\":0,\"PlaceId\":0,\"EstablishmentId\":0,\"PolygonId\":0}}");
    var hotelsPost = {_: {}
                     ,body: body
                     ,headers: _L.fromArray([{ctor: "_Tuple2"
@@ -113,6 +137,8 @@ Elm.Api.make = function (_elm) {
                      ,getHotels: getHotels
                      ,getHotelsStatic: getHotelsStatic
                      ,hotels: hotels
-                     ,hotels2: hotels2};
+                     ,hotels2: hotels2
+                     ,estabIdToImageUrl: estabIdToImageUrl
+                     ,imageUrl: imageUrl};
    return _elm.Api.values;
 };

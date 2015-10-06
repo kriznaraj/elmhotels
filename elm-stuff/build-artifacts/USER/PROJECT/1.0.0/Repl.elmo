@@ -13,11 +13,31 @@ Elm.Repl.make = function (_elm) {
    $List = Elm.List.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
    $Result = Elm.Result.make(_elm),
-   $Signal = Elm.Signal.make(_elm);
+   $Signal = Elm.Signal.make(_elm),
+   $String = Elm.String.make(_elm);
    var tsol = {ctor: "_Tuple0"};
-   var deltron3030 = "{ \"sortBy\" : \"coolness\", \"take\": 10 }";
+   var estabId = 12345;
+   var str = $Basics.toString(estabId);
+   var deltron3030 = A3($String.foldl,
+   F2(function (c,str) {
+      return A2($String.append,
+      str,
+      A2($Basics._op["++"],
+      "/",
+      $String.fromChar(c)));
+   }),
+   "",
+   str);
+   var c2 = _U.chr("2");
+   var c1 = _U.chr("1");
+   var c = _U.chr("1");
    _elm.Repl.values = {_op: _op
+                      ,c: c
+                      ,c1: c1
+                      ,c2: c2
                       ,deltron3030: deltron3030
+                      ,estabId: estabId
+                      ,str: str
                       ,tsol: tsol};
    return _elm.Repl.values;
 };
