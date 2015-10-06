@@ -67,4 +67,4 @@ estabIdToImageUrl estabId =
 
 imageUrl : String -> String
 imageUrl estabPart =
-    "https://d23wf1heedwns1.cloudfront.net/ei/" ++ estabPart ++ "/0_260_260.jpg"
+    "https://d23wf1heedwns1.cloudfront.net/ei" ++ estabPart ++ "/0_260_260.jpg"

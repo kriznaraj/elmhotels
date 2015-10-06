@@ -23,7 +23,7 @@ Elm.Api.make = function (_elm) {
    $Task = Elm.Task.make(_elm);
    var imageUrl = function (estabPart) {
       return A2($Basics._op["++"],
-      "https://d23wf1heedwns1.cloudfront.net/ei/",
+      "https://d23wf1heedwns1.cloudfront.net/ei",
       A2($Basics._op["++"],
       estabPart,
       "/0_260_260.jpg"));
