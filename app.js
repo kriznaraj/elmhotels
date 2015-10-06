@@ -6,18 +6,25 @@
 var express = require('express')
   , routes = require('./routes')
   , url = require('url')
+    , bodyParser = require('body-parser')
   , proxy = require('proxy-middleware');
 
 var app = module.exports = express.createServer();
 
-app.use('/api/hotels', proxy(url.parse('https://m.travelrepublic.co.uk/api2/hotels/static/gethotelsbydestination')));
+app.use('/api/hotels', proxy(url.parse('http://pp.hotelsapi.services.travelrepublic.local/api2/hotels/static/gethotelsbydestination')));
+
+//var hotelOpt = url.parse('http://pp.hotelsapi.services.travelrepublic.local/api2/hotels/static/gethotelsbydestination');
+//hotelOpt.cookieRewrite = ".travelrepublic.co.uk";
+//app.use('/api/hotels', proxy(hotelOpt));
 
 // Configuration
 
 app.configure(function(){
   app.set('views', __dirname + '/views');
   app.set('view engine', 'jade');
-  app.use(express.bodyParser());
+    app.use(bodyParser.json());
+  //app.use(express.bodyParser());
+    app.use(bodyParser.urlencoded({ extended: false }));
   app.use(express.methodOverride());
   app.use(app.router);
   app.use(express.static(__dirname + '/public'));
