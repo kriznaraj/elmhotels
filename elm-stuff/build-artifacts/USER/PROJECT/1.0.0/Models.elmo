@@ -14,12 +14,36 @@ Elm.Models.make = function (_elm) {
    $Maybe = Elm.Maybe.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm);
-   var Model = F3(function (a,
+   var Destination = F8(function (a,
    b,
-   c) {
+   c,
+   d,
+   e,
+   f,
+   g,
+   h) {
+      return {_: {}
+             ,countryId: a
+             ,establishmentCount: g
+             ,establishmentId: e
+             ,locationId: c
+             ,placeId: d
+             ,polygonId: f
+             ,provinceId: b
+             ,title: h};
+   });
+   var Model = F6(function (a,
+   b,
+   c,
+   d,
+   e,
+   f) {
       return {_: {}
              ,criteria: c
+             ,destinationQuery: e
+             ,destinations: d
              ,hotels: a
+             ,selectedDestination: f
              ,total: b};
    });
    var Criteria = F3(function (a,
@@ -65,6 +89,18 @@ Elm.Models.make = function (_elm) {
              ,stars: d
              ,thumbnail: b};
    });
+   var SelectDestination = function (a) {
+      return {ctor: "SelectDestination"
+             ,_0: a};
+   };
+   var DestinationQueryChanged = function (a) {
+      return {ctor: "DestinationQueryChanged"
+             ,_0: a};
+   };
+   var LoadDestinations = function (a) {
+      return {ctor: "LoadDestinations"
+             ,_0: a};
+   };
    var SortChange = function (a) {
       return {ctor: "SortChange"
              ,_0: a};
@@ -88,6 +124,9 @@ Elm.Models.make = function (_elm) {
                         ,PageChange: PageChange
                         ,FilterChange: FilterChange
                         ,SortChange: SortChange
+                        ,LoadDestinations: LoadDestinations
+                        ,DestinationQueryChanged: DestinationQueryChanged
+                        ,SelectDestination: SelectDestination
                         ,Hotel: Hotel
                         ,Paging: Paging
                         ,Asc: Asc
@@ -98,6 +137,7 @@ Elm.Models.make = function (_elm) {
                         ,Price: Price
                         ,Filter: Filter
                         ,Criteria: Criteria
-                        ,Model: Model};
+                        ,Model: Model
+                        ,Destination: Destination};
    return _elm.Models.values;
 };

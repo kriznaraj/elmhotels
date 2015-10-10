@@ -236,6 +236,40 @@ Elm.Array.make = function (_elm) {
                        ,foldr: foldr};
    return _elm.Array.values;
 };
+Elm.Autocompleter = Elm.Autocompleter || {};
+Elm.Autocompleter.make = function (_elm) {
+   "use strict";
+   _elm.Autocompleter = _elm.Autocompleter || {};
+   if (_elm.Autocompleter.values)
+   return _elm.Autocompleter.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Autocompleter",
+   $Basics = Elm.Basics.make(_elm),
+   $Html = Elm.Html.make(_elm),
+   $Html$Attributes = Elm.Html.Attributes.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
+   var autocompleter = A2($Html.section,
+   _L.fromArray([$Html$Attributes.$class("autocompleter")]),
+   _L.fromArray([A2($Html.h3,
+                _L.fromArray([]),
+                _L.fromArray([$Html.text("Destination")]))
+                ,A2($Html.div,
+                _L.fromArray([]),
+                _L.fromArray([A2($Html.input,
+                _L.fromArray([$Html$Attributes.placeholder("Search for a destination")
+                             ,$Html$Attributes.autofocus(true)
+                             ,$Html$Attributes.type$("text")]),
+                _L.fromArray([]))]))]));
+   _elm.Autocompleter.values = {_op: _op
+                               ,autocompleter: autocompleter};
+   return _elm.Autocompleter.values;
+};
 Elm.Basics = Elm.Basics || {};
 Elm.Basics.make = function (_elm) {
    "use strict";
@@ -14603,6 +14637,7 @@ Elm.TrpTest.make = function (_elm) {
    _L = _N.List.make(_elm),
    $moduleName = "TrpTest",
    $Api = Elm.Api.make(_elm),
+   $Autocompleter = Elm.Autocompleter.make(_elm),
    $Basics = Elm.Basics.make(_elm),
    $Effects = Elm.Effects.make(_elm),
    $Filtering = Elm.Filtering.make(_elm),
@@ -14631,11 +14666,12 @@ Elm.TrpTest.make = function (_elm) {
                       _L.fromArray([$Header.header]))
                       ,A2($Html.section,
                       _L.fromArray([$Html$Attributes.$class("sidebar")]),
-                      _L.fromArray([A2($Filters.filters,
-                      filtered.criteria.filter,
-                      A2($Signal.forwardTo,
-                      address,
-                      $Models.FilterChange))]))
+                      _L.fromArray([$Autocompleter.autocompleter
+                                   ,A2($Filters.filters,
+                                   filtered.criteria.filter,
+                                   A2($Signal.forwardTo,
+                                   address,
+                                   $Models.FilterChange))]))
                       ,A2($Html.section,
                       _L.fromArray([$Html$Attributes.$class("content")]),
                       _L.fromArray([A2($SortBar.sortBar,
@@ -14703,7 +14739,7 @@ Elm.TrpTest.make = function (_elm) {
                       criteria))
                       ,_1: $Effects.none};}
             _U.badCase($moduleName,
-            "between lines 29 and 43");
+            "between lines 30 and 44");
          }();
       }();
    });

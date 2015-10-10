@@ -10,6 +10,7 @@ Elm.TrpTest.make = function (_elm) {
    _L = _N.List.make(_elm),
    $moduleName = "TrpTest",
    $Api = Elm.Api.make(_elm),
+   $Autocompleter = Elm.Autocompleter.make(_elm),
    $Basics = Elm.Basics.make(_elm),
    $Effects = Elm.Effects.make(_elm),
    $Filtering = Elm.Filtering.make(_elm),
@@ -38,11 +39,12 @@ Elm.TrpTest.make = function (_elm) {
                       _L.fromArray([$Header.header]))
                       ,A2($Html.section,
                       _L.fromArray([$Html$Attributes.$class("sidebar")]),
-                      _L.fromArray([A2($Filters.filters,
-                      filtered.criteria.filter,
-                      A2($Signal.forwardTo,
-                      address,
-                      $Models.FilterChange))]))
+                      _L.fromArray([$Autocompleter.autocompleter
+                                   ,A2($Filters.filters,
+                                   filtered.criteria.filter,
+                                   A2($Signal.forwardTo,
+                                   address,
+                                   $Models.FilterChange))]))
                       ,A2($Html.section,
                       _L.fromArray([$Html$Attributes.$class("content")]),
                       _L.fromArray([A2($SortBar.sortBar,
@@ -110,7 +112,7 @@ Elm.TrpTest.make = function (_elm) {
                       criteria))
                       ,_1: $Effects.none};}
             _U.badCase($moduleName,
-            "between lines 29 and 43");
+            "between lines 30 and 44");
          }();
       }();
    });

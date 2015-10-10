@@ -6,6 +6,9 @@ type Action =
     | PageChange Paging
     | FilterChange Filter
     | SortChange Sort
+    | LoadDestinations DestinationList
+    | DestinationQueryChanged String
+    | SelectDestination Destination
 
 type alias Hotel = {
     name : String,
@@ -47,5 +50,20 @@ type alias HotelList = (List Hotel)
 type alias Model = {
     hotels : HotelList,
     total : Int,
-    criteria : Criteria
+    criteria : Criteria,
+    destinations : DestinationList,
+    destinationQuery : String,
+    selectedDestination : Destination
 }
+
+type alias Destination = {
+    countryId : Int,
+    provinceId : Int,
+    locationId : Int,
+    placeId : Int,
+    establishmentId : Int,
+    polygonId : Int,
+    establishmentCount : Int,
+    title : String }
+
+type alias DestinationList = List Destination
