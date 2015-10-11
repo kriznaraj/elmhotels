@@ -5,8 +5,6 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Signal exposing (Address)
-import StartApp as StartApp
-import Debug exposing (log)
 import String
 import Models exposing(..)
 import Json.Decode as Json exposing ((:=))
@@ -14,6 +12,13 @@ import Task exposing (..)
 import Effects exposing (..)
 
 --VIEW
+
+destination: Destination -> Html
+destination dest =
+    li [] [
+        span [] [ text dest.title ]
+    ]
+
 autocompleter : Address Action -> Model -> Html
 autocompleter address model =
     section [ class "autocompleter" ] [
@@ -29,7 +34,7 @@ autocompleter address model =
                 ] []
         ],
         div [ class "results" ] [
-            text "this is where the results are going to go"
+            ul [] (List.map destination model.destinations)
         ]
     ]
     

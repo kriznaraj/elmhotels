@@ -40,7 +40,7 @@ Elm.Api.make = function (_elm) {
       "",
       $Basics.toString(estabId)));
    };
-   var hotels2 = function () {
+   var hotels = function () {
       var hotel = A7($Json$Decode.object6,
       $Models.Hotel,
       A2($Json$Decode._op[":="],
@@ -65,45 +65,33 @@ Elm.Api.make = function (_elm) {
       "Establishments",
       $Json$Decode.list(hotel));
    }();
-   var hotels = function () {
-      var hotel = A7($Json$Decode.object6,
-      $Models.Hotel,
-      A2($Json$Decode._op[":="],
-      "Name",
-      $Json$Decode.string),
-      A2($Json$Decode._op[":="],
-      "ThumbnailUrl",
-      $Json$Decode.string),
-      A2($Json$Decode._op[":="],
-      "ImageUrl",
-      $Json$Decode.string),
-      A2($Json$Decode._op[":="],
-      "Stars",
-      $Json$Decode.$int),
-      A2($Json$Decode._op[":="],
-      "UserRating",
-      $Json$Decode.$float),
-      A2($Json$Decode._op[":="],
-      "MinCost",
-      $Json$Decode.$float));
-      return A2($Json$Decode._op[":="],
-      "Establishments",
-      $Json$Decode.list(hotel));
-   }();
-   var getHotelsStatic = function () {
-      var req = A2($Task.map,
-      function (hl) {
-         return $Models.LoadData(hl);
-      },
-      A2($Http.get,
-      hotels,
-      "data/hotels.json"));
-      return A2($Task.onError,
-      req,
-      function (err) {
-         return $Task.succeed($Models.LoadData(_L.fromArray([])));
-      });
-   }();
+   var destinationToJson = function (dest) {
+      return A2($Basics._op["++"],
+      "{ \"CountryId\" : ",
+      A2($Basics._op["++"],
+      $Basics.toString(dest.countryId),
+      A2($Basics._op["++"],
+      ", \"ProvinceId\" : ",
+      A2($Basics._op["++"],
+      $Basics.toString(dest.provinceId),
+      A2($Basics._op["++"],
+      ", \"LocationId\" : ",
+      A2($Basics._op["++"],
+      $Basics.toString(dest.locationId),
+      A2($Basics._op["++"],
+      ", \"PlaceId\" : ",
+      A2($Basics._op["++"],
+      $Basics.toString(dest.placeId),
+      A2($Basics._op["++"],
+      ", \"EstablishmentId\" : ",
+      A2($Basics._op["++"],
+      $Basics.toString(dest.establishmentId),
+      A2($Basics._op["++"],
+      ", \"PolygonId\" : ",
+      A2($Basics._op["++"],
+      $Basics.toString(dest.polygonId),
+      ", \"PageStrand\" : 1}"))))))))))));
+   };
    var parseResponse = function (response) {
       return function () {
          var res = A2($Task.map,
@@ -111,7 +99,7 @@ Elm.Api.make = function (_elm) {
             return $Models.LoadData(hl);
          },
          A2($Http.fromJson,
-         hotels2,
+         hotels,
          response));
          return A2($Task.onError,
          res,
@@ -120,25 +108,37 @@ Elm.Api.make = function (_elm) {
          });
       }();
    };
-   var body = $Http.string("{\"CultureCode\":\"en-gb\",\"DomainId\":1,\"TradingGroupId\":1,\"CurrencyCode\":\"GBP\",\"Paging\":{\"PageIndex\":0,\"PageSize\":1000},\"FilterCriteria\":{\"AirportCode\":null,\"Stars\":[],\"PropertyType\":[],\"BoardTypeCode\":[],\"FacilityCodes\":[],\"PriceRange\":null,\"RatingRange\":null,\"EstabGroupIds\":[],\"EstabGroupName\":null,\"FilterByEstabGroup\":false,\"ChildDestinations\":[]},\"SortCriterion\":1,\"Destination\":{\"PageStrand\":1,\"CountryId\":3522,\"ProvinceId\":54875,\"LocationId\":0,\"PlaceId\":0,\"EstablishmentId\":0,\"PolygonId\":0}}");
-   var hotelsPost = {_: {}
-                    ,body: body
-                    ,headers: _L.fromArray([{ctor: "_Tuple2"
-                                            ,_0: "Content-type"
-                                            ,_1: "application/json"}])
-                    ,url: "api/hotels"
-                    ,verb: "POST"};
-   var getHotels = parseResponse(A2($Http.send,
-   $Http.defaultSettings,
-   hotelsPost));
+   var body = function (dest) {
+      return function () {
+         var destJson = destinationToJson(dest);
+         return $Http.string(A2($Basics._op["++"],
+         "{\"CultureCode\":\"en-gb\",\"DomainId\":1,\"TradingGroupId\":1,\"CurrencyCode\":\"GBP\",\"Paging\":{\"PageIndex\":0,\"PageSize\":1000},\"FilterCriteria\":{\"AirportCode\":null,\"Stars\":[],\"PropertyType\":[],\"BoardTypeCode\":[],\"FacilityCodes\":[],\"PriceRange\":null,\"RatingRange\":null,\"EstabGroupIds\":[],\"EstabGroupName\":null,\"FilterByEstabGroup\":false,\"ChildDestinations\":[]},\"SortCriterion\":1,\"Destination\":",
+         A2($Basics._op["++"],
+         destJson,
+         "}")));
+      }();
+   };
+   var hotelsPost = function (dest) {
+      return {_: {}
+             ,body: body(dest)
+             ,headers: _L.fromArray([{ctor: "_Tuple2"
+                                     ,_0: "Content-type"
+                                     ,_1: "application/json"}])
+             ,url: "api/hotels"
+             ,verb: "POST"};
+   };
+   var getHotels = function (dest) {
+      return parseResponse(A2($Http.send,
+      $Http.defaultSettings,
+      hotelsPost(dest)));
+   };
    _elm.Api.values = {_op: _op
                      ,body: body
                      ,hotelsPost: hotelsPost
                      ,parseResponse: parseResponse
+                     ,destinationToJson: destinationToJson
                      ,getHotels: getHotels
-                     ,getHotelsStatic: getHotelsStatic
                      ,hotels: hotels
-                     ,hotels2: hotels2
                      ,estabIdToImageUrl: estabIdToImageUrl
                      ,imageUrl: imageUrl};
    return _elm.Api.values;
@@ -248,26 +248,112 @@ Elm.Autocompleter.make = function (_elm) {
    _L = _N.List.make(_elm),
    $moduleName = "Autocompleter",
    $Basics = Elm.Basics.make(_elm),
+   $Effects = Elm.Effects.make(_elm),
    $Html = Elm.Html.make(_elm),
    $Html$Attributes = Elm.Html.Attributes.make(_elm),
+   $Html$Events = Elm.Html.Events.make(_elm),
+   $Http = Elm.Http.make(_elm),
+   $Json$Decode = Elm.Json.Decode.make(_elm),
    $List = Elm.List.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
+   $Models = Elm.Models.make(_elm),
    $Result = Elm.Result.make(_elm),
-   $Signal = Elm.Signal.make(_elm);
-   var autocompleter = A2($Html.section,
-   _L.fromArray([$Html$Attributes.$class("autocompleter")]),
-   _L.fromArray([A2($Html.h3,
-                _L.fromArray([]),
-                _L.fromArray([$Html.text("Destination")]))
-                ,A2($Html.div,
-                _L.fromArray([]),
-                _L.fromArray([A2($Html.input,
-                _L.fromArray([$Html$Attributes.placeholder("Search for a destination")
-                             ,$Html$Attributes.autofocus(true)
-                             ,$Html$Attributes.type$("text")]),
-                _L.fromArray([]))]))]));
+   $Signal = Elm.Signal.make(_elm),
+   $Task = Elm.Task.make(_elm);
+   var destinations = function () {
+      var dest = A9($Json$Decode.object8,
+      $Models.Destination,
+      A2($Json$Decode._op[":="],
+      "CountryId",
+      $Json$Decode.$int),
+      A2($Json$Decode._op[":="],
+      "ProvinceId",
+      $Json$Decode.$int),
+      A2($Json$Decode._op[":="],
+      "LocationId",
+      $Json$Decode.$int),
+      A2($Json$Decode._op[":="],
+      "PlaceId",
+      $Json$Decode.$int),
+      A2($Json$Decode._op[":="],
+      "EstablishmentId",
+      $Json$Decode.$int),
+      A2($Json$Decode._op[":="],
+      "PloygonId",
+      $Json$Decode.$int),
+      A2($Json$Decode._op[":="],
+      "EstablishmentCount",
+      $Json$Decode.$int),
+      A2($Json$Decode._op[":="],
+      "Title",
+      $Json$Decode.string));
+      return A2($Json$Decode._op[":="],
+      "Destinations",
+      $Json$Decode.list(dest));
+   }();
+   var getDestinations = function (query) {
+      return function () {
+         var req = A2($Task.map,
+         function (dests) {
+            return $Models.LoadDestinations(dests);
+         },
+         A2($Http.get,
+         destinations,
+         A2($Basics._op["++"],
+         "api/destinations?SearchTerm=",
+         A2($Basics._op["++"],
+         query,
+         "&MaxResults=15&CultureCode=en-gb&RestrictToFlightDestinations=false&v=1.0.6978"))));
+         return A2($Task.onError,
+         req,
+         function (err) {
+            return $Task.succeed($Models.LoadDestinations(_L.fromArray([])));
+         });
+      }();
+   };
+   var destination = function (dest) {
+      return A2($Html.li,
+      _L.fromArray([]),
+      _L.fromArray([A2($Html.span,
+      _L.fromArray([]),
+      _L.fromArray([$Html.text(dest.title)]))]));
+   };
+   var autocompleter = F2(function (address,
+   model) {
+      return A2($Html.section,
+      _L.fromArray([$Html$Attributes.$class("autocompleter")]),
+      _L.fromArray([A2($Html.h3,
+                   _L.fromArray([]),
+                   _L.fromArray([$Html.text("Destination")]))
+                   ,A2($Html.div,
+                   _L.fromArray([]),
+                   _L.fromArray([A2($Html.input,
+                   _L.fromArray([$Html$Attributes.placeholder("Search for a destination")
+                                ,$Html$Attributes.autofocus(true)
+                                ,$Html$Attributes.type$("text")
+                                ,$Html$Attributes.value(model.destinationQuery)
+                                ,A3($Html$Events.on,
+                                "input",
+                                $Html$Events.targetValue,
+                                function (str) {
+                                   return A2($Signal.message,
+                                   address,
+                                   $Models.DestinationQueryChanged(str));
+                                })]),
+                   _L.fromArray([]))]))
+                   ,A2($Html.div,
+                   _L.fromArray([$Html$Attributes.$class("results")]),
+                   _L.fromArray([A2($Html.ul,
+                   _L.fromArray([]),
+                   A2($List.map,
+                   destination,
+                   model.destinations))]))]));
+   });
    _elm.Autocompleter.values = {_op: _op
-                               ,autocompleter: autocompleter};
+                               ,destination: destination
+                               ,autocompleter: autocompleter
+                               ,getDestinations: getDestinations
+                               ,destinations: destinations};
    return _elm.Autocompleter.values;
 };
 Elm.Basics = Elm.Basics || {};
@@ -2148,7 +2234,7 @@ Elm.Filtering.make = function (_elm) {
               starsFilter);
             case "[]": return true;}
          _U.badCase($moduleName,
-         "between lines 51 and 53");
+         "between lines 52 and 54");
       }();
    });
    var nameMatches = F2(function (query,
@@ -2177,10 +2263,11 @@ Elm.Filtering.make = function (_elm) {
          var hotels = A2($List.filter,
          filterFn,
          model.hotels);
-         return A3($Models.Model,
-         hotels,
-         $List.length(hotels),
-         model.criteria);
+         return _U.replace([["hotels"
+                            ,hotels]
+                           ,["total"
+                            ,$List.length(hotels)]],
+         model);
       }();
    };
    var sort = function (model) {
@@ -2213,10 +2300,10 @@ Elm.Filtering.make = function (_elm) {
                "between lines 30 and 38");
             }();
          };
-         return A3($Models.Model,
-         sortFn(model.hotels),
-         model.total,
-         model.criteria);
+         var hotels = sortFn(model.hotels);
+         return _U.replace([["hotels"
+                            ,hotels]],
+         model);
       }();
    };
    var adjustPaging = F2(function (total,
@@ -2236,20 +2323,19 @@ Elm.Filtering.make = function (_elm) {
          model.criteria);
          var paging = criteria.paging;
          var page = $List.take(paging.pageSize)($List.drop(paging.pageIndex * paging.pageSize)(model.hotels));
-         return A3($Models.Model,
-         page,
-         model.total,
-         criteria);
+         return _U.replace([["hotels"
+                            ,page]
+                           ,["criteria",criteria]],
+         model);
       }();
    };
    var restrict = function (model) {
       return function () {
          var criteria = model.criteria;
          var hotels = model.hotels;
-         var newModel = A3($Models.Model,
-         hotels,
-         $List.length(hotels),
-         criteria);
+         var newModel = _U.replace([["total"
+                                    ,$List.length(hotels)]],
+         model);
          return page(sort(filter(newModel)));
       }();
    };
@@ -5290,12 +5376,54 @@ Elm.Models.make = function (_elm) {
    $Maybe = Elm.Maybe.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm);
-   var Model = F3(function (a,
+   var Destination = F8(function (a,
    b,
-   c) {
+   c,
+   d,
+   e,
+   f,
+   g,
+   h) {
+      return {_: {}
+             ,countryId: a
+             ,establishmentCount: g
+             ,establishmentId: e
+             ,locationId: c
+             ,placeId: d
+             ,polygonId: f
+             ,provinceId: b
+             ,title: h};
+   });
+   var emptyDestination = A8(Destination,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   "");
+   var tenerife = A8(Destination,
+   3522,
+   54875,
+   0,
+   0,
+   0,
+   0,
+   0,
+   "Tenerife, Spain");
+   var Model = F6(function (a,
+   b,
+   c,
+   d,
+   e,
+   f) {
       return {_: {}
              ,criteria: c
+             ,destinationQuery: e
+             ,destinations: d
              ,hotels: a
+             ,selectedDestination: f
              ,total: b};
    });
    var Criteria = F3(function (a,
@@ -5341,6 +5469,18 @@ Elm.Models.make = function (_elm) {
              ,stars: d
              ,thumbnail: b};
    });
+   var SelectDestination = function (a) {
+      return {ctor: "SelectDestination"
+             ,_0: a};
+   };
+   var DestinationQueryChanged = function (a) {
+      return {ctor: "DestinationQueryChanged"
+             ,_0: a};
+   };
+   var LoadDestinations = function (a) {
+      return {ctor: "LoadDestinations"
+             ,_0: a};
+   };
    var SortChange = function (a) {
       return {ctor: "SortChange"
              ,_0: a};
@@ -5364,6 +5504,9 @@ Elm.Models.make = function (_elm) {
                         ,PageChange: PageChange
                         ,FilterChange: FilterChange
                         ,SortChange: SortChange
+                        ,LoadDestinations: LoadDestinations
+                        ,DestinationQueryChanged: DestinationQueryChanged
+                        ,SelectDestination: SelectDestination
                         ,Hotel: Hotel
                         ,Paging: Paging
                         ,Asc: Asc
@@ -5374,7 +5517,10 @@ Elm.Models.make = function (_elm) {
                         ,Price: Price
                         ,Filter: Filter
                         ,Criteria: Criteria
-                        ,Model: Model};
+                        ,Model: Model
+                        ,Destination: Destination
+                        ,emptyDestination: emptyDestination
+                        ,tenerife: tenerife};
    return _elm.Models.values;
 };
 Elm.Native.Array = {};
@@ -14639,6 +14785,7 @@ Elm.TrpTest.make = function (_elm) {
    $Api = Elm.Api.make(_elm),
    $Autocompleter = Elm.Autocompleter.make(_elm),
    $Basics = Elm.Basics.make(_elm),
+   $Debug = Elm.Debug.make(_elm),
    $Effects = Elm.Effects.make(_elm),
    $Filtering = Elm.Filtering.make(_elm),
    $Filters = Elm.Filters.make(_elm),
@@ -14666,7 +14813,9 @@ Elm.TrpTest.make = function (_elm) {
                       _L.fromArray([$Header.header]))
                       ,A2($Html.section,
                       _L.fromArray([$Html$Attributes.$class("sidebar")]),
-                      _L.fromArray([$Autocompleter.autocompleter
+                      _L.fromArray([A2($Autocompleter.autocompleter,
+                                   address,
+                                   model)
                                    ,A2($Filters.filters,
                                    filtered.criteria.filter,
                                    A2($Signal.forwardTo,
@@ -14705,7 +14854,15 @@ Elm.TrpTest.make = function (_elm) {
          var criteria = model.criteria;
          return function () {
             switch (action.ctor)
-            {case "FilterChange":
+            {case "DestinationQueryChanged":
+               return {ctor: "_Tuple2"
+                      ,_0: _U.replace([["destinationQuery"
+                                       ,action._0]],
+                      model)
+                      ,_1: $Effects.task($Autocompleter.getDestinations(A2($Debug.log,
+                      "query:",
+                      action._0)))};
+               case "FilterChange":
                return {ctor: "_Tuple2"
                       ,_0: A2(updateCriteria,
                       model,
@@ -14716,6 +14873,12 @@ Elm.TrpTest.make = function (_elm) {
                case "LoadData":
                return {ctor: "_Tuple2"
                       ,_0: _U.replace([["hotels"
+                                       ,action._0]],
+                      model)
+                      ,_1: $Effects.none};
+               case "LoadDestinations":
+               return {ctor: "_Tuple2"
+                      ,_0: _U.replace([["destinations"
                                        ,action._0]],
                       model)
                       ,_1: $Effects.none};
@@ -14731,6 +14894,12 @@ Elm.TrpTest.make = function (_elm) {
                                   ,action._0]],
                       criteria))
                       ,_1: $Effects.none};
+               case "SelectDestination":
+               return {ctor: "_Tuple2"
+                      ,_0: _U.replace([["selectedDestination"
+                                       ,action._0]],
+                      model)
+                      ,_1: $Effects.task($Api.getHotels(action._0))};
                case "SortChange":
                return {ctor: "_Tuple2"
                       ,_0: A2(updateCriteria,
@@ -14739,11 +14908,11 @@ Elm.TrpTest.make = function (_elm) {
                       criteria))
                       ,_1: $Effects.none};}
             _U.badCase($moduleName,
-            "between lines 30 and 44");
+            "between lines 31 and 54");
          }();
       }();
    });
-   var initialModel = A3($Models.Model,
+   var initialModel = A6($Models.Model,
    _L.fromArray([]),
    0,
    A3($Models.Criteria,
@@ -14753,11 +14922,14 @@ Elm.TrpTest.make = function (_elm) {
    "",
    0),
    $Models.HotelName,
-   A2($Models.Paging,20,0)));
+   A2($Models.Paging,20,0)),
+   _L.fromArray([]),
+   "",
+   $Models.tenerife);
    var app = $StartApp.start({_: {}
                              ,init: {ctor: "_Tuple2"
                                     ,_0: initialModel
-                                    ,_1: $Effects.task($Api.getHotels)}
+                                    ,_1: $Effects.task($Api.getHotels(initialModel.selectedDestination))}
                              ,inputs: _L.fromArray([])
                              ,update: update
                              ,view: view});

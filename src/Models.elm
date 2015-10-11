@@ -66,4 +66,9 @@ type alias Destination = {
     establishmentCount : Int,
     title : String }
 
+emptyDestination = Destination 0 0 0 0 0 0 0 ""
+
+tenerife = Destination 3522 54875 0 0 0 0 0 "Tenerife, Spain"
+
+
 type alias DestinationList = List Destination

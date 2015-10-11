@@ -73,6 +73,13 @@ Elm.Autocompleter.make = function (_elm) {
          });
       }();
    };
+   var destination = function (dest) {
+      return A2($Html.li,
+      _L.fromArray([]),
+      _L.fromArray([A2($Html.span,
+      _L.fromArray([]),
+      _L.fromArray([$Html.text(dest.title)]))]));
+   };
    var autocompleter = F2(function (address,
    model) {
       return A2($Html.section,
@@ -98,9 +105,14 @@ Elm.Autocompleter.make = function (_elm) {
                    _L.fromArray([]))]))
                    ,A2($Html.div,
                    _L.fromArray([$Html$Attributes.$class("results")]),
-                   _L.fromArray([$Html.text("this is where the results are going to go")]))]));
+                   _L.fromArray([A2($Html.ul,
+                   _L.fromArray([]),
+                   A2($List.map,
+                   destination,
+                   model.destinations))]))]));
    });
    _elm.Autocompleter.values = {_op: _op
+                               ,destination: destination
                                ,autocompleter: autocompleter
                                ,getDestinations: getDestinations
                                ,destinations: destinations};

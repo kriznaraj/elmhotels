@@ -36,7 +36,7 @@ Elm.Filtering.make = function (_elm) {
               starsFilter);
             case "[]": return true;}
          _U.badCase($moduleName,
-         "between lines 51 and 53");
+         "between lines 52 and 54");
       }();
    });
    var nameMatches = F2(function (query,
@@ -65,10 +65,11 @@ Elm.Filtering.make = function (_elm) {
          var hotels = A2($List.filter,
          filterFn,
          model.hotels);
-         return A3($Models.Model,
-         hotels,
-         $List.length(hotels),
-         model.criteria);
+         return _U.replace([["hotels"
+                            ,hotels]
+                           ,["total"
+                            ,$List.length(hotels)]],
+         model);
       }();
    };
    var sort = function (model) {
@@ -101,10 +102,10 @@ Elm.Filtering.make = function (_elm) {
                "between lines 30 and 38");
             }();
          };
-         return A3($Models.Model,
-         sortFn(model.hotels),
-         model.total,
-         model.criteria);
+         var hotels = sortFn(model.hotels);
+         return _U.replace([["hotels"
+                            ,hotels]],
+         model);
       }();
    };
    var adjustPaging = F2(function (total,
@@ -124,20 +125,19 @@ Elm.Filtering.make = function (_elm) {
          model.criteria);
          var paging = criteria.paging;
          var page = $List.take(paging.pageSize)($List.drop(paging.pageIndex * paging.pageSize)(model.hotels));
-         return A3($Models.Model,
-         page,
-         model.total,
-         criteria);
+         return _U.replace([["hotels"
+                            ,page]
+                           ,["criteria",criteria]],
+         model);
       }();
    };
    var restrict = function (model) {
       return function () {
          var criteria = model.criteria;
          var hotels = model.hotels;
-         var newModel = A3($Models.Model,
-         hotels,
-         $List.length(hotels),
-         criteria);
+         var newModel = _U.replace([["total"
+                                    ,$List.length(hotels)]],
+         model);
          return page(sort(filter(newModel)));
       }();
    };

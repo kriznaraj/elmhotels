@@ -15,11 +15,12 @@ import HotelsList
 import Autocompleter exposing (..)
 import Models exposing (..)
 import Filtering exposing (..)
+import Debug exposing(log)
 
 --MODEL
 initialModel : Model
 initialModel =
-    Model [] 0 (Criteria (Filter [] 0 "" 0) HotelName (Paging 20 0)) [] "" (Destination 0 0 0 0 0 0 0 "")
+    Model [] 0 (Criteria (Filter [] 0 "" 0) HotelName (Paging 20 0)) [] "" tenerife
 
 --UPDATE
 update : Action -> Model -> (Model, Effects Action)
@@ -47,7 +48,7 @@ update action model =
                 ({model | destinations <- destinations}, Effects.none)
 
             DestinationQueryChanged query -> 
-                ({model | destinationQuery <- query}, Effects.task (getDestinations query))
+                ({model | destinationQuery <- query}, Effects.task (getDestinations (log "query:" query)))
 
             SelectDestination dest -> 
                 ({model | selectedDestination <- dest}, Effects.task (getHotels dest))
@@ -62,7 +63,7 @@ view address model =
                 Header.header
             ],
             section [ class "sidebar" ] [ 
-                --Autocompleter.view,
+                (Autocompleter.autocompleter address model),
                 (Filters.filters filtered.criteria.filter (Signal.forwardTo address FilterChange))
             ],
             section [ class "content" ] [

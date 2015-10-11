@@ -39,7 +39,7 @@ Elm.Api.make = function (_elm) {
       "",
       $Basics.toString(estabId)));
    };
-   var hotels2 = function () {
+   var hotels = function () {
       var hotel = A7($Json$Decode.object6,
       $Models.Hotel,
       A2($Json$Decode._op[":="],
@@ -64,45 +64,33 @@ Elm.Api.make = function (_elm) {
       "Establishments",
       $Json$Decode.list(hotel));
    }();
-   var hotels = function () {
-      var hotel = A7($Json$Decode.object6,
-      $Models.Hotel,
-      A2($Json$Decode._op[":="],
-      "Name",
-      $Json$Decode.string),
-      A2($Json$Decode._op[":="],
-      "ThumbnailUrl",
-      $Json$Decode.string),
-      A2($Json$Decode._op[":="],
-      "ImageUrl",
-      $Json$Decode.string),
-      A2($Json$Decode._op[":="],
-      "Stars",
-      $Json$Decode.$int),
-      A2($Json$Decode._op[":="],
-      "UserRating",
-      $Json$Decode.$float),
-      A2($Json$Decode._op[":="],
-      "MinCost",
-      $Json$Decode.$float));
-      return A2($Json$Decode._op[":="],
-      "Establishments",
-      $Json$Decode.list(hotel));
-   }();
-   var getHotelsStatic = function () {
-      var req = A2($Task.map,
-      function (hl) {
-         return $Models.LoadData(hl);
-      },
-      A2($Http.get,
-      hotels,
-      "data/hotels.json"));
-      return A2($Task.onError,
-      req,
-      function (err) {
-         return $Task.succeed($Models.LoadData(_L.fromArray([])));
-      });
-   }();
+   var destinationToJson = function (dest) {
+      return A2($Basics._op["++"],
+      "{ \"CountryId\" : ",
+      A2($Basics._op["++"],
+      $Basics.toString(dest.countryId),
+      A2($Basics._op["++"],
+      ", \"ProvinceId\" : ",
+      A2($Basics._op["++"],
+      $Basics.toString(dest.provinceId),
+      A2($Basics._op["++"],
+      ", \"LocationId\" : ",
+      A2($Basics._op["++"],
+      $Basics.toString(dest.locationId),
+      A2($Basics._op["++"],
+      ", \"PlaceId\" : ",
+      A2($Basics._op["++"],
+      $Basics.toString(dest.placeId),
+      A2($Basics._op["++"],
+      ", \"EstablishmentId\" : ",
+      A2($Basics._op["++"],
+      $Basics.toString(dest.establishmentId),
+      A2($Basics._op["++"],
+      ", \"PolygonId\" : ",
+      A2($Basics._op["++"],
+      $Basics.toString(dest.polygonId),
+      ", \"PageStrand\" : 1}"))))))))))));
+   };
    var parseResponse = function (response) {
       return function () {
          var res = A2($Task.map,
@@ -110,7 +98,7 @@ Elm.Api.make = function (_elm) {
             return $Models.LoadData(hl);
          },
          A2($Http.fromJson,
-         hotels2,
+         hotels,
          response));
          return A2($Task.onError,
          res,
@@ -119,25 +107,37 @@ Elm.Api.make = function (_elm) {
          });
       }();
    };
-   var body = $Http.string("{\"CultureCode\":\"en-gb\",\"DomainId\":1,\"TradingGroupId\":1,\"CurrencyCode\":\"GBP\",\"Paging\":{\"PageIndex\":0,\"PageSize\":1000},\"FilterCriteria\":{\"AirportCode\":null,\"Stars\":[],\"PropertyType\":[],\"BoardTypeCode\":[],\"FacilityCodes\":[],\"PriceRange\":null,\"RatingRange\":null,\"EstabGroupIds\":[],\"EstabGroupName\":null,\"FilterByEstabGroup\":false,\"ChildDestinations\":[]},\"SortCriterion\":1,\"Destination\":{\"PageStrand\":1,\"CountryId\":3522,\"ProvinceId\":54875,\"LocationId\":0,\"PlaceId\":0,\"EstablishmentId\":0,\"PolygonId\":0}}");
-   var hotelsPost = {_: {}
-                    ,body: body
-                    ,headers: _L.fromArray([{ctor: "_Tuple2"
-                                            ,_0: "Content-type"
-                                            ,_1: "application/json"}])
-                    ,url: "api/hotels"
-                    ,verb: "POST"};
-   var getHotels = parseResponse(A2($Http.send,
-   $Http.defaultSettings,
-   hotelsPost));
+   var body = function (dest) {
+      return function () {
+         var destJson = destinationToJson(dest);
+         return $Http.string(A2($Basics._op["++"],
+         "{\"CultureCode\":\"en-gb\",\"DomainId\":1,\"TradingGroupId\":1,\"CurrencyCode\":\"GBP\",\"Paging\":{\"PageIndex\":0,\"PageSize\":1000},\"FilterCriteria\":{\"AirportCode\":null,\"Stars\":[],\"PropertyType\":[],\"BoardTypeCode\":[],\"FacilityCodes\":[],\"PriceRange\":null,\"RatingRange\":null,\"EstabGroupIds\":[],\"EstabGroupName\":null,\"FilterByEstabGroup\":false,\"ChildDestinations\":[]},\"SortCriterion\":1,\"Destination\":",
+         A2($Basics._op["++"],
+         destJson,
+         "}")));
+      }();
+   };
+   var hotelsPost = function (dest) {
+      return {_: {}
+             ,body: body(dest)
+             ,headers: _L.fromArray([{ctor: "_Tuple2"
+                                     ,_0: "Content-type"
+                                     ,_1: "application/json"}])
+             ,url: "api/hotels"
+             ,verb: "POST"};
+   };
+   var getHotels = function (dest) {
+      return parseResponse(A2($Http.send,
+      $Http.defaultSettings,
+      hotelsPost(dest)));
+   };
    _elm.Api.values = {_op: _op
                      ,body: body
                      ,hotelsPost: hotelsPost
                      ,parseResponse: parseResponse
+                     ,destinationToJson: destinationToJson
                      ,getHotels: getHotels
-                     ,getHotelsStatic: getHotelsStatic
                      ,hotels: hotels
-                     ,hotels2: hotels2
                      ,estabIdToImageUrl: estabIdToImageUrl
                      ,imageUrl: imageUrl};
    return _elm.Api.values;

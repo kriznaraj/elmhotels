@@ -32,6 +32,24 @@ Elm.Models.make = function (_elm) {
              ,provinceId: b
              ,title: h};
    });
+   var emptyDestination = A8(Destination,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   "");
+   var tenerife = A8(Destination,
+   3522,
+   54875,
+   0,
+   0,
+   0,
+   0,
+   0,
+   "Tenerife, Spain");
    var Model = F6(function (a,
    b,
    c,
@@ -138,6 +156,8 @@ Elm.Models.make = function (_elm) {
                         ,Filter: Filter
                         ,Criteria: Criteria
                         ,Model: Model
-                        ,Destination: Destination};
+                        ,Destination: Destination
+                        ,emptyDestination: emptyDestination
+                        ,tenerife: tenerife};
    return _elm.Models.values;
 };
