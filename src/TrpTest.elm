@@ -44,6 +44,8 @@ update action model =
             LoadData hotels ->
                 ({model | hotels <- hotels}, Effects.none)
 
+            --feels like these actions belong inside the autocomleter, but I just can't 
+            --quite make that work without getting into a mess of circular references
             LoadDestinations destinations -> 
                 ({model | destinations <- destinations}, Effects.none)
 

@@ -1,0 +1,48 @@
+Elm.TrpAction = Elm.TrpAction || {};
+Elm.TrpAction.make = function (_elm) {
+   "use strict";
+   _elm.TrpAction = _elm.TrpAction || {};
+   if (_elm.TrpAction.values)
+   return _elm.TrpAction.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "TrpAction",
+   $Autocompleter = Elm.Autocompleter.make(_elm),
+   $Basics = Elm.Basics.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Models = Elm.Models.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
+   var Autocompleter = function (a) {
+      return {ctor: "Autocompleter"
+             ,_0: a};
+   };
+   var SortChange = function (a) {
+      return {ctor: "SortChange"
+             ,_0: a};
+   };
+   var FilterChange = function (a) {
+      return {ctor: "FilterChange"
+             ,_0: a};
+   };
+   var PageChange = function (a) {
+      return {ctor: "PageChange"
+             ,_0: a};
+   };
+   var LoadData = function (a) {
+      return {ctor: "LoadData"
+             ,_0: a};
+   };
+   var NoOp = {ctor: "NoOp"};
+   _elm.TrpAction.values = {_op: _op
+                           ,NoOp: NoOp
+                           ,LoadData: LoadData
+                           ,PageChange: PageChange
+                           ,FilterChange: FilterChange
+                           ,SortChange: SortChange
+                           ,Autocompleter: Autocompleter};
+   return _elm.TrpAction.values;
+};
