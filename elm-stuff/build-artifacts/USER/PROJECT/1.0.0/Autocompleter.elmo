@@ -1,0 +1,129 @@
+Elm.Autocompleter = Elm.Autocompleter || {};
+Elm.Autocompleter.make = function (_elm) {
+   "use strict";
+   _elm.Autocompleter = _elm.Autocompleter || {};
+   if (_elm.Autocompleter.values)
+   return _elm.Autocompleter.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Autocompleter",
+   $Basics = Elm.Basics.make(_elm),
+   $Effects = Elm.Effects.make(_elm),
+   $Html = Elm.Html.make(_elm),
+   $Html$Attributes = Elm.Html.Attributes.make(_elm),
+   $Html$Events = Elm.Html.Events.make(_elm),
+   $Http = Elm.Http.make(_elm),
+   $Json$Decode = Elm.Json.Decode.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Models = Elm.Models.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $Task = Elm.Task.make(_elm);
+   var destinations = function () {
+      var dest = A9($Json$Decode.object8,
+      $Models.Destination,
+      A2($Json$Decode._op[":="],
+      "CountryId",
+      $Json$Decode.$int),
+      A2($Json$Decode._op[":="],
+      "ProvinceId",
+      $Json$Decode.$int),
+      A2($Json$Decode._op[":="],
+      "LocationId",
+      $Json$Decode.$int),
+      A2($Json$Decode._op[":="],
+      "PlaceId",
+      $Json$Decode.$int),
+      A2($Json$Decode._op[":="],
+      "EstablishmentId",
+      $Json$Decode.$int),
+      A2($Json$Decode._op[":="],
+      "PolygonId",
+      $Json$Decode.$int),
+      A2($Json$Decode._op[":="],
+      "EstablishmentCount",
+      $Json$Decode.$int),
+      A2($Json$Decode._op[":="],
+      "Title",
+      $Json$Decode.string));
+      return A2($Json$Decode._op[":="],
+      "Destinations",
+      $Json$Decode.list(dest));
+   }();
+   var getDestinations = function (query) {
+      return function () {
+         var req = A2($Task.map,
+         function (dests) {
+            return $Models.LoadDestinations(dests);
+         },
+         A2($Http.get,
+         destinations,
+         A2($Basics._op["++"],
+         "https://m.travelrepublic.co.uk/api2/destination/v2/search?SearchTerm=",
+         A2($Basics._op["++"],
+         query,
+         "&MaxResults=15&CultureCode=en-gb&RestrictToFlightDestinations=false&v=1.0.6978"))));
+         return A2($Task.onError,
+         req,
+         function (err) {
+            return $Task.succeed($Models.LoadDestinations(_L.fromArray([])));
+         });
+      }();
+   };
+   var destination = F2(function (address,
+   dest) {
+      return A2($Html.li,
+      _L.fromArray([A2($Html$Events.onClick,
+      address,
+      $Models.SelectDestination(dest))]),
+      _L.fromArray([A2($Html.span,
+      _L.fromArray([]),
+      _L.fromArray([$Html.text(A2($Basics._op["++"],
+      dest.title,
+      A2($Basics._op["++"],
+      ", (",
+      A2($Basics._op["++"],
+      $Basics.toString(dest.establishmentCount),
+      " hotels)"))))]))]));
+   });
+   var autocompleter = F2(function (address,
+   model) {
+      return A2($Html.section,
+      _L.fromArray([$Html$Attributes.$class("autocompleter")]),
+      _L.fromArray([A2($Html.h3,
+                   _L.fromArray([]),
+                   _L.fromArray([$Html.text("Destination")]))
+                   ,A2($Html.div,
+                   _L.fromArray([]),
+                   _L.fromArray([A2($Html.input,
+                   _L.fromArray([$Html$Attributes.placeholder("Search for a destination")
+                                ,$Html$Attributes.autofocus(true)
+                                ,$Html$Attributes.type$("text")
+                                ,$Html$Attributes.value(model.destinationQuery)
+                                ,A3($Html$Events.on,
+                                "input",
+                                $Html$Events.targetValue,
+                                function (str) {
+                                   return A2($Signal.message,
+                                   address,
+                                   $Models.DestinationQueryChanged(str));
+                                })]),
+                   _L.fromArray([]))]))
+                   ,A2($Html.div,
+                   _L.fromArray([$Html$Attributes.$class("results")]),
+                   _L.fromArray([A2($Html.ul,
+                   _L.fromArray([]),
+                   A2($List.map,
+                   destination(address),
+                   model.destinations))]))]));
+   });
+   _elm.Autocompleter.values = {_op: _op
+                               ,destination: destination
+                               ,autocompleter: autocompleter
+                               ,getDestinations: getDestinations
+                               ,destinations: destinations};
+   return _elm.Autocompleter.values;
+};

@@ -10,7 +10,9 @@ Elm.TrpTest.make = function (_elm) {
    _L = _N.List.make(_elm),
    $moduleName = "TrpTest",
    $Api = Elm.Api.make(_elm),
+   $Autocompleter = Elm.Autocompleter.make(_elm),
    $Basics = Elm.Basics.make(_elm),
+   $Debug = Elm.Debug.make(_elm),
    $Effects = Elm.Effects.make(_elm),
    $Filtering = Elm.Filtering.make(_elm),
    $Filters = Elm.Filters.make(_elm),
@@ -38,11 +40,14 @@ Elm.TrpTest.make = function (_elm) {
                       _L.fromArray([$Header.header]))
                       ,A2($Html.section,
                       _L.fromArray([$Html$Attributes.$class("sidebar")]),
-                      _L.fromArray([A2($Filters.filters,
-                      filtered.criteria.filter,
-                      A2($Signal.forwardTo,
-                      address,
-                      $Models.FilterChange))]))
+                      _L.fromArray([A2($Autocompleter.autocompleter,
+                                   address,
+                                   model)
+                                   ,A2($Filters.filters,
+                                   filtered.criteria.filter,
+                                   A2($Signal.forwardTo,
+                                   address,
+                                   $Models.FilterChange))]))
                       ,A2($Html.section,
                       _L.fromArray([$Html$Attributes.$class("content")]),
                       _L.fromArray([A2($SortBar.sortBar,
@@ -76,7 +81,15 @@ Elm.TrpTest.make = function (_elm) {
          var criteria = model.criteria;
          return function () {
             switch (action.ctor)
-            {case "FilterChange":
+            {case "DestinationQueryChanged":
+               return {ctor: "_Tuple2"
+                      ,_0: _U.replace([["destinationQuery"
+                                       ,action._0]],
+                      model)
+                      ,_1: $Effects.task($Autocompleter.getDestinations(A2($Debug.log,
+                      "query:",
+                      action._0)))};
+               case "FilterChange":
                return {ctor: "_Tuple2"
                       ,_0: A2(updateCriteria,
                       model,
@@ -87,6 +100,12 @@ Elm.TrpTest.make = function (_elm) {
                case "LoadData":
                return {ctor: "_Tuple2"
                       ,_0: _U.replace([["hotels"
+                                       ,action._0]],
+                      model)
+                      ,_1: $Effects.none};
+               case "LoadDestinations":
+               return {ctor: "_Tuple2"
+                      ,_0: _U.replace([["destinations"
                                        ,action._0]],
                       model)
                       ,_1: $Effects.none};
@@ -102,6 +121,17 @@ Elm.TrpTest.make = function (_elm) {
                                   ,action._0]],
                       criteria))
                       ,_1: $Effects.none};
+               case "SelectDestination":
+               return {ctor: "_Tuple2"
+                      ,_0: _U.replace([["selectedDestination"
+                                       ,action._0]
+                                      ,["destinationQuery"
+                                       ,action._0.title]
+                                      ,["hotels",_L.fromArray([])]
+                                      ,["destinations"
+                                       ,_L.fromArray([])]],
+                      model)
+                      ,_1: $Effects.task($Api.getHotels(action._0))};
                case "SortChange":
                return {ctor: "_Tuple2"
                       ,_0: A2(updateCriteria,
@@ -110,11 +140,11 @@ Elm.TrpTest.make = function (_elm) {
                       criteria))
                       ,_1: $Effects.none};}
             _U.badCase($moduleName,
-            "between lines 29 and 43");
+            "between lines 31 and 57");
          }();
       }();
    });
-   var initialModel = A3($Models.Model,
+   var initialModel = A6($Models.Model,
    _L.fromArray([]),
    0,
    A3($Models.Criteria,
@@ -124,11 +154,14 @@ Elm.TrpTest.make = function (_elm) {
    "",
    0),
    $Models.HotelName,
-   A2($Models.Paging,20,0)));
+   A2($Models.Paging,20,0)),
+   _L.fromArray([]),
+   "Tenerife, Spain",
+   $Models.tenerife);
    var app = $StartApp.start({_: {}
                              ,init: {ctor: "_Tuple2"
                                     ,_0: initialModel
-                                    ,_1: $Effects.task($Api.getHotels)}
+                                    ,_1: $Effects.task($Api.getHotels(initialModel.selectedDestination))}
                              ,inputs: _L.fromArray([])
                              ,update: update
                              ,view: view});

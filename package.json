@@ -16,10 +16,14 @@
     "url": "https://github.com/julianjelfs/elmhotels/issues"
   },
   "homepage": "https://github.com/julianjelfs/elmhotels",
+  "dependencies": {
+    "body-parser": "^1.14.1",
+    "express": "2.5.8",
+    "jade": ">= 0.0.1",
+    "proxy-middleware": "^0.14.0"
+  },
   "devDependencies": {
-    "grunt": "^0.4.5",
-    "grunt-contrib-clean": "^0.6.0",
-    "grunt-contrib-watch": "^0.6.1",
-    "grunt-elm": "^1.3.0"
+    "gulp": "^3.9.0",
+    "gulp-elm": "^0.2.0"
   }
 }

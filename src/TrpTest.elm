@@ -12,13 +12,15 @@ import SortBar
 import Pager
 import Filters
 import HotelsList
+import Autocompleter exposing (..)
 import Models exposing (..)
 import Filtering exposing (..)
+import Debug exposing(log)
 
 --MODEL
 initialModel : Model
 initialModel =
-    Model [] 0 (Criteria (Filter [] 0 "" 0) HotelName (Paging 20 0))
+    Model [] 0 (Criteria (Filter [] 0 "" 0) HotelName (Paging 20 0)) [] "Tenerife, Spain" tenerife
 
 --UPDATE
 update : Action -> Model -> (Model, Effects Action)
@@ -42,6 +44,18 @@ update action model =
             LoadData hotels ->
                 ({model | hotels <- hotels}, Effects.none)
 
+            LoadDestinations destinations -> 
+                ({model | destinations <- destinations}, Effects.none)
+
+            DestinationQueryChanged query -> 
+                ({model | destinationQuery <- query}, Effects.task (getDestinations (log "query:" query)))
+
+            SelectDestination dest -> 
+                ({model | selectedDestination <- dest,
+                        destinationQuery <- dest.title,
+                        hotels <- [],
+                        destinations <- []}, Effects.task (getHotels dest))
+
 --VIEW
 view: Address Action -> Model -> Html
 view address model =
@@ -52,6 +66,7 @@ view address model =
                 Header.header
             ],
             section [ class "sidebar" ] [ 
+                (Autocompleter.autocompleter address model),
                 (Filters.filters filtered.criteria.filter (Signal.forwardTo address FilterChange))
             ],
             section [ class "content" ] [
@@ -66,7 +81,7 @@ view address model =
 --WIRING
 app =
     StartApp.start
-       {init = (initialModel, Effects.task getHotels),
+       {init = (initialModel, Effects.task (getHotels initialModel.selectedDestination)),
         view = view,
         update = update,
         inputs = [] }

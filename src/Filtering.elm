@@ -22,7 +22,7 @@ page model =
             |> List.drop (paging.pageIndex * paging.pageSize)
             |> List.take paging.pageSize
     in
-        (Model page model.total criteria)
+       {model | hotels <- page, criteria <- criteria }
 
 sort : Model -> Model
 sort model =
@@ -36,8 +36,9 @@ sort model =
                         |> List.sortBy .rating
                         |> List.reverse
            Price -> List.sortBy .price hotels)
+        hotels = (sortFn model.hotels)
     in
-       Model (sortFn model.hotels) model.total model.criteria
+       {model | hotels <- hotels}
 
 nameMatches : String -> Hotel -> Bool
 nameMatches query hotel =
@@ -69,13 +70,13 @@ filter model =
         (nameMatches model.criteria.filter.hotelName h))
         hotels = List.filter filterFn model.hotels
     in
-        Model hotels (List.length hotels) model.criteria
+       {model | hotels <- hotels, total <- (List.length hotels)}
 
 restrict : Model -> Model
 restrict model =
     let hotels = model.hotels
         criteria = model.criteria
-        newModel = Model hotels (List.length hotels) criteria
+        newModel = {model|total <- (List.length hotels)}
     in
        newModel
         |> filter

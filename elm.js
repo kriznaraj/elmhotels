@@ -1,4 +1,69 @@
 var Elm = Elm || { Native: {} };
+Elm.Api = Elm.Api || {};
+Elm.Api.make = function (_elm) {
+   "use strict";
+   _elm.Api = _elm.Api || {};
+   if (_elm.Api.values)
+   return _elm.Api.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Api",
+   $Basics = Elm.Basics.make(_elm),
+   $Effects = Elm.Effects.make(_elm),
+   $Http = Elm.Http.make(_elm),
+   $Json$Decode = Elm.Json.Decode.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Models = Elm.Models.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $Task = Elm.Task.make(_elm);
+   var hotels = function () {
+      var hotel = A7($Json$Decode.object6,
+      $Models.Hotel,
+      A2($Json$Decode._op[":="],
+      "Name",
+      $Json$Decode.string),
+      A2($Json$Decode._op[":="],
+      "ThumbnailUrl",
+      $Json$Decode.string),
+      A2($Json$Decode._op[":="],
+      "ImageUrl",
+      $Json$Decode.string),
+      A2($Json$Decode._op[":="],
+      "Stars",
+      $Json$Decode.$int),
+      A2($Json$Decode._op[":="],
+      "UserRating",
+      $Json$Decode.$float),
+      A2($Json$Decode._op[":="],
+      "MinCost",
+      $Json$Decode.$float));
+      return A2($Json$Decode._op[":="],
+      "Establishments",
+      $Json$Decode.list(hotel));
+   }();
+   var getHotels = function () {
+      var req = A2($Task.map,
+      function (hl) {
+         return $Models.LoadData(hl);
+      },
+      A2($Http.get,
+      hotels,
+      "data/hotels.json"));
+      return A2($Task.onError,
+      req,
+      function (err) {
+         return $Task.succeed($Models.LoadData(_L.fromArray([])));
+      });
+   }();
+   _elm.Api.values = {_op: _op
+                     ,getHotels: getHotels
+                     ,hotels: hotels};
+   return _elm.Api.values;
+};
 Elm.Array = Elm.Array || {};
 Elm.Array.make = function (_elm) {
    "use strict";
@@ -1800,6 +1865,138 @@ Elm.Dict.make = function (_elm) {
                       ,fromList: fromList};
    return _elm.Dict.values;
 };
+Elm.Effects = Elm.Effects || {};
+Elm.Effects.make = function (_elm) {
+   "use strict";
+   _elm.Effects = _elm.Effects || {};
+   if (_elm.Effects.values)
+   return _elm.Effects.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Effects",
+   $Basics = Elm.Basics.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Native$Effects = Elm.Native.Effects.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $Task = Elm.Task.make(_elm),
+   $Time = Elm.Time.make(_elm);
+   var ignore = function (task) {
+      return A2($Task.map,
+      $Basics.always({ctor: "_Tuple0"}),
+      task);
+   };
+   var requestTickSending = $Native$Effects.requestTickSending;
+   var toTaskHelp = F3(function (address,
+   effect,
+   _v0) {
+      return function () {
+         switch (_v0.ctor)
+         {case "_Tuple2":
+            return function () {
+                 switch (effect.ctor)
+                 {case "Batch":
+                    return A3($List.foldl,
+                      toTaskHelp(address),
+                      _v0,
+                      effect._0);
+                    case "None": return _v0;
+                    case "Task":
+                    return function () {
+                         var reporter = A2($Task.andThen,
+                         effect._0,
+                         function (answer) {
+                            return A2($Signal.send,
+                            address,
+                            _L.fromArray([answer]));
+                         });
+                         return {ctor: "_Tuple2"
+                                ,_0: A2($Task.andThen,
+                                _v0._0,
+                                $Basics.always(ignore($Task.spawn(reporter))))
+                                ,_1: _v0._1};
+                      }();
+                    case "Tick":
+                    return {ctor: "_Tuple2"
+                           ,_0: _v0._0
+                           ,_1: A2($List._op["::"],
+                           effect._0,
+                           _v0._1)};}
+                 _U.badCase($moduleName,
+                 "between lines 181 and 200");
+              }();}
+         _U.badCase($moduleName,
+         "between lines 181 and 200");
+      }();
+   });
+   var toTask = F2(function (address,
+   effect) {
+      return function () {
+         var $ = A3(toTaskHelp,
+         address,
+         effect,
+         {ctor: "_Tuple2"
+         ,_0: $Task.succeed({ctor: "_Tuple0"})
+         ,_1: _L.fromArray([])}),
+         combinedTask = $._0,
+         tickMessages = $._1;
+         return $List.isEmpty(tickMessages) ? combinedTask : A2($Task.andThen,
+         combinedTask,
+         $Basics.always(A2(requestTickSending,
+         address,
+         tickMessages)));
+      }();
+   });
+   var Never = function (a) {
+      return {ctor: "Never",_0: a};
+   };
+   var Batch = function (a) {
+      return {ctor: "Batch",_0: a};
+   };
+   var batch = Batch;
+   var None = {ctor: "None"};
+   var none = None;
+   var Tick = function (a) {
+      return {ctor: "Tick",_0: a};
+   };
+   var tick = Tick;
+   var Task = function (a) {
+      return {ctor: "Task",_0: a};
+   };
+   var task = Task;
+   var map = F2(function (func,
+   effect) {
+      return function () {
+         switch (effect.ctor)
+         {case "Batch":
+            return Batch(A2($List.map,
+              map(func),
+              effect._0));
+            case "None": return None;
+            case "Task":
+            return Task(A2($Task.map,
+              func,
+              effect._0));
+            case "Tick":
+            return Tick(function ($) {
+                 return func(effect._0($));
+              });}
+         _U.badCase($moduleName,
+         "between lines 136 and 147");
+      }();
+   });
+   _elm.Effects.values = {_op: _op
+                         ,none: none
+                         ,task: task
+                         ,tick: tick
+                         ,map: map
+                         ,batch: batch
+                         ,toTask: toTask};
+   return _elm.Effects.values;
+};
 Elm.Filtering = Elm.Filtering || {};
 Elm.Filtering.make = function (_elm) {
    "use strict";
@@ -1838,7 +2035,7 @@ Elm.Filtering.make = function (_elm) {
               starsFilter);
             case "[]": return true;}
          _U.badCase($moduleName,
-         "between lines 40 and 42");
+         "between lines 51 and 53");
       }();
    });
    var nameMatches = F2(function (query,
@@ -1900,7 +2097,7 @@ Elm.Filtering.make = function (_elm) {
                        return _.stars;
                     })(hotels));}
                _U.badCase($moduleName,
-               "between lines 19 and 27");
+               "between lines 30 and 38");
             }();
          };
          return A3($Models.Model,
@@ -1909,27 +2106,42 @@ Elm.Filtering.make = function (_elm) {
          model.criteria);
       }();
    };
+   var adjustPaging = F2(function (total,
+   criteria) {
+      return function () {
+         var paging = criteria.paging;
+         return _U.cmp(paging.pageIndex * paging.pageSize,
+         total) > 0 ? _U.replace([["paging"
+                                  ,A2($Models.Paging,20,0)]],
+         criteria) : criteria;
+      }();
+   });
    var page = function (model) {
       return function () {
-         var paging = model.criteria.paging;
+         var criteria = A2(adjustPaging,
+         model.total,
+         model.criteria);
+         var paging = criteria.paging;
          var page = $List.take(paging.pageSize)($List.drop(paging.pageIndex * paging.pageSize)(model.hotels));
          return A3($Models.Model,
          page,
          model.total,
-         model.criteria);
+         criteria);
       }();
    };
-   var restrict = F2(function (hotels,
-   criteria) {
+   var restrict = function (model) {
       return function () {
-         var model = A3($Models.Model,
+         var criteria = model.criteria;
+         var hotels = model.hotels;
+         var newModel = A3($Models.Model,
          hotels,
          $List.length(hotels),
          criteria);
-         return page(sort(filter(model)));
+         return page(sort(filter(newModel)));
       }();
-   });
+   };
    _elm.Filtering.values = {_op: _op
+                           ,adjustPaging: adjustPaging
                            ,page: page
                            ,sort: sort
                            ,nameMatches: nameMatches
@@ -1968,77 +2180,16 @@ Elm.Filters.make = function (_elm) {
          {case "Err": return 0;
             case "Ok": return _v0._0;}
          _U.badCase($moduleName,
-         "between lines 107 and 109");
+         "between lines 93 and 95");
       }();
    };
-   var replaceFilter = F2(function (criteria,
-   filter) {
-      return _U.replace([["filter"
-                         ,filter]],
-      criteria);
-   });
-   var addOrRemoveStar = F2(function (criteria,
-   star) {
-      return function () {
-         var filter = criteria.filter;
-         var inList = A2($List.member,
-         star,
-         filter.stars);
-         return inList ? _U.replace([["filter"
-                                     ,_U.replace([["stars"
-                                                  ,A2($List.filter,
-                                                  function (s) {
-                                                     return !_U.eq(s,star);
-                                                  },
-                                                  filter.stars)]],
-                                     filter)]],
-         criteria) : _U.replace([["filter"
-                                 ,_U.replace([["stars"
-                                              ,A2($List._op["::"],
-                                              star,
-                                              filter.stars)]],
-                                 filter)]],
-         criteria);
-      }();
-   });
-   var resetPageIndex = function (criteria) {
-      return function () {
-         var paging = criteria.paging;
-         return _U.replace([["paging"
-                            ,_U.replace([["pageIndex",0]],
-                            paging)]],
-         criteria);
-      }();
-   };
-   var stars = F3(function (num,
-   criteria,
-   address) {
-      return A2($Html.div,
-      _L.fromArray([$Html$Attributes.$class("stars")]),
-      _L.fromArray([A2($Html.input,
-                   _L.fromArray([$Html$Attributes.type$("checkbox")
-                                ,$Html$Attributes.checked(A2($List.member,
-                                num,
-                                criteria.filter.stars))
-                                ,A2($Html$Events.onClick,
-                                address,
-                                resetPageIndex(A2(addOrRemoveStar,
-                                criteria,
-                                num)))]),
-                   _L.fromArray([]))
-                   ,A2($Html.span,
-                   _L.fromArray([]),
-                   _L.fromArray([$Html.text(A2($Basics._op["++"],
-                   $Basics.toString(num),
-                   " Stars"))]))]));
-   });
    var rangeInput = F7(function (name,
    min,
    max,
    val,
-   address,
-   criteria,
-   updater) {
+   filter,
+   updater,
+   address) {
       return A2($Html.div,
       _L.fromArray([]),
       _L.fromArray([A2($Html.label,
@@ -2058,110 +2209,135 @@ Elm.Filters.make = function (_elm) {
                                 function (str) {
                                    return A2($Signal.message,
                                    address,
-                                   resetPageIndex(A2(updater,
-                                   criteria,
-                                   str)));
+                                   A2(updater,filter,str));
                                 })]),
                    _L.fromArray([]))]));
    });
-   var filters = F2(function (criteria,
-   address) {
+   var addOrRemoveStar = F2(function (filter,
+   star) {
       return function () {
-         var filter = criteria.filter;
-         return A2($Html.section,
-         _L.fromArray([$Html$Attributes.$class("filters")]),
-         _L.fromArray([A2($Html.h3,
-                      _L.fromArray([]),
-                      _L.fromArray([$Html.text("Filters")]))
-                      ,A2($Html.div,
-                      _L.fromArray([]),
-                      _L.fromArray([A2($Html.input,
-                      _L.fromArray([$Html$Attributes.placeholder("Hotel Name")
-                                   ,$Html$Attributes.autofocus(true)
-                                   ,$Html$Attributes.type$("text")
-                                   ,$Html$Attributes.value(criteria.filter.hotelName)
-                                   ,A3($Html$Events.on,
-                                   "input",
-                                   $Html$Events.targetValue,
-                                   function (str) {
-                                      return A2($Signal.message,
-                                      address,
-                                      resetPageIndex(A2(replaceFilter,
-                                      criteria,
-                                      _U.replace([["hotelName",str]],
-                                      filter))));
-                                   })]),
-                      _L.fromArray([]))]))
-                      ,A2($Html.div,
-                      _L.fromArray([]),
-                      _L.fromArray([A2($Html.label,
-                                   _L.fromArray([]),
-                                   _L.fromArray([$Html.text("Stars: ")]))
-                                   ,A2($Html.div,
-                                   _L.fromArray([]),
-                                   _L.fromArray([A3(stars,
-                                                5,
-                                                criteria,
-                                                address)
-                                                ,A3(stars,4,criteria,address)
-                                                ,A3(stars,3,criteria,address)
-                                                ,A3(stars,2,criteria,address)
-                                                ,A3(stars,
-                                                1,
-                                                criteria,
-                                                address)]))]))
-                      ,A2($Html.div,
-                      _L.fromArray([$Html$Attributes.$class("clear")]),
-                      _L.fromArray([A7(rangeInput,
-                      "Minimum Rating",
-                      "0",
-                      "10",
-                      criteria.filter.minRating,
-                      address,
-                      criteria,
-                      F2(function (c,str) {
-                         return A2(replaceFilter,
-                         criteria,
-                         _U.replace([["minRating"
-                                     ,parseFloat(str)]],
-                         filter));
-                      }))]))
-                      ,A7(rangeInput,
-                      "Minimum Price",
-                      "0",
-                      "7000",
-                      criteria.filter.minPrice,
-                      address,
-                      criteria,
-                      F2(function (c,str) {
-                         return A2(replaceFilter,
-                         criteria,
-                         _U.replace([["minPrice"
-                                     ,parseFloat(str)]],
-                         filter));
-                      }))
-                      ,A2($Html.div,
-                      _L.fromArray([]),
-                      _L.fromArray([A2($Html.button,
-                      _L.fromArray([$Html$Attributes.$class("button")
-                                   ,A2($Html$Events.onClick,
-                                   address,
-                                   A3($Models.Criteria,
-                                   A4($Models.Filter,
-                                   _L.fromArray([]),
-                                   0,
-                                   "",
-                                   0),
-                                   $Models.HotelName,
-                                   A2($Models.Paging,20,0)))]),
-                      _L.fromArray([$Html.text("Clear Filters")]))]))]));
+         var inList = A2($List.member,
+         star,
+         filter.stars);
+         return inList ? _U.replace([["stars"
+                                     ,A2($List.filter,
+                                     function (s) {
+                                        return !_U.eq(s,star);
+                                     },
+                                     filter.stars)]],
+         filter) : _U.replace([["stars"
+                               ,A2($List._op["::"],
+                               star,
+                               filter.stars)]],
+         filter);
       }();
    });
+   var stars = F3(function (num,
+   filter,
+   address) {
+      return A2($Html.div,
+      _L.fromArray([$Html$Attributes.$class("stars")]),
+      _L.fromArray([A2($Html.input,
+                   _L.fromArray([$Html$Attributes.type$("checkbox")
+                                ,$Html$Attributes.checked(A2($List.member,
+                                num,
+                                filter.stars))
+                                ,A2($Html$Events.onClick,
+                                address,
+                                A2(addOrRemoveStar,
+                                filter,
+                                num))]),
+                   _L.fromArray([]))
+                   ,A2($Html.span,
+                   _L.fromArray([]),
+                   _L.fromArray([$Html.text(A2($Basics._op["++"],
+                   $Basics.toString(num),
+                   " Stars"))]))]));
+   });
+   var filters = F2(function (filter,
+   address) {
+      return A2($Html.section,
+      _L.fromArray([$Html$Attributes.$class("filters")]),
+      _L.fromArray([A2($Html.h3,
+                   _L.fromArray([]),
+                   _L.fromArray([$Html.text("Filters")]))
+                   ,A2($Html.div,
+                   _L.fromArray([]),
+                   _L.fromArray([A2($Html.input,
+                   _L.fromArray([$Html$Attributes.placeholder("Hotel Name")
+                                ,$Html$Attributes.autofocus(true)
+                                ,$Html$Attributes.type$("text")
+                                ,$Html$Attributes.value(filter.hotelName)
+                                ,A3($Html$Events.on,
+                                "input",
+                                $Html$Events.targetValue,
+                                function (str) {
+                                   return A2($Signal.message,
+                                   address,
+                                   _U.replace([["hotelName",str]],
+                                   filter));
+                                })]),
+                   _L.fromArray([]))]))
+                   ,A2($Html.div,
+                   _L.fromArray([]),
+                   _L.fromArray([A2($Html.label,
+                                _L.fromArray([]),
+                                _L.fromArray([$Html.text("Stars: ")]))
+                                ,A2($Html.div,
+                                _L.fromArray([]),
+                                _L.fromArray([A3(stars,
+                                             5,
+                                             filter,
+                                             address)
+                                             ,A3(stars,4,filter,address)
+                                             ,A3(stars,3,filter,address)
+                                             ,A3(stars,2,filter,address)
+                                             ,A3(stars,
+                                             1,
+                                             filter,
+                                             address)]))]))
+                   ,A2($Html.div,
+                   _L.fromArray([$Html$Attributes.$class("clear")]),
+                   _L.fromArray([A7(rangeInput,
+                   "Minimum Rating",
+                   "0",
+                   "10",
+                   filter.minRating,
+                   filter,
+                   F2(function (c,str) {
+                      return _U.replace([["minRating"
+                                         ,parseFloat(str)]],
+                      filter);
+                   }),
+                   address)]))
+                   ,A7(rangeInput,
+                   "Minimum Price",
+                   "0",
+                   "7000",
+                   filter.minPrice,
+                   filter,
+                   F2(function (c,str) {
+                      return _U.replace([["minPrice"
+                                         ,parseFloat(str)]],
+                      filter);
+                   }),
+                   address)
+                   ,A2($Html.div,
+                   _L.fromArray([]),
+                   _L.fromArray([A2($Html.button,
+                   _L.fromArray([$Html$Attributes.$class("button")
+                                ,A2($Html$Events.onClick,
+                                address,
+                                A4($Models.Filter,
+                                _L.fromArray([]),
+                                0,
+                                "",
+                                0))]),
+                   _L.fromArray([$Html.text("Clear Filters")]))]))]));
+   });
    _elm.Filters.values = {_op: _op
-                         ,resetPageIndex: resetPageIndex
                          ,addOrRemoveStar: addOrRemoveStar
                          ,stars: stars
-                         ,replaceFilter: replaceFilter
                          ,filters: filters
                          ,rangeInput: rangeInput
                          ,parseFloat: parseFloat};
@@ -5052,7 +5228,29 @@ Elm.Models.make = function (_elm) {
              ,stars: d
              ,thumbnail: b};
    });
+   var SortChange = function (a) {
+      return {ctor: "SortChange"
+             ,_0: a};
+   };
+   var FilterChange = function (a) {
+      return {ctor: "FilterChange"
+             ,_0: a};
+   };
+   var PageChange = function (a) {
+      return {ctor: "PageChange"
+             ,_0: a};
+   };
+   var LoadData = function (a) {
+      return {ctor: "LoadData"
+             ,_0: a};
+   };
+   var NoOp = {ctor: "NoOp"};
    _elm.Models.values = {_op: _op
+                        ,NoOp: NoOp
+                        ,LoadData: LoadData
+                        ,PageChange: PageChange
+                        ,FilterChange: FilterChange
+                        ,SortChange: SortChange
                         ,Hotel: Hotel
                         ,Paging: Paging
                         ,Asc: Asc
@@ -6313,6 +6511,147 @@ Elm.Native.Debug.make = function(localRuntime) {
 		watch: F2(watch),
 		watchSummary:F3(watchSummary),
 	};
+};
+
+Elm.Native.Effects = {};
+Elm.Native.Effects.make = function(localRuntime) {
+
+	localRuntime.Native = localRuntime.Native || {};
+	localRuntime.Native.Effects = localRuntime.Native.Effects || {};
+	if (localRuntime.Native.Effects.values)
+	{
+		return localRuntime.Native.Effects.values;
+	}
+
+	var Task = Elm.Native.Task.make(localRuntime);
+	var Utils = Elm.Native.Utils.make(localRuntime);
+	var Signal = Elm.Signal.make(localRuntime);
+	var List = Elm.Native.List.make(localRuntime);
+
+
+	// polyfill so things will work even if rAF is not available for some reason
+	var _requestAnimationFrame =
+		typeof requestAnimationFrame !== 'undefined'
+			? requestAnimationFrame
+			: function(cb) { setTimeout(cb, 1000 / 60); }
+			;
+
+
+	// batchedSending and sendCallback implement a small state machine in order
+	// to schedule only one send(time) call per animation frame.
+	//
+	// Invariants:
+	// 1. In the NO_REQUEST state, there is never a scheduled sendCallback.
+	// 2. In the PENDING_REQUEST and EXTRA_REQUEST states, there is always exactly
+	//    one scheduled sendCallback.
+	var NO_REQUEST = 0;
+	var PENDING_REQUEST = 1;
+	var EXTRA_REQUEST = 2;
+	var state = NO_REQUEST;
+	var messageArray = [];
+
+
+	function batchedSending(address, tickMessages)
+	{
+		// insert ticks into the messageArray
+		var foundAddress = false;
+
+		for (var i = messageArray.length; i--; )
+		{
+			if (messageArray[i].address === address)
+			{
+				foundAddress = true;
+				messageArray[i].tickMessages = A3(List.foldl, List.cons, messageArray[i].tickMessages, tickMessages);
+				break;
+			}
+		}
+
+		if (!foundAddress)
+		{
+			messageArray.push({ address: address, tickMessages: tickMessages });
+		}
+
+		// do the appropriate state transition
+		switch (state)
+		{
+			case NO_REQUEST:
+				_requestAnimationFrame(sendCallback);
+				state = PENDING_REQUEST;
+				break;
+			case PENDING_REQUEST:
+				state = PENDING_REQUEST;
+				break;
+			case EXTRA_REQUEST:
+				state = PENDING_REQUEST;
+				break;
+		}
+	}
+
+
+	function sendCallback(time)
+	{
+		switch (state)
+		{
+			case NO_REQUEST:
+				// This state should not be possible. How can there be no
+				// request, yet somehow we are actively fulfilling a
+				// request?
+				throw new Error(
+					'Unexpected send callback.\n' +
+					'Please report this to <https://github.com/evancz/elm-effects/issues>.'
+				);
+
+			case PENDING_REQUEST:
+				// At this point, we do not *know* that another frame is
+				// needed, but we make an extra request to rAF just in
+				// case. It's possible to drop a frame if rAF is called
+				// too late, so we just do it preemptively.
+				_requestAnimationFrame(sendCallback);
+				state = EXTRA_REQUEST;
+
+				// There's also stuff we definitely need to send.
+				send(time);
+				return;
+
+			case EXTRA_REQUEST:
+				// Turns out the extra request was not needed, so we will
+				// stop calling rAF. No reason to call it all the time if
+				// no one needs it.
+				state = NO_REQUEST;
+				return;
+		}
+	}
+
+
+	function send(time)
+	{
+		for (var i = messageArray.length; i--; )
+		{
+			var messages = A3(
+				List.foldl,
+				F2( function(toAction, list) { return List.Cons(toAction(time), list); } ),
+				List.Nil,
+				messageArray[i].tickMessages
+			);
+			Task.perform( A2(Signal.send, messageArray[i].address, messages) );
+		}
+		messageArray = [];
+	}
+
+
+	function requestTickSending(address, tickMessages)
+	{
+		return Task.asyncFunction(function(callback) {
+			batchedSending(address, tickMessages);
+			callback(Task.succeed(Utils.Tuple0));
+		});
+	}
+
+
+	return localRuntime.Native.Effects.values = {
+		requestTickSending: F2(requestTickSending)
+	};
+
 };
 
 
@@ -13005,35 +13344,19 @@ Elm.Pager.make = function (_elm) {
    $Models = Elm.Models.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm);
-   var replacePageIndex = F2(function (criteria,
-   index) {
-      return function () {
-         var paging = criteria.paging;
-         return _U.replace([["paging"
-                            ,_U.replace([["pageIndex"
-                                         ,index]],
-                            paging)]],
-         criteria);
-      }();
-   });
-   var pager = F2(function (model,
+   var pager = F3(function (total,
+   paging,
    address) {
       return function () {
-         var hotelCount = $Basics.toFloat(model.total);
-         var paging = model.criteria.paging;
+         var pageSize = $Basics.toFloat(paging.pageSize);
+         var hotelCount = $Basics.toFloat(total);
+         var pageCount = $Basics.ceiling(hotelCount / pageSize);
          var pageIndex = paging.pageIndex;
          var pageNum = pageIndex + 1;
+         var lastPage = _U.eq(pageNum,
+         pageCount);
          var firstPage = _U.eq(pageIndex,
          0);
-         var pageSize = $Basics.toFloat(paging.pageSize);
-         var pageCount = $Basics.ceiling(hotelCount / pageSize);
-         var lastPage = _U.eq(pageNum,
-         A2($Debug.log,
-         "pages:",
-         pageCount));
-         var criteria = A2($Debug.watch,
-         "criteria",
-         model.criteria);
          return A2($Html.section,
          _L.fromArray([$Html$Attributes.$class("pager")]),
          _L.fromArray([A2($Html.button,
@@ -13041,9 +13364,9 @@ Elm.Pager.make = function (_elm) {
                                    ,$Html$Attributes.disabled(firstPage)
                                    ,A2($Html$Events.onClick,
                                    address,
-                                   A2(replacePageIndex,
-                                   criteria,
-                                   pageIndex - 1))]),
+                                   _U.replace([["pageIndex"
+                                               ,pageIndex - 1]],
+                                   paging))]),
                       _L.fromArray([$Html.text("Previous")]))
                       ,A2($Html.span,
                       _L.fromArray([$Html$Attributes.$class("total-pages")]),
@@ -13061,14 +13384,13 @@ Elm.Pager.make = function (_elm) {
                                    ,$Html$Attributes.disabled(lastPage)
                                    ,A2($Html$Events.onClick,
                                    address,
-                                   A2(replacePageIndex,
-                                   criteria,
-                                   pageIndex + 1))]),
+                                   _U.replace([["pageIndex"
+                                               ,pageIndex + 1]],
+                                   paging))]),
                       _L.fromArray([$Html.text("Next")]))]));
       }();
    });
    _elm.Pager.values = {_op: _op
-                       ,replacePageIndex: replacePageIndex
                        ,pager: pager};
    return _elm.Pager.values;
 };
@@ -13480,116 +13802,159 @@ Elm.SortBar.make = function (_elm) {
    $Models = Elm.Models.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm);
-   var replaceSort = F2(function (criteria,
-   sort) {
-      return _U.replace([["sort"
-                         ,sort]],
-      criteria);
-   });
-   var sortButton = F4(function (criteria,
+   var sortButton = F4(function (currentSort,
    sort,
    label,
    address) {
       return function () {
-         var cls = _U.eq(criteria.sort,
+         var cls = _U.eq(currentSort,
          sort) ? "button sort-bar-button sort-selected" : "button sort-bar-button";
          return A2($Html.div,
          _L.fromArray([$Html$Attributes.$class(cls)
                       ,A2($Html$Events.onClick,
                       address,
-                      A2(replaceSort,
-                      criteria,
-                      sort))]),
+                      sort)]),
          _L.fromArray([$Html.text(label)]));
       }();
    });
-   var sortBar = F2(function (criteria,
+   var sortBar = F2(function (sort,
    address) {
       return A2($Html.section,
       _L.fromArray([$Html$Attributes.$class("sort-bar")]),
       _L.fromArray([A4(sortButton,
-                   criteria,
+                   sort,
                    $Models.HotelName,
                    "Name",
                    address)
                    ,A4(sortButton,
-                   criteria,
+                   sort,
                    $Models.Stars,
                    "Stars",
                    address)
                    ,A4(sortButton,
-                   criteria,
+                   sort,
                    $Models.Rating,
                    "Rating",
                    address)
                    ,A4(sortButton,
-                   criteria,
+                   sort,
                    $Models.Price,
                    "Price",
                    address)]));
    });
    _elm.SortBar.values = {_op: _op
-                         ,replaceSort: replaceSort
                          ,sortButton: sortButton
                          ,sortBar: sortBar};
    return _elm.SortBar.values;
 };
 Elm.StartApp = Elm.StartApp || {};
-Elm.StartApp.Simple = Elm.StartApp.Simple || {};
-Elm.StartApp.Simple.make = function (_elm) {
+Elm.StartApp.make = function (_elm) {
    "use strict";
    _elm.StartApp = _elm.StartApp || {};
-   _elm.StartApp.Simple = _elm.StartApp.Simple || {};
-   if (_elm.StartApp.Simple.values)
-   return _elm.StartApp.Simple.values;
+   if (_elm.StartApp.values)
+   return _elm.StartApp.values;
    var _op = {},
    _N = Elm.Native,
    _U = _N.Utils.make(_elm),
    _L = _N.List.make(_elm),
-   $moduleName = "StartApp.Simple",
+   $moduleName = "StartApp",
    $Basics = Elm.Basics.make(_elm),
+   $Effects = Elm.Effects.make(_elm),
    $Html = Elm.Html.make(_elm),
    $List = Elm.List.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
    $Result = Elm.Result.make(_elm),
-   $Signal = Elm.Signal.make(_elm);
+   $Signal = Elm.Signal.make(_elm),
+   $Task = Elm.Task.make(_elm);
    var start = function (config) {
       return function () {
-         var actions = $Signal.mailbox($Maybe.Nothing);
-         var address = A2($Signal.forwardTo,
-         actions.address,
-         $Maybe.Just);
-         var model = A3($Signal.foldp,
-         F2(function (_v0,model) {
+         var updateStep = F2(function (action,
+         _v0) {
             return function () {
                switch (_v0.ctor)
-               {case "Just":
-                  return A2(config.update,
-                    _v0._0,
-                    model);}
+               {case "_Tuple2":
+                  return function () {
+                       var $ = A2(config.update,
+                       action,
+                       _v0._0),
+                       newModel = $._0,
+                       additionalEffects = $._1;
+                       return {ctor: "_Tuple2"
+                              ,_0: newModel
+                              ,_1: $Effects.batch(_L.fromArray([_v0._1
+                                                               ,additionalEffects]))};
+                    }();}
                _U.badCase($moduleName,
-               "on line 91, column 34 to 60");
+               "between lines 94 and 97");
             }();
-         }),
-         config.model,
-         actions.signal);
-         return A2($Signal.map,
-         config.view(address),
-         model);
+         });
+         var update = F2(function (actions,
+         _v4) {
+            return function () {
+               switch (_v4.ctor)
+               {case "_Tuple2":
+                  return A3($List.foldl,
+                    updateStep,
+                    {ctor: "_Tuple2"
+                    ,_0: _v4._0
+                    ,_1: $Effects.none},
+                    actions);}
+               _U.badCase($moduleName,
+               "on line 101, column 13 to 64");
+            }();
+         });
+         var messages = $Signal.mailbox(_L.fromArray([]));
+         var singleton = function (action) {
+            return _L.fromArray([action]);
+         };
+         var address = A2($Signal.forwardTo,
+         messages.address,
+         singleton);
+         var inputs = $Signal.mergeMany(A2($List._op["::"],
+         messages.signal,
+         A2($List.map,
+         $Signal.map(singleton),
+         config.inputs)));
+         var effectsAndModel = A3($Signal.foldp,
+         update,
+         config.init,
+         inputs);
+         var model = A2($Signal.map,
+         $Basics.fst,
+         effectsAndModel);
+         return {_: {}
+                ,html: A2($Signal.map,
+                config.view(address),
+                model)
+                ,model: model
+                ,tasks: A2($Signal.map,
+                function ($) {
+                   return $Effects.toTask(messages.address)($Basics.snd($));
+                },
+                effectsAndModel)};
       }();
    };
-   var Config = F3(function (a,
-   b,
-   c) {
+   var App = F3(function (a,b,c) {
       return {_: {}
-             ,model: a
-             ,update: c
-             ,view: b};
+             ,html: a
+             ,model: b
+             ,tasks: c};
    });
-   _elm.StartApp.Simple.values = {_op: _op
-                                 ,Config: Config
-                                 ,start: start};
-   return _elm.StartApp.Simple.values;
+   var Config = F4(function (a,
+   b,
+   c,
+   d) {
+      return {_: {}
+             ,init: a
+             ,inputs: d
+             ,update: b
+             ,view: c};
+   });
+   _elm.StartApp.values = {_op: _op
+                          ,start: start
+                          ,Config: Config
+                          ,App: App};
+   return _elm.StartApp.values;
 };
 Elm.String = Elm.String || {};
 Elm.String.make = function (_elm) {
@@ -14158,16 +14523,15 @@ Elm.TrpTest.make = function (_elm) {
    _U = _N.Utils.make(_elm),
    _L = _N.List.make(_elm),
    $moduleName = "TrpTest",
+   $Api = Elm.Api.make(_elm),
    $Basics = Elm.Basics.make(_elm),
-   $Debug = Elm.Debug.make(_elm),
+   $Effects = Elm.Effects.make(_elm),
    $Filtering = Elm.Filtering.make(_elm),
    $Filters = Elm.Filters.make(_elm),
    $Header = Elm.Header.make(_elm),
    $HotelsList = Elm.HotelsList.make(_elm),
    $Html = Elm.Html.make(_elm),
    $Html$Attributes = Elm.Html.Attributes.make(_elm),
-   $Http = Elm.Http.make(_elm),
-   $Json$Decode = Elm.Json.Decode.make(_elm),
    $List = Elm.List.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
    $Models = Elm.Models.make(_elm),
@@ -14175,57 +14539,99 @@ Elm.TrpTest.make = function (_elm) {
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm),
    $SortBar = Elm.SortBar.make(_elm),
+   $StartApp = Elm.StartApp.make(_elm),
    $Task = Elm.Task.make(_elm);
-   var hotels = function () {
-      var hotel = A7($Json$Decode.object6,
-      $Models.Hotel,
-      A2($Json$Decode._op[":="],
-      "Name",
-      $Json$Decode.string),
-      A2($Json$Decode._op[":="],
-      "ThumbnailUrl",
-      $Json$Decode.string),
-      A2($Json$Decode._op[":="],
-      "ImageUrl",
-      $Json$Decode.string),
-      A2($Json$Decode._op[":="],
-      "Stars",
-      $Json$Decode.$int),
-      A2($Json$Decode._op[":="],
-      "UserRating",
-      $Json$Decode.$float),
-      A2($Json$Decode._op[":="],
-      "MinCost",
-      $Json$Decode.$float));
-      return A2($Json$Decode._op[":="],
-      "Establishments",
-      $Json$Decode.list(hotel));
-   }();
-   var getHotels = A2($Http.get,
-   hotels,
-   "hotels.json");
-   var results = $Signal.mailbox(_L.fromArray([]));
-   var unwrapHotels = function (result) {
+   var view = F2(function (address,
+   model) {
       return function () {
-         switch (result.ctor)
-         {case "Err":
-            return A4($Debug.log,
-              $Basics.toString(result._0),
-              $Signal.send,
-              results.address,
-              _L.fromArray([]));
-            case "Ok":
-            return A2($Signal.send,
-              results.address,
-              result._0);}
-         _U.badCase($moduleName,
-         "between lines 63 and 67");
+         var filtered = $Filtering.restrict(model);
+         return A2($Html.div,
+         _L.fromArray([]),
+         _L.fromArray([A2($Html.section,
+                      _L.fromArray([$Html$Attributes.$class("header")]),
+                      _L.fromArray([$Header.header]))
+                      ,A2($Html.section,
+                      _L.fromArray([$Html$Attributes.$class("sidebar")]),
+                      _L.fromArray([A2($Filters.filters,
+                      filtered.criteria.filter,
+                      A2($Signal.forwardTo,
+                      address,
+                      $Models.FilterChange))]))
+                      ,A2($Html.section,
+                      _L.fromArray([$Html$Attributes.$class("content")]),
+                      _L.fromArray([A2($SortBar.sortBar,
+                                   filtered.criteria.sort,
+                                   A2($Signal.forwardTo,
+                                   address,
+                                   $Models.SortChange))
+                                   ,A3($Pager.pager,
+                                   filtered.total,
+                                   filtered.criteria.paging,
+                                   A2($Signal.forwardTo,
+                                   address,
+                                   $Models.PageChange))
+                                   ,$HotelsList.hotelList(filtered.hotels)]))
+                      ,A2($Html.section,
+                      _L.fromArray([$Html$Attributes.$class("footer")]),
+                      _L.fromArray([A2($Html.h3,
+                      _L.fromArray([]),
+                      _L.fromArray([$Html.text("My beautiful footer section")]))]))]));
       }();
-   };
-   var requests = Elm.Native.Task.make(_elm).perform(A2($Task.andThen,
-   $Task.toResult(getHotels),
-   unwrapHotels));
-   var query = $Signal.mailbox(A3($Models.Criteria,
+   });
+   var update = F2(function (action,
+   model) {
+      return function () {
+         var updateCriteria = F2(function (model,
+         criteria) {
+            return _U.replace([["criteria"
+                               ,criteria]],
+            model);
+         });
+         var criteria = model.criteria;
+         return function () {
+            switch (action.ctor)
+            {case "FilterChange":
+               return {ctor: "_Tuple2"
+                      ,_0: A2(updateCriteria,
+                      model,
+                      _U.replace([["filter"
+                                  ,action._0]],
+                      criteria))
+                      ,_1: $Effects.none};
+               case "LoadData":
+               return {ctor: "_Tuple2"
+                      ,_0: _U.replace([["hotels"
+                                       ,action._0]],
+                      model)
+                      ,_1: $Effects.none};
+               case "NoOp":
+               return {ctor: "_Tuple2"
+                      ,_0: model
+                      ,_1: $Effects.none};
+               case "PageChange":
+               return {ctor: "_Tuple2"
+                      ,_0: A2(updateCriteria,
+                      model,
+                      _U.replace([["paging"
+                                  ,action._0]],
+                      criteria))
+                      ,_1: $Effects.none};
+               case "SortChange":
+               return {ctor: "_Tuple2"
+                      ,_0: A2(updateCriteria,
+                      model,
+                      _U.replace([["sort",action._0]],
+                      criteria))
+                      ,_1: $Effects.none};}
+            _U.badCase($moduleName,
+            "between lines 29 and 43");
+         }();
+      }();
+   });
+   var initialModel = A3($Models.Model,
+   _L.fromArray([]),
+   0,
+   A3($Models.Criteria,
    A4($Models.Filter,
    _L.fromArray([]),
    0,
@@ -14233,50 +14639,22 @@ Elm.TrpTest.make = function (_elm) {
    0),
    $Models.HotelName,
    A2($Models.Paging,20,0)));
-   var restrictedResults = A3($Signal.map2,
-   $Filtering.restrict,
-   results.signal,
-   query.signal);
-   var view = function (model) {
-      return A2($Html.div,
-      _L.fromArray([]),
-      _L.fromArray([A2($Html.section,
-                   _L.fromArray([$Html$Attributes.$class("header")]),
-                   _L.fromArray([$Header.header]))
-                   ,A2($Html.section,
-                   _L.fromArray([$Html$Attributes.$class("sidebar")]),
-                   _L.fromArray([A2($Filters.filters,
-                   model.criteria,
-                   query.address)]))
-                   ,A2($Html.section,
-                   _L.fromArray([$Html$Attributes.$class("content")]),
-                   _L.fromArray([A2($SortBar.sortBar,
-                                model.criteria,
-                                query.address)
-                                ,A2($Pager.pager,
-                                model,
-                                query.address)
-                                ,$HotelsList.hotelList(model.hotels)]))
-                   ,A2($Html.section,
-                   _L.fromArray([$Html$Attributes.$class("footer")]),
-                   _L.fromArray([A2($Html.h3,
-                   _L.fromArray([]),
-                   _L.fromArray([$Html.text("My beautiful footer section")]))]))]));
-   };
-   var main = A2($Signal.map,
-   view,
-   A2($Debug.watch,
-   "results",
-   restrictedResults));
+   var app = $StartApp.start({_: {}
+                             ,init: {ctor: "_Tuple2"
+                                    ,_0: initialModel
+                                    ,_1: $Effects.task($Api.getHotels)}
+                             ,inputs: _L.fromArray([])
+                             ,update: update
+                             ,view: view});
+   var main = app.html;
+   var tasks = Elm.Native.Task.make(_elm).performSignal("tasks",
+   app.tasks);
    _elm.TrpTest.values = {_op: _op
+                         ,initialModel: initialModel
+                         ,update: update
                          ,view: view
-                         ,main: main
-                         ,restrictedResults: restrictedResults
-                         ,query: query
-                         ,results: results
-                         ,unwrapHotels: unwrapHotels
-                         ,getHotels: getHotels
-                         ,hotels: hotels};
+                         ,app: app
+                         ,main: main};
    return _elm.TrpTest.values;
 };
 Elm.VirtualDom = Elm.VirtualDom || {};

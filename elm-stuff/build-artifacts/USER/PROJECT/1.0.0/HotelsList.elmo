@@ -66,7 +66,10 @@ Elm.HotelsList.make = function (_elm) {
    var hotelList = function (hotels) {
       return A2($Html.section,
       _L.fromArray([$Html$Attributes.$class("hotel-list")]),
-      _L.fromArray([A2($Html.ul,
+      _L.fromArray([_U.eq($List.length(hotels),
+      0) ? A2($Html.h3,
+      _L.fromArray([]),
+      _L.fromArray([$Html.text("Loading hotels ...")])) : A2($Html.ul,
       _L.fromArray([]),
       A2($List.map,
       hotelCard,

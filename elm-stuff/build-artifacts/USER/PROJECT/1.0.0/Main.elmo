@@ -1,0 +1,65 @@
+Elm.Main = Elm.Main || {};
+Elm.Main.make = function (_elm) {
+   "use strict";
+   _elm.Main = _elm.Main || {};
+   if (_elm.Main.values)
+   return _elm.Main.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Main",
+   $Api = Elm.Api.make(_elm),
+   $Basics = Elm.Basics.make(_elm),
+   $ElmTest$Assertion = Elm.ElmTest.Assertion.make(_elm),
+   $ElmTest$Runner$Element = Elm.ElmTest.Runner.Element.make(_elm),
+   $ElmTest$Test = Elm.ElmTest.Test.make(_elm),
+   $Json$Decode = Elm.Json.Decode.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Models = Elm.Models.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
+   var estabToImageUrlCorrect = A2($ElmTest$Test.test,
+   "estabToImageUrl gives correct results",
+   A2($ElmTest$Assertion.assertEqual,
+   $Api.estabIdToImageUrl(12345),
+   "https://d23wf1heedwns1.cloudfront.net/ei/1/2/3/4/5/0_260_260.jpg"));
+   var imageUrlIsCorrect = A2($ElmTest$Test.test,
+   "imageUrl gives correct result",
+   A2($ElmTest$Assertion.assertEqual,
+   $Api.imageUrl("/12345"),
+   "https://d23wf1heedwns1.cloudfront.net/ei/12345/0_260_260.jpg"));
+   var parseResult = function (result) {
+      return function () {
+         switch (result.ctor)
+         {case "Err": return result._0;
+            case "Ok": return "PASS";}
+         _U.badCase($moduleName,
+         "between lines 17 and 19");
+      }();
+   };
+   var hotelJson = "{ \"Establishments\" : [ { \"Name\" : \"Test Hotel\", \"ThumbnailUrl\" : \"url\", \"ImageUrl\" : \"url\", \"Stars\" : 4, \"UserRating\" : 4.5, \"MinCost\" : 100.55 } ] }";
+   var hotelsDecoderWorks = A2($ElmTest$Test.test,
+   "hotels decoder works",
+   A2($ElmTest$Assertion.assertEqual,
+   "PASS",
+   parseResult(A2($Json$Decode.decodeString,
+   $Api.hotels,
+   hotelJson))));
+   var tests = A2($ElmTest$Test.suite,
+   "Some tests on the api layer",
+   _L.fromArray([imageUrlIsCorrect
+                ,estabToImageUrlCorrect
+                ,hotelsDecoderWorks]));
+   var main = $ElmTest$Runner$Element.runDisplay(tests);
+   _elm.Main.values = {_op: _op
+                      ,hotelJson: hotelJson
+                      ,parseResult: parseResult
+                      ,hotelsDecoderWorks: hotelsDecoderWorks
+                      ,imageUrlIsCorrect: imageUrlIsCorrect
+                      ,estabToImageUrlCorrect: estabToImageUrlCorrect
+                      ,tests: tests
+                      ,main: main};
+   return _elm.Main.values;
+};
