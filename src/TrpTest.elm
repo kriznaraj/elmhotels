@@ -20,7 +20,7 @@ import Debug exposing(log)
 --MODEL
 initialModel : Model
 initialModel =
-    Model [] 0 (Criteria (Filter [] 0 "" 0) HotelName (Paging 20 0)) [] "" tenerife
+    Model [] 0 (Criteria (Filter [] 0 "" 0) HotelName (Paging 20 0)) [] "Tenerife, Spain" tenerife
 
 --UPDATE
 update : Action -> Model -> (Model, Effects Action)
@@ -51,7 +51,10 @@ update action model =
                 ({model | destinationQuery <- query}, Effects.task (getDestinations (log "query:" query)))
 
             SelectDestination dest -> 
-                ({model | selectedDestination <- dest}, Effects.task (getHotels dest))
+                ({model | selectedDestination <- dest,
+                        destinationQuery <- dest.title,
+                        hotels <- [],
+                        destinations <- []}, Effects.task (getHotels dest))
 
 --VIEW
 view: Address Action -> Model -> Html

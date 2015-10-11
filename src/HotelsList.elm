@@ -34,6 +34,9 @@ hotelCard hotel =
 hotelList : HotelList -> Html
 hotelList hotels =
     section [ class "hotel-list"] [ 
-        ul [] (List.map hotelCard hotels)
+        if((List.length hotels) == 0) then 
+            h3 [] [ text "Loading hotels ..." ]
+        else
+            ul [] (List.map hotelCard hotels)
     ]
 

@@ -56,6 +56,27 @@ label {
     background: #eaeaea;
 }
 
+.autocompleter {
+    position : relative;
+}
+
+.autocompleter ul {
+    position:absolute;
+    list-style:none;
+    margin:0;
+    padding:0;
+    background:#fff;
+    border:solid 1px #ccc;
+    border-top:none;
+}
+
+.autocompleter li {
+    padding:5px;
+    cursor:pointer;
+}
+
+
+
 .filters>div {
     padding-bottom:10px;
 }

@@ -14,12 +14,7 @@ var app = module.exports = express.createServer();
 app.use('/api/hotels', proxy(url.parse('https://m.travelrepublic.co.uk/api2/hotels/static/gethotelsbydestination')));
 app.use('/api/destinations', proxy(url.parse('https://m.travelrepublic.co.uk/api2/destination/v2/search')));
 
-//var hotelOpt = url.parse('http://pp.hotelsapi.services.travelrepublic.local/api2/hotels/static/gethotelsbydestination');
-//hotelOpt.cookieRewrite = ".travelrepublic.co.uk";
-//app.use('/api/hotels', proxy(hotelOpt));
-
 // Configuration
-
 app.configure(function(){
   app.set('views', __dirname + '/views');
   app.set('view engine', 'jade');

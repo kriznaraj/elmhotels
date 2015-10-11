@@ -124,7 +124,12 @@ Elm.TrpTest.make = function (_elm) {
                case "SelectDestination":
                return {ctor: "_Tuple2"
                       ,_0: _U.replace([["selectedDestination"
-                                       ,action._0]],
+                                       ,action._0]
+                                      ,["destinationQuery"
+                                       ,action._0.title]
+                                      ,["hotels",_L.fromArray([])]
+                                      ,["destinations"
+                                       ,_L.fromArray([])]],
                       model)
                       ,_1: $Effects.task($Api.getHotels(action._0))};
                case "SortChange":
@@ -135,7 +140,7 @@ Elm.TrpTest.make = function (_elm) {
                       criteria))
                       ,_1: $Effects.none};}
             _U.badCase($moduleName,
-            "between lines 31 and 54");
+            "between lines 31 and 57");
          }();
       }();
    });
@@ -151,7 +156,7 @@ Elm.TrpTest.make = function (_elm) {
    $Models.HotelName,
    A2($Models.Paging,20,0)),
    _L.fromArray([]),
-   "",
+   "Tenerife, Spain",
    $Models.tenerife);
    var app = $StartApp.start({_: {}
                              ,init: {ctor: "_Tuple2"

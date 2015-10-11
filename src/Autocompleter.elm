@@ -5,18 +5,20 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Signal exposing (Address)
-import String
+import String exposing (length)
 import Models exposing(..)
 import Json.Decode as Json exposing ((:=))
 import Task exposing (..)
 import Effects exposing (..)
+import Debug exposing (log)
 
 --VIEW
 
-destination: Destination -> Html
-destination dest =
-    li [] [
-        span [] [ text dest.title ]
+destination: Address Action -> Destination -> Html
+destination address dest =
+    li [ 
+        onClick address (SelectDestination dest)] [
+        span [] [ text (dest.title ++ ", (" ++ (toString dest.establishmentCount) ++ " hotels)") ]
     ]
 
 autocompleter : Address Action -> Model -> Html
@@ -30,17 +32,18 @@ autocompleter address model =
                 , type' "text"
                 , value model.destinationQuery
                 , on "input" targetValue
-                        (\str -> Signal.message address (DestinationQueryChanged str))
+                        (\str -> 
+                               Signal.message address (DestinationQueryChanged str) )
                 ] []
         ],
         div [ class "results" ] [
-            ul [] (List.map destination model.destinations)
+            ul [] (List.map (destination address) model.destinations)
         ]
     ]
     
 getDestinations : String -> Task Never Action
 getDestinations query =
-    let req = Task.map (\dests -> LoadDestinations dests) (get destinations ("api/destinations?SearchTerm=" ++ query ++ "&MaxResults=15&CultureCode=en-gb&RestrictToFlightDestinations=false&v=1.0.6978"))
+    let req = Task.map (\dests -> LoadDestinations dests) (get destinations ("https://m.travelrepublic.co.uk/api2/destination/v2/search?SearchTerm=" ++ query ++ "&MaxResults=15&CultureCode=en-gb&RestrictToFlightDestinations=false&v=1.0.6978"))
     in
         Task.onError req (\err -> Task.succeed (LoadDestinations []))
 
@@ -53,7 +56,7 @@ destinations =
            ("LocationId" := Json.int)
            ("PlaceId" := Json.int)
            ("EstablishmentId" := Json.int)
-           ("PloygonId" := Json.int)
+           ("PolygonId" := Json.int)
            ("EstablishmentCount" := Json.int)
            ("Title" := Json.string)
     in

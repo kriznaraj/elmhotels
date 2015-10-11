@@ -279,7 +279,7 @@ Elm.Autocompleter.make = function (_elm) {
       "EstablishmentId",
       $Json$Decode.$int),
       A2($Json$Decode._op[":="],
-      "PloygonId",
+      "PolygonId",
       $Json$Decode.$int),
       A2($Json$Decode._op[":="],
       "EstablishmentCount",
@@ -300,7 +300,7 @@ Elm.Autocompleter.make = function (_elm) {
          A2($Http.get,
          destinations,
          A2($Basics._op["++"],
-         "api/destinations?SearchTerm=",
+         "https://m.travelrepublic.co.uk/api2/destination/v2/search?SearchTerm=",
          A2($Basics._op["++"],
          query,
          "&MaxResults=15&CultureCode=en-gb&RestrictToFlightDestinations=false&v=1.0.6978"))));
@@ -311,13 +311,22 @@ Elm.Autocompleter.make = function (_elm) {
          });
       }();
    };
-   var destination = function (dest) {
+   var destination = F2(function (address,
+   dest) {
       return A2($Html.li,
-      _L.fromArray([]),
+      _L.fromArray([A2($Html$Events.onClick,
+      address,
+      $Models.SelectDestination(dest))]),
       _L.fromArray([A2($Html.span,
       _L.fromArray([]),
-      _L.fromArray([$Html.text(dest.title)]))]));
-   };
+      _L.fromArray([$Html.text(A2($Basics._op["++"],
+      dest.title,
+      A2($Basics._op["++"],
+      ", (",
+      A2($Basics._op["++"],
+      $Basics.toString(dest.establishmentCount),
+      " hotels)"))))]))]));
+   });
    var autocompleter = F2(function (address,
    model) {
       return A2($Html.section,
@@ -346,7 +355,7 @@ Elm.Autocompleter.make = function (_elm) {
                    _L.fromArray([A2($Html.ul,
                    _L.fromArray([]),
                    A2($List.map,
-                   destination,
+                   destination(address),
                    model.destinations))]))]));
    });
    _elm.Autocompleter.values = {_op: _op
@@ -3522,7 +3531,10 @@ Elm.HotelsList.make = function (_elm) {
    var hotelList = function (hotels) {
       return A2($Html.section,
       _L.fromArray([$Html$Attributes.$class("hotel-list")]),
-      _L.fromArray([A2($Html.ul,
+      _L.fromArray([_U.eq($List.length(hotels),
+      0) ? A2($Html.h3,
+      _L.fromArray([]),
+      _L.fromArray([$Html.text("Loading hotels ...")])) : A2($Html.ul,
       _L.fromArray([]),
       A2($List.map,
       hotelCard,
@@ -14897,7 +14909,12 @@ Elm.TrpTest.make = function (_elm) {
                case "SelectDestination":
                return {ctor: "_Tuple2"
                       ,_0: _U.replace([["selectedDestination"
-                                       ,action._0]],
+                                       ,action._0]
+                                      ,["destinationQuery"
+                                       ,action._0.title]
+                                      ,["hotels",_L.fromArray([])]
+                                      ,["destinations"
+                                       ,_L.fromArray([])]],
                       model)
                       ,_1: $Effects.task($Api.getHotels(action._0))};
                case "SortChange":
@@ -14908,7 +14925,7 @@ Elm.TrpTest.make = function (_elm) {
                       criteria))
                       ,_1: $Effects.none};}
             _U.badCase($moduleName,
-            "between lines 31 and 54");
+            "between lines 31 and 57");
          }();
       }();
    });
@@ -14924,7 +14941,7 @@ Elm.TrpTest.make = function (_elm) {
    $Models.HotelName,
    A2($Models.Paging,20,0)),
    _L.fromArray([]),
-   "",
+   "Tenerife, Spain",
    $Models.tenerife);
    var app = $StartApp.start({_: {}
                              ,init: {ctor: "_Tuple2"
