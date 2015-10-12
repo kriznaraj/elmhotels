@@ -3,7 +3,17 @@ module HotelsList where
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Debug exposing (log)
-import Models exposing (..)
+
+type alias Hotel = {
+    name : String,
+    thumbnail : String,
+    image : String,
+    stars : Int,
+    rating : Float,
+    price : Float
+}
+
+type alias HotelList = (List Hotel)
 
 backgroundImage : String -> Attribute
 backgroundImage url =

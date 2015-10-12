@@ -4,9 +4,18 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Signal exposing (Address)
-import Models exposing (..)
 
-sortButton : Sort -> Sort -> String -> Address Sort -> Html
+--MODEL
+type Model = 
+    Stars 
+    | Rating 
+    | HotelName 
+    | Price 
+
+initialModel : Model
+initialModel = HotelName
+
+sortButton : Model -> Model -> String -> Address Model -> Html
 sortButton currentSort sort label address =
     let cls = if currentSort == sort then 
                  "button sort-bar-button sort-selected" 
@@ -19,8 +28,8 @@ sortButton currentSort sort label address =
             [ text label ]
 
 
-sortBar : Sort -> Address Sort -> Html
-sortBar sort address = 
+view : Model -> Address Model -> Html
+view sort address = 
     section [ class "sort-bar"] [ 
         sortButton sort HotelName "Name" address,
         sortButton sort Stars "Stars" address,

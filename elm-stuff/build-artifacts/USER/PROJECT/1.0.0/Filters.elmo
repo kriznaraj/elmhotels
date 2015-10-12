@@ -15,7 +15,6 @@ Elm.Filters.make = function (_elm) {
    $Html$Events = Elm.Html.Events.make(_elm),
    $List = Elm.List.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
-   $Models = Elm.Models.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm),
    $String = Elm.String.make(_elm);
@@ -26,7 +25,7 @@ Elm.Filters.make = function (_elm) {
          {case "Err": return 0;
             case "Ok": return _v0._0;}
          _U.badCase($moduleName,
-         "between lines 93 and 95");
+         "between lines 103 and 105");
       }();
    };
    var rangeInput = F7(function (name,
@@ -100,7 +99,22 @@ Elm.Filters.make = function (_elm) {
                    $Basics.toString(num),
                    " Stars"))]))]));
    });
-   var filters = F2(function (filter,
+   var Model = F4(function (a,
+   b,
+   c,
+   d) {
+      return {_: {}
+             ,hotelName: c
+             ,minPrice: d
+             ,minRating: b
+             ,stars: a};
+   });
+   var initialModel = A4(Model,
+   _L.fromArray([]),
+   0,
+   "",
+   0);
+   var view = F2(function (filter,
    address) {
       return A2($Html.section,
       _L.fromArray([$Html$Attributes.$class("filters")]),
@@ -174,7 +188,7 @@ Elm.Filters.make = function (_elm) {
                    _L.fromArray([$Html$Attributes.$class("button")
                                 ,A2($Html$Events.onClick,
                                 address,
-                                A4($Models.Filter,
+                                A4(Model,
                                 _L.fromArray([]),
                                 0,
                                 "",
@@ -182,9 +196,11 @@ Elm.Filters.make = function (_elm) {
                    _L.fromArray([$Html.text("Clear Filters")]))]))]));
    });
    _elm.Filters.values = {_op: _op
+                         ,Model: Model
+                         ,initialModel: initialModel
                          ,addOrRemoveStar: addOrRemoveStar
                          ,stars: stars
-                         ,filters: filters
+                         ,view: view
                          ,rangeInput: rangeInput
                          ,parseFloat: parseFloat};
    return _elm.Filters.values;

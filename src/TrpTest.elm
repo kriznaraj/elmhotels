@@ -7,20 +7,20 @@ import Html.Attributes exposing (..)
 import StartApp as StartApp
 import Signal exposing (Address)
 import Api exposing (getHotels)
+import Models exposing (..)
 import Header
 import SortBar 
 import Pager
 import Filters
 import HotelsList
-import Autocompleter exposing (..)
-import Models exposing (..)
+import Autocompleter 
 import Filtering exposing (..)
 import Debug exposing(log)
 
 --MODEL
 initialModel : Model
 initialModel =
-    Model [] 0 (Criteria (Filter [] 0 "" 0) HotelName (Paging 20 0)) [] "Tenerife, Spain" tenerife
+    Model [] 0 (Criteria Filters.initialModel SortBar.initialModel Pager.initialModel) Autocompleter.initialModel
 
 --UPDATE
 update : Action -> Model -> (Model, Effects Action)
@@ -44,19 +44,19 @@ update action model =
             LoadData hotels ->
                 ({model | hotels <- hotels}, Effects.none)
 
-            --feels like these actions belong inside the autocomleter, but I just can't 
-            --quite make that work without getting into a mess of circular references
-            LoadDestinations destinations -> 
-                ({model | destinations <- destinations}, Effects.none)
+            AutocompleterUpdate action ->
+                let (m, e) = Autocompleter.update action model.autocompleter
+                in
+                    case action of
+                        Autocompleter.SelectDestination dest -> 
+                            ({model | autocompleter <- m, hotels <- []}, 
+                            Effects.batch [
+                                Effects.task (getHotels dest),
+                                Effects.map AutocompleterUpdate e
+                            ])
+                        
+                        _ -> ({model | autocompleter <- m}, Effects.map AutocompleterUpdate e)
 
-            DestinationQueryChanged query -> 
-                ({model | destinationQuery <- query}, Effects.task (getDestinations (log "query:" query)))
-
-            SelectDestination dest -> 
-                ({model | selectedDestination <- dest,
-                        destinationQuery <- dest.title,
-                        hotels <- [],
-                        destinations <- []}, Effects.task (getHotels dest))
 
 --VIEW
 view: Address Action -> Model -> Html
@@ -68,12 +68,12 @@ view address model =
                 Header.header
             ],
             section [ class "sidebar" ] [ 
-                (Autocompleter.autocompleter address model),
-                (Filters.filters filtered.criteria.filter (Signal.forwardTo address FilterChange))
+                (Autocompleter.view (Signal.forwardTo address AutocompleterUpdate) model.autocompleter),
+                (Filters.view filtered.criteria.filter (Signal.forwardTo address FilterChange))
             ],
             section [ class "content" ] [
-                (SortBar.sortBar filtered.criteria.sort (Signal.forwardTo address SortChange)),
-                (Pager.pager filtered.total filtered.criteria.paging (Signal.forwardTo address PageChange)),
+                (SortBar.view filtered.criteria.sort (Signal.forwardTo address SortChange)),
+                (Pager.view filtered.total filtered.criteria.paging (Signal.forwardTo address PageChange)),
                 (HotelsList.hotelList filtered.hotels)
             ], 
             section [class "footer"] [
@@ -83,7 +83,7 @@ view address model =
 --WIRING
 app =
     StartApp.start
-       {init = (initialModel, Effects.task (getHotels initialModel.selectedDestination)),
+       {init = (initialModel, Effects.task (getHotels initialModel.autocompleter.selected)),
         view = view,
         update = update,
         inputs = [] }

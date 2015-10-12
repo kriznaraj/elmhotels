@@ -10,7 +10,9 @@ Elm.Api.make = function (_elm) {
    _L = _N.List.make(_elm),
    $moduleName = "Api",
    $Basics = Elm.Basics.make(_elm),
+   $Destination = Elm.Destination.make(_elm),
    $Effects = Elm.Effects.make(_elm),
+   $HotelsList = Elm.HotelsList.make(_elm),
    $Http = Elm.Http.make(_elm),
    $Json$Decode = Elm.Json.Decode.make(_elm),
    $List = Elm.List.make(_elm),
@@ -41,7 +43,7 @@ Elm.Api.make = function (_elm) {
    };
    var hotels = function () {
       var hotel = A7($Json$Decode.object6,
-      $Models.Hotel,
+      $HotelsList.Hotel,
       A2($Json$Decode._op[":="],
       "Name",
       $Json$Decode.string),

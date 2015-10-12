@@ -2,11 +2,13 @@ module Api where
 
 import Json.Decode as Json exposing ((:=))
 import Json.Encode exposing (encode)
-import Models exposing (..)
 import Task exposing (..)
 import Effects exposing (..)
 import Http exposing (..)
 import String exposing (append, fromChar, foldl)
+import HotelsList exposing (HotelList, Hotel)
+import Destination exposing (Destination, DestinationList)
+import Models exposing (..)
 
 body : Destination -> Body
 body dest =

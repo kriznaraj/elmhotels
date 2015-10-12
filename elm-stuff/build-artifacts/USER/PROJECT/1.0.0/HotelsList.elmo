@@ -14,7 +14,6 @@ Elm.HotelsList.make = function (_elm) {
    $Html$Attributes = Elm.Html.Attributes.make(_elm),
    $List = Elm.List.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
-   $Models = Elm.Models.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm);
    var backgroundImage = function (url) {
@@ -75,7 +74,22 @@ Elm.HotelsList.make = function (_elm) {
       hotelCard,
       hotels))]));
    };
+   var Hotel = F6(function (a,
+   b,
+   c,
+   d,
+   e,
+   f) {
+      return {_: {}
+             ,image: c
+             ,name: a
+             ,price: f
+             ,rating: e
+             ,stars: d
+             ,thumbnail: b};
+   });
    _elm.HotelsList.values = {_op: _op
+                            ,Hotel: Hotel
                             ,backgroundImage: backgroundImage
                             ,hotelCard: hotelCard
                             ,hotelList: hotelList};

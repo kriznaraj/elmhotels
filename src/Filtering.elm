@@ -1,6 +1,9 @@
 module Filtering where
 
 import Models exposing (..)
+import SortBar
+import Pager
+import HotelsList exposing (HotelList, Hotel)
 import String
 import Debug exposing (log)
 
@@ -9,7 +12,7 @@ adjustPaging total criteria =
     let paging = criteria.paging
     in
         if(paging.pageIndex * paging.pageSize > total) then 
-            {criteria | paging <- (Paging 20 0)}
+            {criteria | paging <- Pager.initialModel}
         else
             criteria
 
@@ -28,14 +31,14 @@ sort : Model -> Model
 sort model =
     let sortFn = (\hotels -> 
         case model.criteria.sort of
-           HotelName -> List.sortBy .name hotels
-           Stars -> hotels
+           SortBar.HotelName -> List.sortBy .name hotels
+           SortBar.Stars -> hotels
                         |> List.sortBy .stars
                         |> List.reverse
-           Rating -> hotels
+           SortBar.Rating -> hotels
                         |> List.sortBy .rating
                         |> List.reverse
-           Price -> List.sortBy .price hotels)
+           SortBar.Price -> List.sortBy .price hotels)
         hotels = (sortFn model.hotels)
     in
        {model | hotels <- hotels}

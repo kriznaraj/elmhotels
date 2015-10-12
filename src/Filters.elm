@@ -4,11 +4,21 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Signal exposing (Address)
-import Models exposing (..)
 import Debug exposing (log)
 import String
 
-addOrRemoveStar : Filter -> Int -> Filter
+--MODEL
+type alias Model = {
+    stars : List Int,
+    minRating : Float,
+    hotelName : String,
+    minPrice : Float
+}
+
+initialModel : Model
+initialModel = Model [] 0 "" 0
+
+addOrRemoveStar : Model -> Int -> Model
 addOrRemoveStar filter star =
     let inList = List.member star filter.stars
     in
@@ -17,7 +27,7 @@ addOrRemoveStar filter star =
        else 
             { filter | stars <- (star :: filter.stars) }
 
-stars : Int -> Filter -> Address Filter -> Html
+stars : Int -> Model -> Address Model -> Html
 stars num filter address =
     div [class "stars"] [
                  input [
@@ -28,8 +38,8 @@ stars num filter address =
                 span [] [text ((toString num) ++ " Stars")]
     ]
 
-filters : Filter -> Address Filter -> Html
-filters filter address = 
+view : Model -> Address Model -> Html
+view filter address = 
     section [ class "filters"] [ 
         h3 [] [text "Filters"],
         div [] [
@@ -66,12 +76,12 @@ filters filter address =
             address,
         div [] [
             button [class "button",
-                onClick address (Filter [] 0 "" 0)] [ text "Clear Filters" ]
+                onClick address (Model [] 0 "" 0)] [ text "Clear Filters" ]
         ]
     ] 
 
 
-rangeInput : String -> String -> String -> Float -> Filter -> (Filter -> String -> Filter) -> Address Filter -> Html
+rangeInput : String -> String -> String -> Float -> Model -> (Model -> String -> Model) -> Address Model -> Html
 rangeInput name min max val filter updater address =
     div [] [
         label [] [ text (name ++ ": ")],

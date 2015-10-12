@@ -6,11 +6,41 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Signal exposing (Address)
 import String exposing (length)
-import Models exposing(..)
 import Json.Decode as Json exposing ((:=))
 import Task exposing (..)
 import Effects exposing (..)
 import Debug exposing (log)
+import Destination exposing (Destination, DestinationList)
+
+--MODEL
+type alias Model = {
+    destinations : DestinationList,
+    query : String,
+    selected : Destination }
+
+initialModel : Model
+initialModel = Model [] "Tenerife, Spain" tenerife
+
+emptyDestination = Destination 0 0 0 0 0 0 0 ""
+
+tenerife = Destination 3522 54875 0 0 0 0 0 "Tenerife, Spain"
+
+--UPDATE
+type Action = QueryChanged String
+        | SelectDestination Destination
+        | LoadResults DestinationList
+
+update : Action -> Model -> (Model, Effects Action)
+update action model =
+    case action of
+        QueryChanged query -> 
+            ({model | query <- query }, Effects.task (getDestinations query))
+
+        SelectDestination dest ->
+            ({model | selected <- dest, destinations <- [], query <- dest.title}, Effects.none)
+
+        LoadResults results -> 
+            ({model | destinations <- results}, Effects.none)
 
 --VIEW
 
@@ -21,8 +51,8 @@ destination address dest =
         span [] [ text (dest.title ++ ", (" ++ (toString dest.establishmentCount) ++ " hotels)") ]
     ]
 
-autocompleter : Address Action -> Model -> Html
-autocompleter address model =
+view : Address Action -> Model -> Html
+view address model =
     section [ class "autocompleter" ] [
         h3 [] [ text "Destination" ],
         div [] [
@@ -30,10 +60,10 @@ autocompleter address model =
                 [ placeholder "Search for a destination"
                 , autofocus True
                 , type' "text"
-                , value model.destinationQuery
+                , value model.query
                 , on "input" targetValue
                         (\str -> 
-                               Signal.message address (DestinationQueryChanged str) )
+                               Signal.message address (QueryChanged str) )
                 ] []
         ],
         div [ class "results" ] [
@@ -43,9 +73,9 @@ autocompleter address model =
     
 getDestinations : String -> Task Never Action
 getDestinations query =
-    let req = Task.map (\dests -> LoadDestinations dests) (get destinations ("https://m.travelrepublic.co.uk/api2/destination/v2/search?SearchTerm=" ++ query ++ "&MaxResults=15&CultureCode=en-gb&RestrictToFlightDestinations=false&v=1.0.6978"))
+    let req = Task.map (\dests -> LoadResults dests) (get destinations ("https://m.travelrepublic.co.uk/api2/destination/v2/search?SearchTerm=" ++ query ++ "&MaxResults=15&CultureCode=en-gb&RestrictToFlightDestinations=false&v=1.0.6978"))
     in
-        Task.onError req (\err -> Task.succeed (LoadDestinations []))
+        Task.onError req (\err -> Task.succeed (LoadResults []))
 
 destinations : Json.Decoder DestinationList
 destinations =

@@ -10,6 +10,7 @@ Elm.Autocompleter.make = function (_elm) {
    _L = _N.List.make(_elm),
    $moduleName = "Autocompleter",
    $Basics = Elm.Basics.make(_elm),
+   $Destination = Elm.Destination.make(_elm),
    $Effects = Elm.Effects.make(_elm),
    $Html = Elm.Html.make(_elm),
    $Html$Attributes = Elm.Html.Attributes.make(_elm),
@@ -18,13 +19,12 @@ Elm.Autocompleter.make = function (_elm) {
    $Json$Decode = Elm.Json.Decode.make(_elm),
    $List = Elm.List.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
-   $Models = Elm.Models.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm),
    $Task = Elm.Task.make(_elm);
    var destinations = function () {
       var dest = A9($Json$Decode.object8,
-      $Models.Destination,
+      $Destination.Destination,
       A2($Json$Decode._op[":="],
       "CountryId",
       $Json$Decode.$int),
@@ -53,11 +53,15 @@ Elm.Autocompleter.make = function (_elm) {
       "Destinations",
       $Json$Decode.list(dest));
    }();
+   var LoadResults = function (a) {
+      return {ctor: "LoadResults"
+             ,_0: a};
+   };
    var getDestinations = function (query) {
       return function () {
          var req = A2($Task.map,
          function (dests) {
-            return $Models.LoadDestinations(dests);
+            return LoadResults(dests);
          },
          A2($Http.get,
          destinations,
@@ -69,16 +73,49 @@ Elm.Autocompleter.make = function (_elm) {
          return A2($Task.onError,
          req,
          function (err) {
-            return $Task.succeed($Models.LoadDestinations(_L.fromArray([])));
+            return $Task.succeed(LoadResults(_L.fromArray([])));
          });
       }();
+   };
+   var update = F2(function (action,
+   model) {
+      return function () {
+         switch (action.ctor)
+         {case "LoadResults":
+            return {ctor: "_Tuple2"
+                   ,_0: _U.replace([["destinations"
+                                    ,action._0]],
+                   model)
+                   ,_1: $Effects.none};
+            case "QueryChanged":
+            return {ctor: "_Tuple2"
+                   ,_0: _U.replace([["query"
+                                    ,action._0]],
+                   model)
+                   ,_1: $Effects.task(getDestinations(action._0))};
+            case "SelectDestination":
+            return {ctor: "_Tuple2"
+                   ,_0: _U.replace([["selected"
+                                    ,action._0]
+                                   ,["destinations"
+                                    ,_L.fromArray([])]
+                                   ,["query",action._0.title]],
+                   model)
+                   ,_1: $Effects.none};}
+         _U.badCase($moduleName,
+         "between lines 35 and 43");
+      }();
+   });
+   var SelectDestination = function (a) {
+      return {ctor: "SelectDestination"
+             ,_0: a};
    };
    var destination = F2(function (address,
    dest) {
       return A2($Html.li,
       _L.fromArray([A2($Html$Events.onClick,
       address,
-      $Models.SelectDestination(dest))]),
+      SelectDestination(dest))]),
       _L.fromArray([A2($Html.span,
       _L.fromArray([]),
       _L.fromArray([$Html.text(A2($Basics._op["++"],
@@ -89,7 +126,11 @@ Elm.Autocompleter.make = function (_elm) {
       $Basics.toString(dest.establishmentCount),
       " hotels)"))))]))]));
    });
-   var autocompleter = F2(function (address,
+   var QueryChanged = function (a) {
+      return {ctor: "QueryChanged"
+             ,_0: a};
+   };
+   var view = F2(function (address,
    model) {
       return A2($Html.section,
       _L.fromArray([$Html$Attributes.$class("autocompleter")]),
@@ -102,14 +143,14 @@ Elm.Autocompleter.make = function (_elm) {
                    _L.fromArray([$Html$Attributes.placeholder("Search for a destination")
                                 ,$Html$Attributes.autofocus(true)
                                 ,$Html$Attributes.type$("text")
-                                ,$Html$Attributes.value(model.destinationQuery)
+                                ,$Html$Attributes.value(model.query)
                                 ,A3($Html$Events.on,
                                 "input",
                                 $Html$Events.targetValue,
                                 function (str) {
                                    return A2($Signal.message,
                                    address,
-                                   $Models.DestinationQueryChanged(str));
+                                   QueryChanged(str));
                                 })]),
                    _L.fromArray([]))]))
                    ,A2($Html.div,
@@ -120,9 +161,47 @@ Elm.Autocompleter.make = function (_elm) {
                    destination(address),
                    model.destinations))]))]));
    });
+   var tenerife = A8($Destination.Destination,
+   3522,
+   54875,
+   0,
+   0,
+   0,
+   0,
+   0,
+   "Tenerife, Spain");
+   var emptyDestination = A8($Destination.Destination,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   "");
+   var Model = F3(function (a,
+   b,
+   c) {
+      return {_: {}
+             ,destinations: a
+             ,query: b
+             ,selected: c};
+   });
+   var initialModel = A3(Model,
+   _L.fromArray([]),
+   "Tenerife, Spain",
+   tenerife);
    _elm.Autocompleter.values = {_op: _op
+                               ,Model: Model
+                               ,initialModel: initialModel
+                               ,emptyDestination: emptyDestination
+                               ,tenerife: tenerife
+                               ,QueryChanged: QueryChanged
+                               ,SelectDestination: SelectDestination
+                               ,LoadResults: LoadResults
+                               ,update: update
                                ,destination: destination
-                               ,autocompleter: autocompleter
+                               ,view: view
                                ,getDestinations: getDestinations
                                ,destinations: destinations};
    return _elm.Autocompleter.values;

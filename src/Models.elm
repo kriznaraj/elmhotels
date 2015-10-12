@@ -1,74 +1,28 @@
 module Models where
 
+import Filters
+import SortBar
+import Pager
+import Autocompleter
+import HotelsList
+
 type Action =
     NoOp
-    | LoadData HotelList
-    | PageChange Paging
-    | FilterChange Filter
-    | SortChange Sort
-    | LoadDestinations DestinationList
-    | DestinationQueryChanged String
-    | SelectDestination Destination
-
-type alias Hotel = {
-    name : String,
-    thumbnail : String,
-    image : String,
-    stars : Int,
-    rating : Float,
-    price : Float
-}
-
-type alias Paging = {
-    pageSize : Int,
-    pageIndex : Int
-}
-
-type Direction = Asc | Desc
-
-type Sort = 
-    Stars 
-    | Rating 
-    | HotelName 
-    | Price 
-
-type alias Filter = {
-    stars : List Int,
-    minRating : Float,
-    hotelName : String,
-    minPrice : Float
-}
+    | LoadData HotelsList.HotelList
+    | PageChange Pager.Model
+    | FilterChange Filters.Model
+    | SortChange SortBar.Model
+    | AutocompleterUpdate Autocompleter.Action
 
 type alias Criteria = {
-    filter : Filter,
-    sort : Sort,
-    paging : Paging
+    filter : Filters.Model,
+    sort : SortBar.Model,
+    paging : Pager.Model
 }
-
-type alias HotelList = (List Hotel)
 
 type alias Model = {
-    hotels : HotelList,
+    hotels : HotelsList.HotelList,
     total : Int,
     criteria : Criteria,
-    destinations : DestinationList,
-    destinationQuery : String,
-    selectedDestination : Destination
+    autocompleter : Autocompleter.Model
 }
-
-type alias Destination = {
-    countryId : Int,
-    provinceId : Int,
-    locationId : Int,
-    placeId : Int,
-    establishmentId : Int,
-    polygonId : Int,
-    establishmentCount : Int,
-    title : String }
-
-emptyDestination = Destination 0 0 0 0 0 0 0 ""
-
-tenerife = Destination 3522 54875 0 0 0 0 0 "Tenerife, Spain"
-
-
-type alias DestinationList = List Destination

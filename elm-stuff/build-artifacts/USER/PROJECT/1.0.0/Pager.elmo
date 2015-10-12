@@ -16,10 +16,9 @@ Elm.Pager.make = function (_elm) {
    $Html$Events = Elm.Html.Events.make(_elm),
    $List = Elm.List.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
-   $Models = Elm.Models.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm);
-   var pager = F3(function (total,
+   var view = F3(function (total,
    paging,
    address) {
       return function () {
@@ -65,7 +64,17 @@ Elm.Pager.make = function (_elm) {
                       _L.fromArray([$Html.text("Next")]))]));
       }();
    });
+   var Model = F2(function (a,b) {
+      return {_: {}
+             ,pageIndex: b
+             ,pageSize: a};
+   });
+   var initialModel = A2(Model,
+   20,
+   0);
    _elm.Pager.values = {_op: _op
-                       ,pager: pager};
+                       ,Model: Model
+                       ,initialModel: initialModel
+                       ,view: view};
    return _elm.Pager.values;
 };

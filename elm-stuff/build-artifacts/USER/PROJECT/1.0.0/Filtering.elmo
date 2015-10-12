@@ -10,11 +10,14 @@ Elm.Filtering.make = function (_elm) {
    _L = _N.List.make(_elm),
    $moduleName = "Filtering",
    $Basics = Elm.Basics.make(_elm),
+   $HotelsList = Elm.HotelsList.make(_elm),
    $List = Elm.List.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
    $Models = Elm.Models.make(_elm),
+   $Pager = Elm.Pager.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm),
+   $SortBar = Elm.SortBar.make(_elm),
    $String = Elm.String.make(_elm);
    var ratingAtLeast = F2(function (min,
    hotel) {
@@ -36,7 +39,7 @@ Elm.Filtering.make = function (_elm) {
               starsFilter);
             case "[]": return true;}
          _U.badCase($moduleName,
-         "between lines 52 and 54");
+         "between lines 55 and 57");
       }();
    });
    var nameMatches = F2(function (query,
@@ -99,7 +102,7 @@ Elm.Filtering.make = function (_elm) {
                        return _.stars;
                     })(hotels));}
                _U.badCase($moduleName,
-               "between lines 30 and 38");
+               "between lines 33 and 41");
             }();
          };
          var hotels = sortFn(model.hotels);
@@ -114,7 +117,7 @@ Elm.Filtering.make = function (_elm) {
          var paging = criteria.paging;
          return _U.cmp(paging.pageIndex * paging.pageSize,
          total) > 0 ? _U.replace([["paging"
-                                  ,A2($Models.Paging,20,0)]],
+                                  ,$Pager.initialModel]],
          criteria) : criteria;
       }();
    });
