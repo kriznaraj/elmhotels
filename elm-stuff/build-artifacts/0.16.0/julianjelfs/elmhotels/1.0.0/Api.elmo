@@ -1,0 +1,88 @@
+Elm.Api = Elm.Api || {};
+Elm.Api.make = function (_elm) {
+   "use strict";
+   _elm.Api = _elm.Api || {};
+   if (_elm.Api.values) return _elm.Api.values;
+   var _U = Elm.Native.Utils.make(_elm),
+   $Basics = Elm.Basics.make(_elm),
+   $Debug = Elm.Debug.make(_elm),
+   $Destination = Elm.Destination.make(_elm),
+   $Effects = Elm.Effects.make(_elm),
+   $HotelsList = Elm.HotelsList.make(_elm),
+   $Http = Elm.Http.make(_elm),
+   $Json$Decode = Elm.Json.Decode.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Models = Elm.Models.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $String = Elm.String.make(_elm),
+   $Task = Elm.Task.make(_elm);
+   var _op = {};
+   var imageUrl = function (estabPart) {
+      return A2($Basics._op["++"],"https://d23wf1heedwns1.cloudfront.net/ei",A2($Basics._op["++"],estabPart,"/0_260_260.jpg"));
+   };
+   var estabIdToImageUrl = function (estabId) {
+      return imageUrl(A3($String.foldl,
+      F2(function (c,str) {    return A2($String.append,str,A2($Basics._op["++"],"/",$String.fromChar(c)));}),
+      "",
+      $Basics.toString(estabId)));
+   };
+   var hotels = function () {
+      var hotel = A7($Json$Decode.object6,
+      $HotelsList.Hotel,
+      A2($Json$Decode._op[":="],"Name",$Json$Decode.string),
+      $Json$Decode.succeed(""),
+      A2($Json$Decode.map,estabIdToImageUrl,A2($Json$Decode._op[":="],"EstablishmentId",$Json$Decode.$int)),
+      A2($Json$Decode._op[":="],"Stars",$Json$Decode.$int),
+      A2($Json$Decode._op[":="],"UserRating",$Json$Decode.$float),
+      A2($Json$Decode._op[":="],"TeaserPricePerNight",$Json$Decode.$float));
+      return A2($Json$Decode._op[":="],"Establishments",$Json$Decode.list(hotel));
+   }();
+   var destinationToJson = function (dest) {
+      return A2($Basics._op["++"],
+      "{ \"CountryId\" : ",
+      A2($Basics._op["++"],
+      $Basics.toString(dest.countryId),
+      A2($Basics._op["++"],
+      ", \"ProvinceId\" : ",
+      A2($Basics._op["++"],
+      $Basics.toString(dest.provinceId),
+      A2($Basics._op["++"],
+      ", \"LocationId\" : ",
+      A2($Basics._op["++"],
+      $Basics.toString(dest.locationId),
+      A2($Basics._op["++"],
+      ", \"PlaceId\" : ",
+      A2($Basics._op["++"],
+      $Basics.toString(dest.placeId),
+      A2($Basics._op["++"],
+      ", \"EstablishmentId\" : ",
+      A2($Basics._op["++"],
+      $Basics.toString(dest.establishmentId),
+      A2($Basics._op["++"],", \"PolygonId\" : ",A2($Basics._op["++"],$Basics.toString(dest.polygonId),", \"PageStrand\" : 1}"))))))))))));
+   };
+   var parseResponse = function (response) {
+      var res = A2($Task.map,function (hl) {    return $Models.LoadData(hl);},A2($Http.fromJson,hotels,response));
+      return A2($Task.onError,res,function (err) {    return $Task.succeed($Models.LoadData(_U.list([])));});
+   };
+   var body = function (dest) {
+      var destJson = destinationToJson(dest);
+      return $Http.string(A2($Basics._op["++"],
+      "{\"CultureCode\":\"en-gb\",\"DomainId\":1,\"TradingGroupId\":1,\"CurrencyCode\":\"GBP\",\"Paging\":{\"PageIndex\":0,\"PageSize\":1000},\"FilterCriteria\":{\"AirportCode\":null,\"Stars\":[],\"PropertyType\":[],\"BoardTypeCode\":[],\"FacilityCodes\":[],\"PriceRange\":null,\"RatingRange\":null,\"EstabGroupIds\":[],\"EstabGroupName\":null,\"FilterByEstabGroup\":false,\"ChildDestinations\":[]},\"SortCriterion\":1,\"Destination\":",
+      A2($Basics._op["++"],destJson,"}")));
+   };
+   var hotelsPost = function (dest) {
+      return {verb: "POST",headers: _U.list([{ctor: "_Tuple2",_0: "Content-type",_1: "application/json"}]),url: "api/hotels",body: body(dest)};
+   };
+   var getHotels = function (dest) {    return parseResponse(A2($Http.send,$Http.defaultSettings,hotelsPost(dest)));};
+   return _elm.Api.values = {_op: _op
+                            ,body: body
+                            ,hotelsPost: hotelsPost
+                            ,parseResponse: parseResponse
+                            ,destinationToJson: destinationToJson
+                            ,getHotels: getHotels
+                            ,hotels: hotels
+                            ,estabIdToImageUrl: estabIdToImageUrl
+                            ,imageUrl: imageUrl};
+};

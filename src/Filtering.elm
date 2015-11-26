@@ -12,7 +12,7 @@ adjustPaging total criteria =
     let paging = criteria.paging
     in
         if(paging.pageIndex * paging.pageSize > total) then 
-            {criteria | paging <- Pager.initialModel}
+            {criteria | paging = Pager.initialModel}
         else
             criteria
 
@@ -25,7 +25,7 @@ page model =
             |> List.drop (paging.pageIndex * paging.pageSize)
             |> List.take paging.pageSize
     in
-       {model | hotels <- page, criteria <- criteria }
+       {model | hotels = page, criteria = criteria }
 
 sort : Model -> Model
 sort model =
@@ -41,7 +41,7 @@ sort model =
            SortBar.Price -> List.sortBy .price hotels)
         hotels = (sortFn model.hotels)
     in
-       {model | hotels <- hotels}
+       {model | hotels = hotels}
 
 nameMatches : String -> Hotel -> Bool
 nameMatches query hotel =
@@ -73,13 +73,13 @@ filter model =
         (nameMatches model.criteria.filter.hotelName h))
         hotels = List.filter filterFn model.hotels
     in
-       {model | hotels <- hotels, total <- (List.length hotels)}
+       {model | hotels = hotels, total = (List.length hotels)}
 
 restrict : Model -> Model
 restrict model =
     let hotels = model.hotels
         criteria = model.criteria
-        newModel = {model|total <- (List.length hotels)}
+        newModel = {model|total = (List.length hotels)}
     in
        newModel
         |> filter

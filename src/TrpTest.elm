@@ -26,36 +26,36 @@ initialModel =
 update : Action -> Model -> (Model, Effects Action)
 update action model =
     let criteria = model.criteria
-        updateCriteria = (\model criteria -> { model | criteria <- criteria })
+        updateCriteria = (\model criteria -> { model | criteria = criteria })
     in
         case action of
             NoOp ->
                 (model, Effects.none)
 
             PageChange paging ->
-                (updateCriteria model { criteria | paging <- paging }, Effects.none)
+                (updateCriteria model { criteria | paging = paging }, Effects.none)
 
             FilterChange filter ->
-                (updateCriteria model { criteria | filter <- filter }, Effects.none)
+                (updateCriteria model { criteria | filter = filter }, Effects.none)
 
             SortChange sort ->
-                (updateCriteria model { criteria | sort <- sort }, Effects.none)
+                (updateCriteria model { criteria | sort = sort }, Effects.none)
 
             LoadData hotels ->
-                ({model | hotels <- hotels}, Effects.none)
+                ({model | hotels = hotels}, Effects.none)
 
             AutocompleterUpdate action ->
                 let (m, e) = Autocompleter.update action model.autocompleter
                 in
                     case action of
                         Autocompleter.SelectDestination dest -> 
-                            ({model | autocompleter <- m, hotels <- []}, 
+                            ({model | autocompleter = m, hotels = []}, 
                             Effects.batch [
                                 Effects.task (getHotels dest),
                                 Effects.map AutocompleterUpdate e
                             ])
                         
-                        _ -> ({model | autocompleter <- m}, Effects.map AutocompleterUpdate e)
+                        _ -> ({model | autocompleter = m}, Effects.map AutocompleterUpdate e)
 
 
 --VIEW

@@ -34,13 +34,13 @@ update : Action -> Model -> (Model, Effects Action)
 update action model =
     case action of
         QueryChanged query -> 
-            ({model | query <- query }, Effects.task (getDestinations query))
+            ({model | query = query }, Effects.task (getDestinations query))
 
         SelectDestination dest ->
-            ({model | selected <- dest, destinations <- [], query <- dest.title}, Effects.none)
+            ({model | selected = dest, destinations = [], query = dest.title}, Effects.none)
 
         LoadResults results -> 
-            ({model | destinations <- results}, Effects.none)
+            ({model | destinations = results}, Effects.none)
 
 --VIEW
 

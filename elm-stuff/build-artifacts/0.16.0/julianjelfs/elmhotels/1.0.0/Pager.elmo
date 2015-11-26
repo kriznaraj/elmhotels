@@ -1,0 +1,46 @@
+Elm.Pager = Elm.Pager || {};
+Elm.Pager.make = function (_elm) {
+   "use strict";
+   _elm.Pager = _elm.Pager || {};
+   if (_elm.Pager.values) return _elm.Pager.values;
+   var _U = Elm.Native.Utils.make(_elm),
+   $Basics = Elm.Basics.make(_elm),
+   $Debug = Elm.Debug.make(_elm),
+   $Html = Elm.Html.make(_elm),
+   $Html$Attributes = Elm.Html.Attributes.make(_elm),
+   $Html$Events = Elm.Html.Events.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
+   var _op = {};
+   var view = F3(function (total,paging,address) {
+      var pageSize = $Basics.toFloat(paging.pageSize);
+      var hotelCount = $Basics.toFloat(total);
+      var pageCount = $Basics.ceiling(hotelCount / pageSize);
+      var pageIndex = paging.pageIndex;
+      var pageNum = pageIndex + 1;
+      var lastPage = _U.eq(pageNum,pageCount);
+      var firstPage = _U.eq(pageIndex,0);
+      return A2($Html.section,
+      _U.list([$Html$Attributes.$class("pager")]),
+      _U.list([A2($Html.button,
+              _U.list([$Html$Attributes.$class("button prev")
+                      ,$Html$Attributes.disabled(firstPage)
+                      ,A2($Html$Events.onClick,address,_U.update(paging,{pageIndex: pageIndex - 1}))]),
+              _U.list([$Html.text("Previous")]))
+              ,A2($Html.span,
+              _U.list([$Html$Attributes.$class("total-pages")]),
+              _U.list([$Html.text(A2($Basics._op["++"],
+              "Page ",
+              A2($Basics._op["++"],$Basics.toString(A2($Debug.watch,"pageNum",pageNum)),A2($Basics._op["++"]," of ",$Basics.toString(pageCount)))))]))
+              ,A2($Html.button,
+              _U.list([$Html$Attributes.$class("button next")
+                      ,$Html$Attributes.disabled(lastPage)
+                      ,A2($Html$Events.onClick,address,_U.update(paging,{pageIndex: pageIndex + 1}))]),
+              _U.list([$Html.text("Next")]))]));
+   });
+   var Model = F2(function (a,b) {    return {pageSize: a,pageIndex: b};});
+   var initialModel = A2(Model,20,0);
+   return _elm.Pager.values = {_op: _op,Model: Model,initialModel: initialModel,view: view};
+};

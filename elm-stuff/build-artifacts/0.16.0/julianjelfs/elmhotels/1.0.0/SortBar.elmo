@@ -1,0 +1,42 @@
+Elm.SortBar = Elm.SortBar || {};
+Elm.SortBar.make = function (_elm) {
+   "use strict";
+   _elm.SortBar = _elm.SortBar || {};
+   if (_elm.SortBar.values) return _elm.SortBar.values;
+   var _U = Elm.Native.Utils.make(_elm),
+   $Basics = Elm.Basics.make(_elm),
+   $Debug = Elm.Debug.make(_elm),
+   $Html = Elm.Html.make(_elm),
+   $Html$Attributes = Elm.Html.Attributes.make(_elm),
+   $Html$Events = Elm.Html.Events.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
+   var _op = {};
+   var sortButton = F4(function (currentSort,sort,label,address) {
+      var cls = _U.eq(currentSort,sort) ? "button sort-bar-button sort-selected" : "button sort-bar-button";
+      return A2($Html.div,_U.list([$Html$Attributes.$class(cls),A2($Html$Events.onClick,address,sort)]),_U.list([$Html.text(label)]));
+   });
+   var Price = {ctor: "Price"};
+   var HotelName = {ctor: "HotelName"};
+   var initialModel = HotelName;
+   var Rating = {ctor: "Rating"};
+   var Stars = {ctor: "Stars"};
+   var view = F2(function (sort,address) {
+      return A2($Html.section,
+      _U.list([$Html$Attributes.$class("sort-bar")]),
+      _U.list([A4(sortButton,sort,HotelName,"Name",address)
+              ,A4(sortButton,sort,Stars,"Stars",address)
+              ,A4(sortButton,sort,Rating,"Rating",address)
+              ,A4(sortButton,sort,Price,"Price",address)]));
+   });
+   return _elm.SortBar.values = {_op: _op
+                                ,Stars: Stars
+                                ,Rating: Rating
+                                ,HotelName: HotelName
+                                ,Price: Price
+                                ,initialModel: initialModel
+                                ,sortButton: sortButton
+                                ,view: view};
+};

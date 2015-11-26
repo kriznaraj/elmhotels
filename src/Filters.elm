@@ -23,9 +23,9 @@ addOrRemoveStar filter star =
     let inList = List.member star filter.stars
     in
        if(inList) then
-            { filter | stars <- (List.filter (\s -> s /= star) filter.stars) }
+            { filter | stars = (List.filter (\s -> s /= star) filter.stars) }
        else 
-            { filter | stars <- (star :: filter.stars) }
+            { filter | stars = (star :: filter.stars) }
 
 stars : Int -> Model -> Address Model -> Html
 stars num filter address =
@@ -49,7 +49,7 @@ view filter address =
                 , type' "text"
                 , value filter.hotelName
                 , on "input" targetValue 
-                    (\str -> Signal.message address {filter|hotelName <- str})
+                    (\str -> Signal.message address {filter|hotelName = str})
                 ] []
         ],
         div [] [
@@ -66,13 +66,13 @@ view filter address =
             rangeInput "Minimum Rating" "0" "10" 
                 filter.minRating 
                 filter
-                (\c str -> {filter|minRating <- (parseFloat str)})
+                (\c str -> {filter|minRating = (parseFloat str)})
                 address
         ],
         rangeInput "Minimum Price" "0" "7000" 
             filter.minPrice 
             filter
-            (\c str -> {filter|minPrice <- (parseFloat str)})
+            (\c str -> {filter|minPrice = (parseFloat str)})
             address,
         div [] [
             button [class "button",

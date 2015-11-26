@@ -1,0 +1,109 @@
+Elm.Filters = Elm.Filters || {};
+Elm.Filters.make = function (_elm) {
+   "use strict";
+   _elm.Filters = _elm.Filters || {};
+   if (_elm.Filters.values) return _elm.Filters.values;
+   var _U = Elm.Native.Utils.make(_elm),
+   $Basics = Elm.Basics.make(_elm),
+   $Debug = Elm.Debug.make(_elm),
+   $Html = Elm.Html.make(_elm),
+   $Html$Attributes = Elm.Html.Attributes.make(_elm),
+   $Html$Events = Elm.Html.Events.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $String = Elm.String.make(_elm);
+   var _op = {};
+   var parseFloat = function (str) {    var _p0 = $String.toFloat(str);if (_p0.ctor === "Err") {    return 0;} else {    return _p0._0;}};
+   var rangeInput = F7(function (name,min,max,val,filter,updater,address) {
+      return A2($Html.div,
+      _U.list([]),
+      _U.list([A2($Html.label,_U.list([]),_U.list([$Html.text(A2($Basics._op["++"],name,": "))]))
+              ,A2($Html.input,
+              _U.list([$Html$Attributes.placeholder(name)
+                      ,$Html$Attributes.type$("range")
+                      ,$Html$Attributes.min(min)
+                      ,$Html$Attributes.max(max)
+                      ,$Html$Attributes.value($Basics.toString(val))
+                      ,A3($Html$Events.on,"input",$Html$Events.targetValue,function (str) {    return A2($Signal.message,address,A2(updater,filter,str));})]),
+              _U.list([]))]));
+   });
+   var addOrRemoveStar = F2(function (filter,star) {
+      var inList = A2($List.member,star,filter.stars);
+      return inList ? _U.update(filter,{stars: A2($List.filter,function (s) {    return !_U.eq(s,star);},filter.stars)}) : _U.update(filter,
+      {stars: A2($List._op["::"],star,filter.stars)});
+   });
+   var stars = F3(function (num,filter,address) {
+      return A2($Html.div,
+      _U.list([$Html$Attributes.$class("stars")]),
+      _U.list([A2($Html.input,
+              _U.list([$Html$Attributes.type$("checkbox")
+                      ,$Html$Attributes.checked(A2($List.member,num,filter.stars))
+                      ,A2($Html$Events.onClick,address,A2(addOrRemoveStar,filter,num))]),
+              _U.list([]))
+              ,A2($Html.span,_U.list([]),_U.list([$Html.text(A2($Basics._op["++"],$Basics.toString(num)," Stars"))]))]));
+   });
+   var Model = F4(function (a,b,c,d) {    return {stars: a,minRating: b,hotelName: c,minPrice: d};});
+   var initialModel = A4(Model,_U.list([]),0,"",0);
+   var view = F2(function (filter,address) {
+      return A2($Html.section,
+      _U.list([$Html$Attributes.$class("filters")]),
+      _U.list([A2($Html.h3,_U.list([]),_U.list([$Html.text("Filters")]))
+              ,A2($Html.div,
+              _U.list([]),
+              _U.list([A2($Html.input,
+              _U.list([$Html$Attributes.placeholder("Hotel Name")
+                      ,$Html$Attributes.autofocus(true)
+                      ,$Html$Attributes.type$("text")
+                      ,$Html$Attributes.value(filter.hotelName)
+                      ,A3($Html$Events.on,
+                      "input",
+                      $Html$Events.targetValue,
+                      function (str) {
+                         return A2($Signal.message,address,_U.update(filter,{hotelName: str}));
+                      })]),
+              _U.list([]))]))
+              ,A2($Html.div,
+              _U.list([]),
+              _U.list([A2($Html.label,_U.list([]),_U.list([$Html.text("Stars: ")]))
+                      ,A2($Html.div,
+                      _U.list([]),
+                      _U.list([A3(stars,5,filter,address)
+                              ,A3(stars,4,filter,address)
+                              ,A3(stars,3,filter,address)
+                              ,A3(stars,2,filter,address)
+                              ,A3(stars,1,filter,address)]))]))
+              ,A2($Html.div,
+              _U.list([$Html$Attributes.$class("clear")]),
+              _U.list([A7(rangeInput,
+              "Minimum Rating",
+              "0",
+              "10",
+              filter.minRating,
+              filter,
+              F2(function (c,str) {    return _U.update(filter,{minRating: parseFloat(str)});}),
+              address)]))
+              ,A7(rangeInput,
+              "Minimum Price",
+              "0",
+              "7000",
+              filter.minPrice,
+              filter,
+              F2(function (c,str) {    return _U.update(filter,{minPrice: parseFloat(str)});}),
+              address)
+              ,A2($Html.div,
+              _U.list([]),
+              _U.list([A2($Html.button,
+              _U.list([$Html$Attributes.$class("button"),A2($Html$Events.onClick,address,A4(Model,_U.list([]),0,"",0))]),
+              _U.list([$Html.text("Clear Filters")]))]))]));
+   });
+   return _elm.Filters.values = {_op: _op
+                                ,Model: Model
+                                ,initialModel: initialModel
+                                ,addOrRemoveStar: addOrRemoveStar
+                                ,stars: stars
+                                ,view: view
+                                ,rangeInput: rangeInput
+                                ,parseFloat: parseFloat};
+};

@@ -1,0 +1,36 @@
+Elm.Models = Elm.Models || {};
+Elm.Models.make = function (_elm) {
+   "use strict";
+   _elm.Models = _elm.Models || {};
+   if (_elm.Models.values) return _elm.Models.values;
+   var _U = Elm.Native.Utils.make(_elm),
+   $Autocompleter = Elm.Autocompleter.make(_elm),
+   $Basics = Elm.Basics.make(_elm),
+   $Debug = Elm.Debug.make(_elm),
+   $Filters = Elm.Filters.make(_elm),
+   $HotelsList = Elm.HotelsList.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Pager = Elm.Pager.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $SortBar = Elm.SortBar.make(_elm);
+   var _op = {};
+   var Model = F4(function (a,b,c,d) {    return {hotels: a,total: b,criteria: c,autocompleter: d};});
+   var Criteria = F3(function (a,b,c) {    return {filter: a,sort: b,paging: c};});
+   var AutocompleterUpdate = function (a) {    return {ctor: "AutocompleterUpdate",_0: a};};
+   var SortChange = function (a) {    return {ctor: "SortChange",_0: a};};
+   var FilterChange = function (a) {    return {ctor: "FilterChange",_0: a};};
+   var PageChange = function (a) {    return {ctor: "PageChange",_0: a};};
+   var LoadData = function (a) {    return {ctor: "LoadData",_0: a};};
+   var NoOp = {ctor: "NoOp"};
+   return _elm.Models.values = {_op: _op
+                               ,NoOp: NoOp
+                               ,LoadData: LoadData
+                               ,PageChange: PageChange
+                               ,FilterChange: FilterChange
+                               ,SortChange: SortChange
+                               ,AutocompleterUpdate: AutocompleterUpdate
+                               ,Criteria: Criteria
+                               ,Model: Model};
+};

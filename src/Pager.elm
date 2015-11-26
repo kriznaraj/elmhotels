@@ -27,8 +27,8 @@ view total paging address =
         section [ class "pager"] [ 
            button [class "button prev",
                 disabled firstPage,
-               onClick address { paging | pageIndex <- (pageIndex - 1) }] [text "Previous"],
+               onClick address { paging | pageIndex = (pageIndex - 1) }] [text "Previous"],
            span [class "total-pages"] [ text ("Page " ++ (toString (watch "pageNum" pageNum)) ++ " of " ++ (toString pageCount)) ],    
            button [class "button next",
                 disabled lastPage, 
-               onClick address { paging | pageIndex <- (pageIndex + 1) }] [text "Next"]]
+               onClick address { paging | pageIndex = (pageIndex + 1) }] [text "Next"]]

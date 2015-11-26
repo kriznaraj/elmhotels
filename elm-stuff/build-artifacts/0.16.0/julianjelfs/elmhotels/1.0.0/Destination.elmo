@@ -1,0 +1,18 @@
+Elm.Destination = Elm.Destination || {};
+Elm.Destination.make = function (_elm) {
+   "use strict";
+   _elm.Destination = _elm.Destination || {};
+   if (_elm.Destination.values) return _elm.Destination.values;
+   var _U = Elm.Native.Utils.make(_elm),
+   $Basics = Elm.Basics.make(_elm),
+   $Debug = Elm.Debug.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
+   var _op = {};
+   var Destination = F8(function (a,b,c,d,e,f,g,h) {
+      return {countryId: a,provinceId: b,locationId: c,placeId: d,establishmentId: e,polygonId: f,establishmentCount: g,title: h};
+   });
+   return _elm.Destination.values = {_op: _op,Destination: Destination};
+};
