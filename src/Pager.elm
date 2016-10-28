@@ -1,20 +1,19 @@
-module Pager where
+module Pager exposing(..)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
-import Signal exposing (Address)
-import Debug exposing (log, watch)
+import Debug exposing (log)
 
-type alias Model = {
-    pageSize : Int,
-    pageIndex : Int
-}
+type alias Model =
+    { pageSize : Int
+    , pageIndex : Int
+    }
 
 initialModel : Model
 initialModel = Model 20 0
 
-view : Int -> Model -> Address Model -> Html
+view : Int -> Model -> Html
 view total paging address =
     let pageIndex = paging.pageIndex
         pageNum = pageIndex + 1
@@ -28,7 +27,7 @@ view total paging address =
            button [class "button prev",
                 disabled firstPage,
                onClick address { paging | pageIndex = (pageIndex - 1) }] [text "Previous"],
-           span [class "total-pages"] [ text ("Page " ++ (toString (watch "pageNum" pageNum)) ++ " of " ++ (toString pageCount)) ],    
+           span [class "total-pages"] [ text ("Page " ++ (toString pageNum) ++ " of " ++ (toString pageCount)) ],
            button [class "button next",
                 disabled lastPage, 
                onClick address { paging | pageIndex = (pageIndex + 1) }] [text "Next"]]

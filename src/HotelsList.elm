@@ -1,4 +1,4 @@
-module HotelsList where
+module HotelsList exposing(..)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)

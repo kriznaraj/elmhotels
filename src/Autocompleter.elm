@@ -1,14 +1,12 @@
-module Autocompleter where
+module Autocompleter exposing(..)
 
 import Http exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
-import Signal exposing (Address)
 import String exposing (length)
 import Json.Decode as Json exposing ((:=))
 import Task exposing (..)
-import Effects exposing (..)
 import Debug exposing (log)
 import Destination exposing (Destination, DestinationList)
 
@@ -26,32 +24,32 @@ emptyDestination = Destination 0 0 0 0 0 0 0 ""
 tenerife = Destination 3522 54875 0 0 0 0 0 "Tenerife, Spain"
 
 --UPDATE
-type Action = QueryChanged String
+type Msg = QueryChanged String
         | SelectDestination Destination
         | LoadResults DestinationList
 
-update : Action -> Model -> (Model, Effects Action)
-update action model =
-    case action of
+update : Msg -> Model -> (Model, Cmd Msg)
+update msg model =
+    case msg of
         QueryChanged query -> 
-            ({model | query = query }, Effects.task (getDestinations query))
+            ({model | query = query }, Cmd.task (getDestinations query))
 
         SelectDestination dest ->
-            ({model | selected = dest, destinations = [], query = dest.title}, Effects.none)
+            ({model | selected = dest, destinations = [], query = dest.title}, Cmd.none)
 
         LoadResults results -> 
-            ({model | destinations = results}, Effects.none)
+            ({model | destinations = results}, Cmd.none)
 
 --VIEW
 
-destination: Address Action -> Destination -> Html
-destination address dest =
+destination: Destination -> Html
+destination dest =
     li [ 
-        onClick address (SelectDestination dest)] [
+        onClick (SelectDestination dest)] [
         span [] [ text (dest.title ++ ", (" ++ (toString dest.establishmentCount) ++ " hotels)") ]
     ]
 
-view : Address Action -> Model -> Html
+view : Address Msg -> Model -> Html
 view address model =
     section [ class "autocompleter" ] [
         h3 [] [ text "Destination" ],
@@ -62,8 +60,7 @@ view address model =
                 , type' "text"
                 , value model.query
                 , on "input" targetValue
-                        (\str -> 
-                               Signal.message address (QueryChanged str) )
+                        (\str -> QueryChanged str )
                 ] []
         ],
         div [ class "results" ] [
@@ -71,7 +68,7 @@ view address model =
         ]
     ]
     
-getDestinations : String -> Task Never Action
+getDestinations : String -> Task Never Msg
 getDestinations query =
     let req = Task.map (\dests -> LoadResults dests) (get destinations ("https://m.travelrepublic.co.uk/api2/destination/v2/search?SearchTerm=" ++ query ++ "&MaxResults=15&CultureCode=en-gb&RestrictToFlightDestinations=false&v=1.0.6978"))
     in

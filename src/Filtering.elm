@@ -1,4 +1,4 @@
-module Filtering where
+module Filtering exposing(..)
 
 import Models exposing (..)
 import SortBar

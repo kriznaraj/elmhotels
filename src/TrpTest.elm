@@ -1,11 +1,9 @@
-module TrpTest where
+module TrpTest exposing(..)
 
 import Task exposing (..)
-import Effects exposing (..)
 import Html exposing (..)
+import Html.App as Html exposing (map)
 import Html.Attributes exposing (..)
-import StartApp as StartApp
-import Signal exposing (Address)
 import Api exposing (getHotels)
 import Models exposing (..)
 import Header
@@ -17,79 +15,78 @@ import Autocompleter
 import Filtering exposing (..)
 import Debug exposing(log)
 
---MODEL
+init: (Model, Cmd Msg)
+init =
+    (initialModel, Cmd.none)
+
 initialModel : Model
 initialModel =
     Model [] 0 (Criteria Filters.initialModel SortBar.initialModel Pager.initialModel) Autocompleter.initialModel
 
---UPDATE
-update : Action -> Model -> (Model, Effects Action)
-update action model =
+update : Msg -> Model -> (Model, Cmd Msg)
+update msg model =
     let criteria = model.criteria
         updateCriteria = (\model criteria -> { model | criteria = criteria })
     in
-        case action of
+        case msg of
             NoOp ->
-                (model, Effects.none)
+                (model, Cmd.none)
 
             PageChange paging ->
-                (updateCriteria model { criteria | paging = paging }, Effects.none)
+                (updateCriteria model { criteria | paging = paging }, Cmd.none)
 
             FilterChange filter ->
-                (updateCriteria model { criteria | filter = filter }, Effects.none)
+                (updateCriteria model { criteria | filter = filter }, Cmd.none)
 
             SortChange sort ->
-                (updateCriteria model { criteria | sort = sort }, Effects.none)
+                (updateCriteria model { criteria | sort = sort }, Cmd.none)
 
             LoadData hotels ->
-                ({model | hotels = hotels}, Effects.none)
+                ({model | hotels = hotels}, Cmd.none)
 
-            AutocompleterUpdate action ->
-                let (m, e) = Autocompleter.update action model.autocompleter
+            AutocompleterUpdate msg ->
+                let (m, e) = Autocompleter.update msg model.autocompleter
                 in
-                    case action of
+                    case msg of
                         Autocompleter.SelectDestination dest -> 
                             ({model | autocompleter = m, hotels = []}, 
-                            Effects.batch [
-                                Effects.task (getHotels dest),
-                                Effects.map AutocompleterUpdate e
+                            Cmd.batch [
+                                Cmd.task (getHotels dest),
+                                Cmd.map AutocompleterUpdate e
                             ])
                         
-                        _ -> ({model | autocompleter = m}, Effects.map AutocompleterUpdate e)
+                        _ -> ({model | autocompleter = m}, Cmd.map AutocompleterUpdate e)
 
 
 --VIEW
-view: Address Action -> Model -> Html
-view address model =
+view: Model -> Html
+view model =
     let filtered = restrict model
     in
         div [] [
             section [ class "header" ] [
                 Header.header
             ],
-            section [ class "sidebar" ] [ 
-                (Autocompleter.view (Signal.forwardTo address AutocompleterUpdate) model.autocompleter),
-                (Filters.view filtered.criteria.filter (Signal.forwardTo address FilterChange))
-            ],
-            section [ class "content" ] [
-                (SortBar.view filtered.criteria.sort (Signal.forwardTo address SortChange)),
-                (Pager.view filtered.total filtered.criteria.paging (Signal.forwardTo address PageChange)),
-                (HotelsList.hotelList filtered.hotels)
+            section [ class "sidebar" ]
+                [ map AutocompleterUpdate (Autocompleter.view model.autocompleter)
+                , map FilterChange (Filters.view filtered.criteria.filter)
+                ],
+            section [ class "content" ]
+                [ map SortChange (SortBar.view filtered.criteria.sort)
+                , map PageChange (Pager.view filtered.total filtered.criteria.paging)
+                , (HotelsList.hotelList filtered.hotels)
             ], 
             section [class "footer"] [
                 h3 [] [text "My beautiful footer section"]]
             ]
 
---WIRING
-app =
-    StartApp.start
-       {init = (initialModel, Effects.task (getHotels initialModel.autocompleter.selected)),
-        view = view,
-        update = update,
-        inputs = [] }
+main =
+    Html.program
+        { init = init
+        , update = update
+        , view = view
+        , subscriptions = \_ -> Sub.none
+        }
 
-main = app.html
 
-port tasks : Signal (Task.Task Never ())
-port tasks = app.tasks
 

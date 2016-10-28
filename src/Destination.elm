@@ -1,4 +1,4 @@
-module Destination where
+module Destination exposing(..)
 
 type alias Destination = {
     countryId : Int,

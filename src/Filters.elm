@@ -1,19 +1,18 @@
-module Filters where
+module Filters exposing(..)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
-import Signal exposing (Address)
 import Debug exposing (log)
 import String
 
 --MODEL
-type alias Model = {
-    stars : List Int,
-    minRating : Float,
-    hotelName : String,
-    minPrice : Float
-}
+type alias Model =
+    { stars : List Int
+    , minRating : Float
+    , hotelName : String
+    , minPrice : Float
+    }
 
 initialModel : Model
 initialModel = Model [] 0 "" 0
@@ -27,18 +26,18 @@ addOrRemoveStar filter star =
        else 
             { filter | stars = (star :: filter.stars) }
 
-stars : Int -> Model -> Address Model -> Html
+stars : Int -> Model -> Html
 stars num filter address =
     div [class "stars"] [
                  input [
                     type' "checkbox",
                     checked (List.member num filter.stars),
-                    onClick address (addOrRemoveStar filter num)
+                    onClick (addOrRemoveStar filter num)
                 ] [],
                 span [] [text ((toString num) ++ " Stars")]
     ]
 
-view : Model -> Address Model -> Html
+view : Model -> Html
 view filter address = 
     section [ class "filters"] [ 
         h3 [] [text "Filters"],
@@ -49,7 +48,7 @@ view filter address =
                 , type' "text"
                 , value filter.hotelName
                 , on "input" targetValue 
-                    (\str -> Signal.message address {filter|hotelName = str})
+                    (\str -> {filter|hotelName = str})
                 ] []
         ],
         div [] [
@@ -76,7 +75,7 @@ view filter address =
             address,
         div [] [
             button [class "button",
-                onClick address (Model [] 0 "" 0)] [ text "Clear Filters" ]
+                onClick (Model [] 0 "" 0)] [ text "Clear Filters" ]
         ]
     ] 
 
@@ -92,7 +91,7 @@ rangeInput name min max val filter updater address =
             , Html.Attributes.max max
             , value (toString val)
             , on "input" targetValue 
-                (\str -> Signal.message address (updater filter str))
+                (\str -> (updater filter str))
             ] []
     ]
     

@@ -1,9 +1,8 @@
-module Api where
+module Api exposing(..)
 
 import Json.Decode as Json exposing ((:=))
 import Json.Encode exposing (encode)
 import Task exposing (..)
-import Effects exposing (..)
 import Http exposing (..)
 import String exposing (append, fromChar, foldl)
 import HotelsList exposing (HotelList, Hotel)
@@ -23,7 +22,7 @@ hotelsPost dest =
         url = "api/hotels",
         body = (body dest) }
 
-parseResponse : Task RawError Response -> Task Never Action
+parseResponse : Task RawError Response -> Task Never Msg
 parseResponse response =
     let res = Task.map (\hl -> LoadData hl) (fromJson hotels response)
     in
@@ -40,7 +39,7 @@ destinationToJson dest =
     """, "PolygonId" : """ ++ (toString dest.polygonId) ++
     """, "PageStrand" : 1}"""
 
-getHotels : Destination -> Task Never Action
+getHotels : Destination -> Task Never Msg
 getHotels dest =
     (parseResponse (send defaultSettings (hotelsPost dest)))
 
