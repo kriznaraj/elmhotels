@@ -1,0 +1,110 @@
+var _julianjelfs$elmhotels$Api$imageUrl = function (estabPart) {
+	return A2(
+		_elm_lang$core$Basics_ops['++'],
+		'https://d23wf1heedwns1.cloudfront.net/ei',
+		A2(_elm_lang$core$Basics_ops['++'], estabPart, '/0_260_260.jpg'));
+};
+var _julianjelfs$elmhotels$Api$estabIdToImageUrl = function (estabId) {
+	return _julianjelfs$elmhotels$Api$imageUrl(
+		A3(
+			_elm_lang$core$String$foldl,
+			F2(
+				function (c, str) {
+					return A2(
+						_elm_lang$core$String$append,
+						str,
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							'/',
+							_elm_lang$core$String$fromChar(c)));
+				}),
+			'',
+			_elm_lang$core$Basics$toString(estabId)));
+};
+var _julianjelfs$elmhotels$Api$hotelsDecoder = function () {
+	var hotel = A7(
+		_elm_lang$core$Json_Decode$object6,
+		_julianjelfs$elmhotels$Models$Hotel,
+		A2(_elm_lang$core$Json_Decode_ops[':='], 'Name', _elm_lang$core$Json_Decode$string),
+		_elm_lang$core$Json_Decode$succeed(''),
+		A2(
+			_elm_lang$core$Json_Decode$map,
+			_julianjelfs$elmhotels$Api$estabIdToImageUrl,
+			A2(_elm_lang$core$Json_Decode_ops[':='], 'EstablishmentId', _elm_lang$core$Json_Decode$int)),
+		A2(_elm_lang$core$Json_Decode_ops[':='], 'Stars', _elm_lang$core$Json_Decode$int),
+		A2(_elm_lang$core$Json_Decode_ops[':='], 'UserRating', _elm_lang$core$Json_Decode$float),
+		A2(_elm_lang$core$Json_Decode_ops[':='], 'TeaserPricePerNight', _elm_lang$core$Json_Decode$float));
+	return A2(
+		_elm_lang$core$Json_Decode_ops[':='],
+		'Establishments',
+		_elm_lang$core$Json_Decode$list(hotel));
+}();
+var _julianjelfs$elmhotels$Api$destinationToJson = function (dest) {
+	return A2(
+		_elm_lang$core$Basics_ops['++'],
+		'{ \"CountryId\" : ',
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			_elm_lang$core$Basics$toString(dest.countryId),
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				', \"ProvinceId\" : ',
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					_elm_lang$core$Basics$toString(dest.provinceId),
+					A2(
+						_elm_lang$core$Basics_ops['++'],
+						', \"LocationId\" : ',
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							_elm_lang$core$Basics$toString(dest.locationId),
+							A2(
+								_elm_lang$core$Basics_ops['++'],
+								', \"PlaceId\" : ',
+								A2(
+									_elm_lang$core$Basics_ops['++'],
+									_elm_lang$core$Basics$toString(dest.placeId),
+									A2(
+										_elm_lang$core$Basics_ops['++'],
+										', \"EstablishmentId\" : ',
+										A2(
+											_elm_lang$core$Basics_ops['++'],
+											_elm_lang$core$Basics$toString(dest.establishmentId),
+											A2(
+												_elm_lang$core$Basics_ops['++'],
+												', \"PolygonId\" : ',
+												A2(
+													_elm_lang$core$Basics_ops['++'],
+													_elm_lang$core$Basics$toString(dest.polygonId),
+													', \"PageStrand\" : 1}'))))))))))));
+};
+var _julianjelfs$elmhotels$Api$body = function (dest) {
+	var destJson = _julianjelfs$elmhotels$Api$destinationToJson(dest);
+	return _evancz$elm_http$Http$string(
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			'{\"CultureCode\":\"en-gb\",\"DomainId\":1,\"TradingGroupId\":1,\"CurrencyCode\":\"GBP\",\"Paging\":{\"PageIndex\":0,\"PageSize\":1000},\"FilterCriteria\":{\"AirportCode\":null,\"Stars\":[],\"PropertyType\":[],\"BoardTypeCode\":[],\"FacilityCodes\":[],\"PriceRange\":null,\"RatingRange\":null,\"EstabGroupIds\":[],\"EstabGroupName\":null,\"FilterByEstabGroup\":false,\"ChildDestinations\":[]},\"SortCriterion\":1,\"Destination\":',
+			A2(_elm_lang$core$Basics_ops['++'], destJson, '}')));
+};
+var _julianjelfs$elmhotels$Api$hotelsPost = function (dest) {
+	return {
+		verb: 'POST',
+		headers: _elm_lang$core$Native_List.fromArray(
+			[
+				{ctor: '_Tuple2', _0: 'Content-type', _1: 'application/json'}
+			]),
+		url: 'api/hotels',
+		body: _julianjelfs$elmhotels$Api$body(dest)
+	};
+};
+var _julianjelfs$elmhotels$Api$getHotels = function (dest) {
+	var config = _julianjelfs$elmhotels$Api$hotelsPost(dest);
+	return A3(
+		_elm_lang$core$Task$perform,
+		_julianjelfs$elmhotels$Models$HotelsLoadFailed,
+		_julianjelfs$elmhotels$Models$HotelsLoadSucceeded,
+		A2(
+			_evancz$elm_http$Http$fromJson,
+			_julianjelfs$elmhotels$Api$hotelsDecoder,
+			A2(_evancz$elm_http$Http$send, _evancz$elm_http$Http$defaultSettings, config)));
+};

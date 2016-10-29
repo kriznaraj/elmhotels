@@ -1,0 +1,106 @@
+var _julianjelfs$elmhotels$Filtering$ratingAtLeast = F2(
+	function (min, hotel) {
+		return _elm_lang$core$Native_Utils.cmp(hotel.rating, min) > -1;
+	});
+var _julianjelfs$elmhotels$Filtering$priceLessThan = F2(
+	function (min, hotel) {
+		return _elm_lang$core$Native_Utils.cmp(hotel.price, min) > -1;
+	});
+var _julianjelfs$elmhotels$Filtering$starsMatch = F2(
+	function (starsFilter, hotel) {
+		var _p0 = starsFilter;
+		if (_p0.ctor === '::') {
+			return A2(_elm_lang$core$List$member, hotel.stars, starsFilter);
+		} else {
+			return true;
+		}
+	});
+var _julianjelfs$elmhotels$Filtering$nameMatches = F2(
+	function (query, hotel) {
+		var nameLower = _elm_lang$core$String$toLower(hotel.name);
+		var queryLower = _elm_lang$core$String$toLower(query);
+		return A2(_elm_lang$core$String$contains, queryLower, nameLower);
+	});
+var _julianjelfs$elmhotels$Filtering$filter = function (model) {
+	var filterFn = function (h) {
+		return A2(_julianjelfs$elmhotels$Filtering$ratingAtLeast, model.criteria.filter.minRating, h) && (A2(_julianjelfs$elmhotels$Filtering$priceLessThan, model.criteria.filter.minPrice, h) && (A2(_julianjelfs$elmhotels$Filtering$starsMatch, model.criteria.filter.stars, h) && A2(_julianjelfs$elmhotels$Filtering$nameMatches, model.criteria.filter.hotelName, h)));
+	};
+	var hotels = A2(_elm_lang$core$List$filter, filterFn, model.hotels);
+	return _elm_lang$core$Native_Utils.update(
+		model,
+		{
+			hotels: hotels,
+			total: _elm_lang$core$List$length(hotels)
+		});
+};
+var _julianjelfs$elmhotels$Filtering$sort = function (model) {
+	var sortFn = function (hotels) {
+		var _p1 = model.criteria.sort;
+		switch (_p1.ctor) {
+			case 'HotelName':
+				return A2(
+					_elm_lang$core$List$sortBy,
+					function (_) {
+						return _.name;
+					},
+					hotels);
+			case 'Stars':
+				return _elm_lang$core$List$reverse(
+					A2(
+						_elm_lang$core$List$sortBy,
+						function (_) {
+							return _.stars;
+						},
+						hotels));
+			case 'Rating':
+				return _elm_lang$core$List$reverse(
+					A2(
+						_elm_lang$core$List$sortBy,
+						function (_) {
+							return _.rating;
+						},
+						hotels));
+			default:
+				return A2(
+					_elm_lang$core$List$sortBy,
+					function (_) {
+						return _.price;
+					},
+					hotels);
+		}
+	};
+	var hotels = sortFn(model.hotels);
+	return _elm_lang$core$Native_Utils.update(
+		model,
+		{hotels: hotels});
+};
+var _julianjelfs$elmhotels$Filtering$adjustPaging = F2(
+	function (total, criteria) {
+		var paging = criteria.paging;
+		return (_elm_lang$core$Native_Utils.cmp(paging.pageIndex * paging.pageSize, total) > 0) ? _elm_lang$core$Native_Utils.update(
+			criteria,
+			{paging: _julianjelfs$elmhotels$Models$initialPager}) : criteria;
+	});
+var _julianjelfs$elmhotels$Filtering$page = function (model) {
+	var criteria = A2(_julianjelfs$elmhotels$Filtering$adjustPaging, model.total, model.criteria);
+	var paging = criteria.paging;
+	var page = A2(
+		_elm_lang$core$List$take,
+		paging.pageSize,
+		A2(_elm_lang$core$List$drop, paging.pageIndex * paging.pageSize, model.hotels));
+	return _elm_lang$core$Native_Utils.update(
+		model,
+		{hotels: page, criteria: criteria});
+};
+var _julianjelfs$elmhotels$Filtering$restrict = function (model) {
+	var criteria = model.criteria;
+	var hotels = model.hotels;
+	var newModel = _elm_lang$core$Native_Utils.update(
+		model,
+		{
+			total: _elm_lang$core$List$length(hotels)
+		});
+	return _julianjelfs$elmhotels$Filtering$page(
+		_julianjelfs$elmhotels$Filtering$sort(
+			_julianjelfs$elmhotels$Filtering$filter(newModel)));
+};

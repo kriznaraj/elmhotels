@@ -1,27 +1,64 @@
 module Models exposing(..)
 
-import Filters
-import SortBar
-import Pager
 import Autocompleter
-import HotelsList
+import Http
+
+
+type alias Filter =
+    { stars : List Int
+    , minRating : Float
+    , hotelName : String
+    , minPrice : Float
+    }
+
+initialFilter : Filter
+initialFilter = Filter [] 0 "" 0
+
+type alias Pager =
+    { pageSize : Int
+    , pageIndex : Int
+    }
+
+initialPager : Pager
+initialPager = Pager 20 0
+
+type SortOrder =
+    Stars
+    | Rating
+    | HotelName
+    | Price
+
+initialSortOrder : SortOrder
+initialSortOrder = HotelName
+
+type alias Hotel =
+    { name : String
+    , thumbnail : String
+    , image : String
+    , stars : Int
+    , rating : Float
+    , price : Float
+    }
+
+type alias HotelList = (List Hotel)
 
 type Msg =
     NoOp
-    | LoadData HotelsList.HotelList
-    | PageChange Pager.Model
-    | FilterChange Filters.Model
-    | SortChange SortBar.Model
+    | HotelsLoadSucceeded HotelList
+    | HotelsLoadFailed Http.Error
+    | PageChange Pager
+    | FilterChange Filter
+    | SortChange SortOrder
     | AutocompleterUpdate Autocompleter.Msg
 
 type alias Criteria =
-    { filter : Filters.Model
-    , sort : SortBar.Model
-    , paging : Pager.Model
+    { filter : Filter
+    , sort : SortOrder
+    , paging : Pager
     }
 
 type alias Model =
-    { hotels : HotelsList.HotelList
+    { hotels : HotelList
     , total : Int
     , criteria : Criteria
     , autocompleter : Autocompleter.Model

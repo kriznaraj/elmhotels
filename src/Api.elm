@@ -5,7 +5,6 @@ import Json.Encode exposing (encode)
 import Task exposing (..)
 import Http exposing (..)
 import String exposing (append, fromChar, foldl)
-import HotelsList exposing (HotelList, Hotel)
 import Destination exposing (Destination, DestinationList)
 import Models exposing (..)
 
@@ -22,13 +21,6 @@ hotelsPost dest =
         url = "api/hotels",
         body = (body dest) }
 
-parseResponse : Task RawError Response -> Task Never Msg
-parseResponse response =
-    let res = Task.map (\hl -> LoadData hl) (fromJson hotels response)
-    in
-        Task.onError res (\err -> Task.succeed (LoadData []))
-
-
 destinationToJson : Destination -> String
 destinationToJson dest = 
     """{ "CountryId" : """ ++ (toString dest.countryId) ++
@@ -39,21 +31,29 @@ destinationToJson dest =
     """, "PolygonId" : """ ++ (toString dest.polygonId) ++
     """, "PageStrand" : 1}"""
 
-getHotels : Destination -> Task Never Msg
+
+getHotels : Destination -> Cmd Msg
 getHotels dest =
-    (parseResponse (send defaultSettings (hotelsPost dest)))
+    let
+        config =
+            hotelsPost dest
+    in
+        Http.send Http.defaultSettings config
+            |> Http.fromJson hotelsDecoder
+            |> Task.perform HotelsLoadFailed HotelsLoadSucceeded
 
 
-hotels : Json.Decoder HotelList
-hotels =
-    let hotel =
-        Json.object6 Hotel
-           ("Name" := Json.string)
-           (Json.succeed "")
-           (Json.map estabIdToImageUrl ("EstablishmentId" := Json.int))
-           ("Stars" := Json.int)
-           ("UserRating" := Json.float)
-           ("TeaserPricePerNight" := Json.float)
+hotelsDecoder : Json.Decoder HotelList
+hotelsDecoder =
+    let
+        hotel =
+            Json.object6 Hotel
+               ("Name" := Json.string)
+               (Json.succeed "")
+               (Json.map estabIdToImageUrl ("EstablishmentId" := Json.int))
+               ("Stars" := Json.int)
+               ("UserRating" := Json.float)
+               ("TeaserPricePerNight" := Json.float)
     in
        "Establishments" := Json.list hotel
 

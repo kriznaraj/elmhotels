@@ -1,0 +1,4 @@
+var _julianjelfs$elmhotels$Destination$Destination = F8(
+	function (a, b, c, d, e, f, g, h) {
+		return {countryId: a, provinceId: b, locationId: c, placeId: d, establishmentId: e, polygonId: f, establishmentCount: g, title: h};
+	});

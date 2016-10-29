@@ -3,19 +3,12 @@ module SortBar exposing(..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
+import Models exposing (..)
 
 --MODEL
-type Model = 
-    Stars 
-    | Rating 
-    | HotelName 
-    | Price 
 
-initialModel : Model
-initialModel = HotelName
-
-sortButton : Model -> Model -> String -> Html
-sortButton currentSort sort label address =
+sortButton : SortOrder -> SortOrder -> String -> Html Msg
+sortButton currentSort sort label =
     let cls = if currentSort == sort then 
                  "button sort-bar-button sort-selected" 
               else 
@@ -23,11 +16,11 @@ sortButton currentSort sort label address =
     in
         div 
             [ class cls,
-              onClick sort ]
+              onClick (SortChange sort) ]
             [ text label ]
 
 
-view : Model -> Html
+view : SortOrder -> Html Msg
 view sort =
     section [ class "sort-bar"] [ 
         sortButton sort HotelName "Name" ,

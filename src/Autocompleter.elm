@@ -26,31 +26,39 @@ tenerife = Destination 3522 54875 0 0 0 0 0 "Tenerife, Spain"
 --UPDATE
 type Msg = QueryChanged String
         | SelectDestination Destination
-        | LoadResults DestinationList
+        | LoadResultsSucceeded DestinationList
+        | LoadResultsFailed Http.Error
 
+--we need to add a root Cmd as a third element in the tuple here so that we can trigger the hotel load
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
     case msg of
         QueryChanged query -> 
-            ({model | query = query }, Cmd.task (getDestinations query))
+            ({model | query = query }, getDestinations query)
 
         SelectDestination dest ->
             ({model | selected = dest, destinations = [], query = dest.title}, Cmd.none)
 
-        LoadResults results -> 
+        LoadResultsSucceeded results ->
             ({model | destinations = results}, Cmd.none)
+
+        LoadResultsFailed err ->
+            let
+                e = log "Autocompleter lookup failed: " err
+            in
+                (model, Cmd.none)
 
 --VIEW
 
-destination: Destination -> Html
+destination: Destination -> Html Msg
 destination dest =
     li [ 
         onClick (SelectDestination dest)] [
         span [] [ text (dest.title ++ ", (" ++ (toString dest.establishmentCount) ++ " hotels)") ]
     ]
 
-view : Address Msg -> Model -> Html
-view address model =
+view : Model -> Html Msg
+view model =
     section [ class "autocompleter" ] [
         h3 [] [ text "Destination" ],
         div [] [
@@ -59,32 +67,31 @@ view address model =
                 , autofocus True
                 , type' "text"
                 , value model.query
-                , on "input" targetValue
-                        (\str -> QueryChanged str )
+                , onInput (\str -> QueryChanged str)
                 ] []
         ],
         div [ class "results" ] [
-            ul [] (List.map (destination address) model.destinations)
+            ul [] (List.map destination model.destinations)
         ]
     ]
     
-getDestinations : String -> Task Never Msg
+getDestinations : String -> Cmd Msg
 getDestinations query =
-    let req = Task.map (\dests -> LoadResults dests) (get destinations ("https://m.travelrepublic.co.uk/api2/destination/v2/search?SearchTerm=" ++ query ++ "&MaxResults=15&CultureCode=en-gb&RestrictToFlightDestinations=false&v=1.0.6978"))
-    in
-        Task.onError req (\err -> Task.succeed (LoadResults []))
+       (get destinations ("https://m.travelrepublic.co.uk/api2/destination/v2/search?SearchTerm=" ++ query ++ "&MaxResults=15&CultureCode=en-gb&RestrictToFlightDestinations=false&v=1.0.6978"))
+        |> Task.perform LoadResultsFailed LoadResultsSucceeded
 
 destinations : Json.Decoder DestinationList
 destinations =
-    let dest =
-        Json.object8 Destination
-           ("CountryId" := Json.int)
-           ("ProvinceId" := Json.int)
-           ("LocationId" := Json.int)
-           ("PlaceId" := Json.int)
-           ("EstablishmentId" := Json.int)
-           ("PolygonId" := Json.int)
-           ("EstablishmentCount" := Json.int)
-           ("Title" := Json.string)
+    let
+        dest =
+            Json.object8 Destination
+               ("CountryId" := Json.int)
+               ("ProvinceId" := Json.int)
+               ("LocationId" := Json.int)
+               ("PlaceId" := Json.int)
+               ("EstablishmentId" := Json.int)
+               ("PolygonId" := Json.int)
+               ("EstablishmentCount" := Json.int)
+               ("Title" := Json.string)
     in
        "Destinations" := Json.list dest

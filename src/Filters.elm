@@ -5,19 +5,10 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Debug exposing (log)
 import String
+import Models exposing (..)
 
---MODEL
-type alias Model =
-    { stars : List Int
-    , minRating : Float
-    , hotelName : String
-    , minPrice : Float
-    }
 
-initialModel : Model
-initialModel = Model [] 0 "" 0
-
-addOrRemoveStar : Model -> Int -> Model
+addOrRemoveStar : Filter -> Int -> Filter
 addOrRemoveStar filter star =
     let inList = List.member star filter.stars
     in
@@ -26,19 +17,19 @@ addOrRemoveStar filter star =
        else 
             { filter | stars = (star :: filter.stars) }
 
-stars : Int -> Model -> Html
-stars num filter address =
+stars : Int -> Filter -> Html Msg
+stars num filter =
     div [class "stars"] [
                  input [
                     type' "checkbox",
                     checked (List.member num filter.stars),
-                    onClick (addOrRemoveStar filter num)
+                    onClick (FilterChange (addOrRemoveStar filter num))
                 ] [],
                 span [] [text ((toString num) ++ " Stars")]
     ]
 
-view : Model -> Html
-view filter address = 
+view : Filter -> Html Msg
+view filter =
     section [ class "filters"] [ 
         h3 [] [text "Filters"],
         div [] [
@@ -47,18 +38,17 @@ view filter address =
                 , autofocus True
                 , type' "text"
                 , value filter.hotelName
-                , on "input" targetValue 
-                    (\str -> {filter|hotelName = str})
+                , onInput (\str -> (FilterChange {filter | hotelName = str}))
                 ] []
         ],
         div [] [
             label [] [ text "Stars: " ],
             div [][
-                (stars 5 filter address), 
-                (stars 4 filter address), 
-                (stars 3 filter address), 
-                (stars 2 filter address), 
-                (stars 1 filter address)
+                (stars 5 filter ),
+                (stars 4 filter ),
+                (stars 3 filter ),
+                (stars 2 filter ),
+                (stars 1 filter )
             ]
         ],
         div [class "clear"] [
@@ -66,22 +56,20 @@ view filter address =
                 filter.minRating 
                 filter
                 (\c str -> {filter|minRating = (parseFloat str)})
-                address
         ],
         rangeInput "Minimum Price" "0" "7000" 
             filter.minPrice 
             filter
-            (\c str -> {filter|minPrice = (parseFloat str)})
-            address,
+            (\c str -> {filter|minPrice = (parseFloat str)}) ,
         div [] [
             button [class "button",
-                onClick (Model [] 0 "" 0)] [ text "Clear Filters" ]
+                onClick (FilterChange (Filter [] 0 "" 0))] [ text "Clear Filters" ]
         ]
     ] 
 
 
-rangeInput : String -> String -> String -> Float -> Model -> (Model -> String -> Model) -> Address Model -> Html
-rangeInput name min max val filter updater address =
+rangeInput : String -> String -> String -> Float -> Filter -> (Filter -> String -> Filter) -> Html Msg
+rangeInput name min max val filter updater =
     div [] [
         label [] [ text (name ++ ": ")],
         input 
@@ -90,16 +78,12 @@ rangeInput name min max val filter updater address =
             , Html.Attributes.min min
             , Html.Attributes.max max
             , value (toString val)
-            , on "input" targetValue 
-                (\str -> (updater filter str))
+            , onInput (\str -> (FilterChange (updater filter str)))
             ] []
     ]
     
 
---return 0 if the string cannot be parsed
 parseFloat : String -> Float
 parseFloat str =
-    case String.toFloat str of
-        Err _ -> 0
-        Ok x -> x
+    Result.withDefault 0 (String.toFloat str)
 

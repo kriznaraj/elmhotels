@@ -21,7 +21,7 @@ init =
 
 initialModel : Model
 initialModel =
-    Model [] 0 (Criteria Filters.initialModel SortBar.initialModel Pager.initialModel) Autocompleter.initialModel
+    Model [] 0 (Criteria initialFilter initialSortOrder initialPager) Autocompleter.initialModel
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
@@ -41,8 +41,14 @@ update msg model =
             SortChange sort ->
                 (updateCriteria model { criteria | sort = sort }, Cmd.none)
 
-            LoadData hotels ->
+            HotelsLoadSucceeded hotels ->
                 ({model | hotels = hotels}, Cmd.none)
+
+            HotelsLoadFailed err ->
+                let
+                    e = log "hotels failed to load: " err
+                in
+                    (model, Cmd.none)
 
             AutocompleterUpdate msg ->
                 let (m, e) = Autocompleter.update msg model.autocompleter
@@ -51,7 +57,7 @@ update msg model =
                         Autocompleter.SelectDestination dest -> 
                             ({model | autocompleter = m, hotels = []}, 
                             Cmd.batch [
-                                Cmd.task (getHotels dest),
+                                getHotels dest,
                                 Cmd.map AutocompleterUpdate e
                             ])
                         
@@ -59,7 +65,7 @@ update msg model =
 
 
 --VIEW
-view: Model -> Html
+view: Model -> Html Msg
 view model =
     let filtered = restrict model
     in
@@ -68,12 +74,12 @@ view model =
                 Header.header
             ],
             section [ class "sidebar" ]
-                [ map AutocompleterUpdate (Autocompleter.view model.autocompleter)
-                , map FilterChange (Filters.view filtered.criteria.filter)
+                [ Html.map AutocompleterUpdate (Autocompleter.view model.autocompleter)
+                , Filters.view filtered.criteria.filter
                 ],
             section [ class "content" ]
-                [ map SortChange (SortBar.view filtered.criteria.sort)
-                , map PageChange (Pager.view filtered.total filtered.criteria.paging)
+                [ SortBar.view filtered.criteria.sort
+                , Pager.view filtered.total filtered.criteria.paging
                 , (HotelsList.hotelList filtered.hotels)
             ], 
             section [class "footer"] [

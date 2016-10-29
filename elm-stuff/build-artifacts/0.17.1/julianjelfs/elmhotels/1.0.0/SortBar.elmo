@@ -1,0 +1,31 @@
+var _julianjelfs$elmhotels$SortBar$sortButton = F3(
+	function (currentSort, sort, label) {
+		var cls = _elm_lang$core$Native_Utils.eq(currentSort, sort) ? 'button sort-bar-button sort-selected' : 'button sort-bar-button';
+		return A2(
+			_elm_lang$html$Html$div,
+			_elm_lang$core$Native_List.fromArray(
+				[
+					_elm_lang$html$Html_Attributes$class(cls),
+					_elm_lang$html$Html_Events$onClick(
+					_julianjelfs$elmhotels$Models$SortChange(sort))
+				]),
+			_elm_lang$core$Native_List.fromArray(
+				[
+					_elm_lang$html$Html$text(label)
+				]));
+	});
+var _julianjelfs$elmhotels$SortBar$view = function (sort) {
+	return A2(
+		_elm_lang$html$Html$section,
+		_elm_lang$core$Native_List.fromArray(
+			[
+				_elm_lang$html$Html_Attributes$class('sort-bar')
+			]),
+		_elm_lang$core$Native_List.fromArray(
+			[
+				A3(_julianjelfs$elmhotels$SortBar$sortButton, sort, _julianjelfs$elmhotels$Models$HotelName, 'Name'),
+				A3(_julianjelfs$elmhotels$SortBar$sortButton, sort, _julianjelfs$elmhotels$Models$Stars, 'Stars'),
+				A3(_julianjelfs$elmhotels$SortBar$sortButton, sort, _julianjelfs$elmhotels$Models$Rating, 'Rating'),
+				A3(_julianjelfs$elmhotels$SortBar$sortButton, sort, _julianjelfs$elmhotels$Models$Price, 'Price')
+			]));
+};

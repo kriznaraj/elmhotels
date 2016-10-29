@@ -3,19 +3,10 @@ module HotelsList exposing(..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Debug exposing (log)
+import Models exposing (..)
 
-type alias Hotel = {
-    name : String,
-    thumbnail : String,
-    image : String,
-    stars : Int,
-    rating : Float,
-    price : Float
-}
 
-type alias HotelList = (List Hotel)
-
-backgroundImage : String -> Attribute
+backgroundImage : String -> Attribute Msg
 backgroundImage url =
     style 
         [ 
@@ -23,12 +14,12 @@ backgroundImage url =
             ("backgroundRepeat", "no-repeat")
         ]
 
-hotelCard : Hotel -> Html
+hotelCard : Hotel -> Html Msg
 hotelCard hotel =
     li [] [ 
         div [class "hotel-card"] [ 
             div [] [
-                div [class "hotel-image", backgroundImage hotel.image] [ ],
+                div [class "hotel-image", (backgroundImage hotel.image)] [ ],
                 div [class "hotel-overlay"] [
                      h3 [class "truncate"] [text hotel.name],
                      div [class "hotel-text"] [
@@ -41,7 +32,7 @@ hotelCard hotel =
         ]
     ]
 
-hotelList : HotelList -> Html
+hotelList : HotelList -> Html Msg
 hotelList hotels =
     section [ class "hotel-list"] [ 
         if((List.length hotels) == 0) then 
