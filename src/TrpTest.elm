@@ -77,10 +77,6 @@ update msg model =
                     )
 
 
-
---VIEW
-
-
 view : Model -> Html Msg
 view model =
     let

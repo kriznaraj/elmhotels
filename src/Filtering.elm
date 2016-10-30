@@ -40,39 +40,31 @@ sort : Model -> Model
 sort model =
     let
         sortFn =
-            (\hotels ->
-                case model.criteria.sort of
-                    HotelName ->
-                        List.sortBy .name hotels
+            case model.criteria.sort of
+                HotelName ->
+                    List.sortBy .name
 
-                    Stars ->
-                        hotels
-                            |> List.sortBy .stars
-                            |> List.reverse
+                Stars ->
+                        List.reverse << List.sortBy .stars
 
-                    Rating ->
-                        hotels
-                            |> List.sortBy .rating
-                            |> List.reverse
+                Rating ->
+                        List.reverse << List.sortBy .rating
 
-                    Price ->
-                        List.sortBy .price hotels
-            )
+                Price ->
+                    List.sortBy .price
 
-        hotels =
-            (sortFn model.hotels)
     in
-        { model | hotels = hotels }
+        { model | hotels = (sortFn model.hotels) }
 
 
 nameMatches : String -> Hotel -> Bool
-nameMatches query hotel =
+nameMatches query {name} =
     let
         queryLower =
             (String.toLower query)
 
         nameLower =
-            (String.toLower hotel.name)
+            (String.toLower name)
     in
         (String.contains queryLower nameLower)
 
@@ -98,35 +90,30 @@ ratingAtLeast min hotel =
 
 
 filter : Model -> Model
-filter model =
+filter ({criteria, hotels} as model) =
     let
-        filterFn =
+        filter = criteria.filter
+
+        fns =
+            [ ratingAtLeast filter.minRating
+            , priceLessThan filter.minPrice
+            , starsMatch filter.stars
+            , nameMatches filter.hotelName ]
+
+        hotelMatches =
             (\h ->
-                (ratingAtLeast model.criteria.filter.minRating h)
-                    && (priceLessThan model.criteria.filter.minPrice h)
-                    && (starsMatch model.criteria.filter.stars h)
-                    && (nameMatches model.criteria.filter.hotelName h)
-            )
+                List.foldl (\fn matches ->
+                    matches && fn h) True fns )
 
         hotels =
-            List.filter filterFn model.hotels
+            List.filter hotelMatches model.hotels
     in
         { model | hotels = hotels, total = (List.length hotels) }
 
 
 restrict : Model -> Model
-restrict model =
-    let
-        hotels =
-            model.hotels
-
-        criteria =
-            model.criteria
-
-        newModel =
-            { model | total = (List.length hotels) }
-    in
-        newModel
-            |> filter
-            |> sort
-            |> page
+restrict ({hotels, criteria} as model) =
+    { model | total = (List.length hotels) }
+        |> filter
+        |> sort
+        |> page
