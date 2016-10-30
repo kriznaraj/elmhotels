@@ -25,7 +25,11 @@ var _julianjelfs$elmhotels$Api$hotelsDecoder = function () {
 	var hotel = A7(
 		_elm_lang$core$Json_Decode$object6,
 		_julianjelfs$elmhotels$Models$Hotel,
-		A2(_elm_lang$core$Json_Decode_ops[':='], 'Name', _elm_lang$core$Json_Decode$string),
+		A2(
+			_elm_lang$core$Json_Decode$map,
+			_elm_lang$core$Maybe$withDefault('No Name'),
+			_elm_lang$core$Json_Decode$maybe(
+				A2(_elm_lang$core$Json_Decode_ops[':='], 'Name', _elm_lang$core$Json_Decode$string))),
 		_elm_lang$core$Json_Decode$succeed(''),
 		A2(
 			_elm_lang$core$Json_Decode$map,

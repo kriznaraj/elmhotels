@@ -25,7 +25,7 @@ var _julianjelfs$elmhotels$TrpTest$view = function (model) {
 						A2(
 						_elm_lang$html$Html_App$map,
 						_julianjelfs$elmhotels$Models$AutocompleterUpdate,
-						_julianjelfs$elmhotels$Autocompleter$view(model.autocompleter)),
+						_julianjelfs$elmhotels$Autocompleter_View$view(model.autocompleter)),
 						_julianjelfs$elmhotels$Filters$view(filtered.criteria.filter)
 					])),
 				A2(
@@ -117,37 +117,22 @@ var _julianjelfs$elmhotels$TrpTest$update = F2(
 				var e = A2(_elm_lang$core$Debug$log, 'hotels failed to load: ', _p0._0);
 				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 			default:
-				var _p3 = _p0._0;
-				var _p1 = A2(_julianjelfs$elmhotels$Autocompleter$update, _p3, model.autocompleter);
-				var m = _p1._0;
-				var e = _p1._1;
-				var _p2 = _p3;
-				if (_p2.ctor === 'SelectDestination') {
-					return {
-						ctor: '_Tuple2',
-						_0: _elm_lang$core$Native_Utils.update(
-							model,
-							{
-								autocompleter: m,
-								hotels: _elm_lang$core$Native_List.fromArray(
-									[])
-							}),
-						_1: _elm_lang$core$Platform_Cmd$batch(
-							_elm_lang$core$Native_List.fromArray(
-								[
-									_julianjelfs$elmhotels$Api$getHotels(_p2._0),
-									A2(_elm_lang$core$Platform_Cmd$map, _julianjelfs$elmhotels$Models$AutocompleterUpdate, e)
-								]))
-					};
-				} else {
-					return {
-						ctor: '_Tuple2',
-						_0: _elm_lang$core$Native_Utils.update(
-							model,
-							{autocompleter: m}),
-						_1: A2(_elm_lang$core$Platform_Cmd$map, _julianjelfs$elmhotels$Models$AutocompleterUpdate, e)
-					};
-				}
+				var _p1 = A2(_julianjelfs$elmhotels$Autocompleter_State$update, _p0._0, model.autocompleter);
+				var updated = _p1._0;
+				var localFx = _p1._1;
+				var rootFx = _p1._2;
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{autocompleter: updated}),
+					_1: _elm_lang$core$Platform_Cmd$batch(
+						_elm_lang$core$Native_List.fromArray(
+							[
+								A2(_elm_lang$core$Platform_Cmd$map, _julianjelfs$elmhotels$Models$AutocompleterUpdate, localFx),
+								rootFx
+							]))
+				};
 		}
 	});
 var _julianjelfs$elmhotels$TrpTest$initialModel = A4(
@@ -156,15 +141,22 @@ var _julianjelfs$elmhotels$TrpTest$initialModel = A4(
 		[]),
 	0,
 	A3(_julianjelfs$elmhotels$Models$Criteria, _julianjelfs$elmhotels$Models$initialFilter, _julianjelfs$elmhotels$Models$initialSortOrder, _julianjelfs$elmhotels$Models$initialPager),
-	_julianjelfs$elmhotels$Autocompleter$initialModel);
-var _julianjelfs$elmhotels$TrpTest$init = {ctor: '_Tuple2', _0: _julianjelfs$elmhotels$TrpTest$initialModel, _1: _elm_lang$core$Platform_Cmd$none};
+	_julianjelfs$elmhotels$Autocompleter_Types$initialModel);
+var _julianjelfs$elmhotels$TrpTest$init = function () {
+	var m = _julianjelfs$elmhotels$TrpTest$initialModel;
+	return {
+		ctor: '_Tuple2',
+		_0: m,
+		_1: _julianjelfs$elmhotels$Api$getHotels(m.autocompleter.selected)
+	};
+}();
 var _julianjelfs$elmhotels$TrpTest$main = {
 	main: _elm_lang$html$Html_App$program(
 		{
 			init: _julianjelfs$elmhotels$TrpTest$init,
 			update: _julianjelfs$elmhotels$TrpTest$update,
 			view: _julianjelfs$elmhotels$TrpTest$view,
-			subscriptions: function (_p4) {
+			subscriptions: function (_p2) {
 				return _elm_lang$core$Platform_Sub$none;
 			}
 		})

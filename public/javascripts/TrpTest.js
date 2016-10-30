@@ -8709,184 +8709,29 @@ var _julianjelfs$elmhotels$Destination$Destination = F8(
 		return {countryId: a, provinceId: b, locationId: c, placeId: d, establishmentId: e, polygonId: f, establishmentCount: g, title: h};
 	});
 
-var _julianjelfs$elmhotels$Autocompleter$destinations = function () {
-	var dest = A9(
-		_elm_lang$core$Json_Decode$object8,
-		_julianjelfs$elmhotels$Destination$Destination,
-		A2(_elm_lang$core$Json_Decode_ops[':='], 'CountryId', _elm_lang$core$Json_Decode$int),
-		A2(_elm_lang$core$Json_Decode_ops[':='], 'ProvinceId', _elm_lang$core$Json_Decode$int),
-		A2(_elm_lang$core$Json_Decode_ops[':='], 'LocationId', _elm_lang$core$Json_Decode$int),
-		A2(_elm_lang$core$Json_Decode_ops[':='], 'PlaceId', _elm_lang$core$Json_Decode$int),
-		A2(_elm_lang$core$Json_Decode_ops[':='], 'EstablishmentId', _elm_lang$core$Json_Decode$int),
-		A2(_elm_lang$core$Json_Decode_ops[':='], 'PolygonId', _elm_lang$core$Json_Decode$int),
-		A2(_elm_lang$core$Json_Decode_ops[':='], 'EstablishmentCount', _elm_lang$core$Json_Decode$int),
-		A2(_elm_lang$core$Json_Decode_ops[':='], 'Title', _elm_lang$core$Json_Decode$string));
-	return A2(
-		_elm_lang$core$Json_Decode_ops[':='],
-		'Destinations',
-		_elm_lang$core$Json_Decode$list(dest));
-}();
-var _julianjelfs$elmhotels$Autocompleter$tenerife = A8(_julianjelfs$elmhotels$Destination$Destination, 3522, 54875, 0, 0, 0, 0, 0, 'Tenerife, Spain');
-var _julianjelfs$elmhotels$Autocompleter$emptyDestination = A8(_julianjelfs$elmhotels$Destination$Destination, 0, 0, 0, 0, 0, 0, 0, '');
-var _julianjelfs$elmhotels$Autocompleter$Model = F3(
+var _julianjelfs$elmhotels$Autocompleter_Types$tenerife = A8(_julianjelfs$elmhotels$Destination$Destination, 3522, 54875, 0, 0, 0, 0, 0, 'Tenerife, Spain');
+var _julianjelfs$elmhotels$Autocompleter_Types$emptyDestination = A8(_julianjelfs$elmhotels$Destination$Destination, 0, 0, 0, 0, 0, 0, 0, '');
+var _julianjelfs$elmhotels$Autocompleter_Types$Model = F3(
 	function (a, b, c) {
 		return {destinations: a, query: b, selected: c};
 	});
-var _julianjelfs$elmhotels$Autocompleter$initialModel = A3(
-	_julianjelfs$elmhotels$Autocompleter$Model,
+var _julianjelfs$elmhotels$Autocompleter_Types$initialModel = A3(
+	_julianjelfs$elmhotels$Autocompleter_Types$Model,
 	_elm_lang$core$Native_List.fromArray(
 		[]),
 	'Tenerife, Spain',
-	_julianjelfs$elmhotels$Autocompleter$tenerife);
-var _julianjelfs$elmhotels$Autocompleter$LoadResultsFailed = function (a) {
+	_julianjelfs$elmhotels$Autocompleter_Types$tenerife);
+var _julianjelfs$elmhotels$Autocompleter_Types$LoadResultsFailed = function (a) {
 	return {ctor: 'LoadResultsFailed', _0: a};
 };
-var _julianjelfs$elmhotels$Autocompleter$LoadResultsSucceeded = function (a) {
+var _julianjelfs$elmhotels$Autocompleter_Types$LoadResultsSucceeded = function (a) {
 	return {ctor: 'LoadResultsSucceeded', _0: a};
 };
-var _julianjelfs$elmhotels$Autocompleter$getDestinations = function (query) {
-	return A3(
-		_elm_lang$core$Task$perform,
-		_julianjelfs$elmhotels$Autocompleter$LoadResultsFailed,
-		_julianjelfs$elmhotels$Autocompleter$LoadResultsSucceeded,
-		A2(
-			_evancz$elm_http$Http$get,
-			_julianjelfs$elmhotels$Autocompleter$destinations,
-			A2(
-				_elm_lang$core$Basics_ops['++'],
-				'https://m.travelrepublic.co.uk/api2/destination/v2/search?SearchTerm=',
-				A2(_elm_lang$core$Basics_ops['++'], query, '&MaxResults=15&CultureCode=en-gb&RestrictToFlightDestinations=false&v=1.0.6978'))));
-};
-var _julianjelfs$elmhotels$Autocompleter$update = F2(
-	function (msg, model) {
-		var _p0 = msg;
-		switch (_p0.ctor) {
-			case 'QueryChanged':
-				var _p1 = _p0._0;
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{query: _p1}),
-					_1: _julianjelfs$elmhotels$Autocompleter$getDestinations(_p1)
-				};
-			case 'SelectDestination':
-				var _p2 = _p0._0;
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							selected: _p2,
-							destinations: _elm_lang$core$Native_List.fromArray(
-								[]),
-							query: _p2.title
-						}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'LoadResultsSucceeded':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{destinations: _p0._0}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			default:
-				var e = A2(_elm_lang$core$Debug$log, 'Autocompleter lookup failed: ', _p0._0);
-				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-		}
-	});
-var _julianjelfs$elmhotels$Autocompleter$SelectDestination = function (a) {
+var _julianjelfs$elmhotels$Autocompleter_Types$SelectDestination = function (a) {
 	return {ctor: 'SelectDestination', _0: a};
 };
-var _julianjelfs$elmhotels$Autocompleter$destination = function (dest) {
-	return A2(
-		_elm_lang$html$Html$li,
-		_elm_lang$core$Native_List.fromArray(
-			[
-				_elm_lang$html$Html_Events$onClick(
-				_julianjelfs$elmhotels$Autocompleter$SelectDestination(dest))
-			]),
-		_elm_lang$core$Native_List.fromArray(
-			[
-				A2(
-				_elm_lang$html$Html$span,
-				_elm_lang$core$Native_List.fromArray(
-					[]),
-				_elm_lang$core$Native_List.fromArray(
-					[
-						_elm_lang$html$Html$text(
-						A2(
-							_elm_lang$core$Basics_ops['++'],
-							dest.title,
-							A2(
-								_elm_lang$core$Basics_ops['++'],
-								', (',
-								A2(
-									_elm_lang$core$Basics_ops['++'],
-									_elm_lang$core$Basics$toString(dest.establishmentCount),
-									' hotels)'))))
-					]))
-			]));
-};
-var _julianjelfs$elmhotels$Autocompleter$QueryChanged = function (a) {
+var _julianjelfs$elmhotels$Autocompleter_Types$QueryChanged = function (a) {
 	return {ctor: 'QueryChanged', _0: a};
-};
-var _julianjelfs$elmhotels$Autocompleter$view = function (model) {
-	return A2(
-		_elm_lang$html$Html$section,
-		_elm_lang$core$Native_List.fromArray(
-			[
-				_elm_lang$html$Html_Attributes$class('autocompleter')
-			]),
-		_elm_lang$core$Native_List.fromArray(
-			[
-				A2(
-				_elm_lang$html$Html$h3,
-				_elm_lang$core$Native_List.fromArray(
-					[]),
-				_elm_lang$core$Native_List.fromArray(
-					[
-						_elm_lang$html$Html$text('Destination')
-					])),
-				A2(
-				_elm_lang$html$Html$div,
-				_elm_lang$core$Native_List.fromArray(
-					[]),
-				_elm_lang$core$Native_List.fromArray(
-					[
-						A2(
-						_elm_lang$html$Html$input,
-						_elm_lang$core$Native_List.fromArray(
-							[
-								_elm_lang$html$Html_Attributes$placeholder('Search for a destination'),
-								_elm_lang$html$Html_Attributes$autofocus(true),
-								_elm_lang$html$Html_Attributes$type$('text'),
-								_elm_lang$html$Html_Attributes$value(model.query),
-								_elm_lang$html$Html_Events$onInput(
-								function (str) {
-									return _julianjelfs$elmhotels$Autocompleter$QueryChanged(str);
-								})
-							]),
-						_elm_lang$core$Native_List.fromArray(
-							[]))
-					])),
-				A2(
-				_elm_lang$html$Html$div,
-				_elm_lang$core$Native_List.fromArray(
-					[
-						_elm_lang$html$Html_Attributes$class('results')
-					]),
-				_elm_lang$core$Native_List.fromArray(
-					[
-						A2(
-						_elm_lang$html$Html$ul,
-						_elm_lang$core$Native_List.fromArray(
-							[]),
-						A2(_elm_lang$core$List$map, _julianjelfs$elmhotels$Autocompleter$destination, model.destinations))
-					]))
-			]));
 };
 
 var _julianjelfs$elmhotels$Models$Filter = F4(
@@ -8969,7 +8814,11 @@ var _julianjelfs$elmhotels$Api$hotelsDecoder = function () {
 	var hotel = A7(
 		_elm_lang$core$Json_Decode$object6,
 		_julianjelfs$elmhotels$Models$Hotel,
-		A2(_elm_lang$core$Json_Decode_ops[':='], 'Name', _elm_lang$core$Json_Decode$string),
+		A2(
+			_elm_lang$core$Json_Decode$map,
+			_elm_lang$core$Maybe$withDefault('No Name'),
+			_elm_lang$core$Json_Decode$maybe(
+				A2(_elm_lang$core$Json_Decode_ops[':='], 'Name', _elm_lang$core$Json_Decode$string))),
 		_elm_lang$core$Json_Decode$succeed(''),
 		A2(
 			_elm_lang$core$Json_Decode$map,
@@ -9051,6 +8900,170 @@ var _julianjelfs$elmhotels$Api$getHotels = function (dest) {
 			_evancz$elm_http$Http$fromJson,
 			_julianjelfs$elmhotels$Api$hotelsDecoder,
 			A2(_evancz$elm_http$Http$send, _evancz$elm_http$Http$defaultSettings, config)));
+};
+
+var _julianjelfs$elmhotels$Autocompleter_Cmds$destinations = function () {
+	var dest = A9(
+		_elm_lang$core$Json_Decode$object8,
+		_julianjelfs$elmhotels$Destination$Destination,
+		A2(_elm_lang$core$Json_Decode_ops[':='], 'CountryId', _elm_lang$core$Json_Decode$int),
+		A2(_elm_lang$core$Json_Decode_ops[':='], 'ProvinceId', _elm_lang$core$Json_Decode$int),
+		A2(_elm_lang$core$Json_Decode_ops[':='], 'LocationId', _elm_lang$core$Json_Decode$int),
+		A2(_elm_lang$core$Json_Decode_ops[':='], 'PlaceId', _elm_lang$core$Json_Decode$int),
+		A2(_elm_lang$core$Json_Decode_ops[':='], 'EstablishmentId', _elm_lang$core$Json_Decode$int),
+		A2(_elm_lang$core$Json_Decode_ops[':='], 'PolygonId', _elm_lang$core$Json_Decode$int),
+		A2(_elm_lang$core$Json_Decode_ops[':='], 'EstablishmentCount', _elm_lang$core$Json_Decode$int),
+		A2(_elm_lang$core$Json_Decode_ops[':='], 'Title', _elm_lang$core$Json_Decode$string));
+	return A2(
+		_elm_lang$core$Json_Decode_ops[':='],
+		'Destinations',
+		_elm_lang$core$Json_Decode$list(dest));
+}();
+var _julianjelfs$elmhotels$Autocompleter_Cmds$getDestinations = function (query) {
+	return A3(
+		_elm_lang$core$Task$perform,
+		_julianjelfs$elmhotels$Autocompleter_Types$LoadResultsFailed,
+		_julianjelfs$elmhotels$Autocompleter_Types$LoadResultsSucceeded,
+		A2(
+			_evancz$elm_http$Http$get,
+			_julianjelfs$elmhotels$Autocompleter_Cmds$destinations,
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				'https://m.travelrepublic.co.uk/api2/destination/v2/search?SearchTerm=',
+				A2(_elm_lang$core$Basics_ops['++'], query, '&MaxResults=15&CultureCode=en-gb&RestrictToFlightDestinations=false&v=1.0.6978'))));
+};
+
+var _julianjelfs$elmhotels$Autocompleter_State$update = F2(
+	function (msg, model) {
+		var _p0 = msg;
+		switch (_p0.ctor) {
+			case 'QueryChanged':
+				var _p1 = _p0._0;
+				var fx = (_elm_lang$core$Native_Utils.cmp(
+					_elm_lang$core$String$length(_p1),
+					2) > 0) ? _julianjelfs$elmhotels$Autocompleter_Cmds$getDestinations(_p1) : _elm_lang$core$Platform_Cmd$none;
+				return {
+					ctor: '_Tuple3',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{query: _p1}),
+					_1: fx,
+					_2: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'SelectDestination':
+				var _p2 = _p0._0;
+				return {
+					ctor: '_Tuple3',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							selected: _p2,
+							destinations: _elm_lang$core$Native_List.fromArray(
+								[]),
+							query: _p2.title
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none,
+					_2: _julianjelfs$elmhotels$Api$getHotels(_p2)
+				};
+			case 'LoadResultsSucceeded':
+				return {
+					ctor: '_Tuple3',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{destinations: _p0._0}),
+					_1: _elm_lang$core$Platform_Cmd$none,
+					_2: _elm_lang$core$Platform_Cmd$none
+				};
+			default:
+				var e = A2(_elm_lang$core$Debug$log, 'Autocompleter lookup failed: ', _p0._0);
+				return {ctor: '_Tuple3', _0: model, _1: _elm_lang$core$Platform_Cmd$none, _2: _elm_lang$core$Platform_Cmd$none};
+		}
+	});
+
+var _julianjelfs$elmhotels$Autocompleter_View$destination = function (dest) {
+	return A2(
+		_elm_lang$html$Html$li,
+		_elm_lang$core$Native_List.fromArray(
+			[
+				_elm_lang$html$Html_Events$onClick(
+				_julianjelfs$elmhotels$Autocompleter_Types$SelectDestination(dest))
+			]),
+		_elm_lang$core$Native_List.fromArray(
+			[
+				A2(
+				_elm_lang$html$Html$span,
+				_elm_lang$core$Native_List.fromArray(
+					[]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html$text(
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							dest.title,
+							A2(
+								_elm_lang$core$Basics_ops['++'],
+								', (',
+								A2(
+									_elm_lang$core$Basics_ops['++'],
+									_elm_lang$core$Basics$toString(dest.establishmentCount),
+									' hotels)'))))
+					]))
+			]));
+};
+var _julianjelfs$elmhotels$Autocompleter_View$view = function (model) {
+	return A2(
+		_elm_lang$html$Html$section,
+		_elm_lang$core$Native_List.fromArray(
+			[
+				_elm_lang$html$Html_Attributes$class('autocompleter')
+			]),
+		_elm_lang$core$Native_List.fromArray(
+			[
+				A2(
+				_elm_lang$html$Html$h3,
+				_elm_lang$core$Native_List.fromArray(
+					[]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html$text('Destination')
+					])),
+				A2(
+				_elm_lang$html$Html$div,
+				_elm_lang$core$Native_List.fromArray(
+					[]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						A2(
+						_elm_lang$html$Html$input,
+						_elm_lang$core$Native_List.fromArray(
+							[
+								_elm_lang$html$Html_Attributes$placeholder('Search for a destination'),
+								_elm_lang$html$Html_Attributes$autofocus(true),
+								_elm_lang$html$Html_Attributes$type$('text'),
+								_elm_lang$html$Html_Attributes$value(model.query),
+								_elm_lang$html$Html_Events$onInput(
+								function (str) {
+									return _julianjelfs$elmhotels$Autocompleter_Types$QueryChanged(str);
+								})
+							]),
+						_elm_lang$core$Native_List.fromArray(
+							[]))
+					])),
+				A2(
+				_elm_lang$html$Html$div,
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html_Attributes$class('results')
+					]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						A2(
+						_elm_lang$html$Html$ul,
+						_elm_lang$core$Native_List.fromArray(
+							[]),
+						A2(_elm_lang$core$List$map, _julianjelfs$elmhotels$Autocompleter_View$destination, model.destinations))
+					]))
+			]));
 };
 
 var _julianjelfs$elmhotels$SortBar$sortButton = F3(
@@ -9680,7 +9693,7 @@ var _julianjelfs$elmhotels$TrpTest$view = function (model) {
 						A2(
 						_elm_lang$html$Html_App$map,
 						_julianjelfs$elmhotels$Models$AutocompleterUpdate,
-						_julianjelfs$elmhotels$Autocompleter$view(model.autocompleter)),
+						_julianjelfs$elmhotels$Autocompleter_View$view(model.autocompleter)),
 						_julianjelfs$elmhotels$Filters$view(filtered.criteria.filter)
 					])),
 				A2(
@@ -9772,37 +9785,22 @@ var _julianjelfs$elmhotels$TrpTest$update = F2(
 				var e = A2(_elm_lang$core$Debug$log, 'hotels failed to load: ', _p0._0);
 				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 			default:
-				var _p3 = _p0._0;
-				var _p1 = A2(_julianjelfs$elmhotels$Autocompleter$update, _p3, model.autocompleter);
-				var m = _p1._0;
-				var e = _p1._1;
-				var _p2 = _p3;
-				if (_p2.ctor === 'SelectDestination') {
-					return {
-						ctor: '_Tuple2',
-						_0: _elm_lang$core$Native_Utils.update(
-							model,
-							{
-								autocompleter: m,
-								hotels: _elm_lang$core$Native_List.fromArray(
-									[])
-							}),
-						_1: _elm_lang$core$Platform_Cmd$batch(
-							_elm_lang$core$Native_List.fromArray(
-								[
-									_julianjelfs$elmhotels$Api$getHotels(_p2._0),
-									A2(_elm_lang$core$Platform_Cmd$map, _julianjelfs$elmhotels$Models$AutocompleterUpdate, e)
-								]))
-					};
-				} else {
-					return {
-						ctor: '_Tuple2',
-						_0: _elm_lang$core$Native_Utils.update(
-							model,
-							{autocompleter: m}),
-						_1: A2(_elm_lang$core$Platform_Cmd$map, _julianjelfs$elmhotels$Models$AutocompleterUpdate, e)
-					};
-				}
+				var _p1 = A2(_julianjelfs$elmhotels$Autocompleter_State$update, _p0._0, model.autocompleter);
+				var updated = _p1._0;
+				var localFx = _p1._1;
+				var rootFx = _p1._2;
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{autocompleter: updated}),
+					_1: _elm_lang$core$Platform_Cmd$batch(
+						_elm_lang$core$Native_List.fromArray(
+							[
+								A2(_elm_lang$core$Platform_Cmd$map, _julianjelfs$elmhotels$Models$AutocompleterUpdate, localFx),
+								rootFx
+							]))
+				};
 		}
 	});
 var _julianjelfs$elmhotels$TrpTest$initialModel = A4(
@@ -9811,15 +9809,22 @@ var _julianjelfs$elmhotels$TrpTest$initialModel = A4(
 		[]),
 	0,
 	A3(_julianjelfs$elmhotels$Models$Criteria, _julianjelfs$elmhotels$Models$initialFilter, _julianjelfs$elmhotels$Models$initialSortOrder, _julianjelfs$elmhotels$Models$initialPager),
-	_julianjelfs$elmhotels$Autocompleter$initialModel);
-var _julianjelfs$elmhotels$TrpTest$init = {ctor: '_Tuple2', _0: _julianjelfs$elmhotels$TrpTest$initialModel, _1: _elm_lang$core$Platform_Cmd$none};
+	_julianjelfs$elmhotels$Autocompleter_Types$initialModel);
+var _julianjelfs$elmhotels$TrpTest$init = function () {
+	var m = _julianjelfs$elmhotels$TrpTest$initialModel;
+	return {
+		ctor: '_Tuple2',
+		_0: m,
+		_1: _julianjelfs$elmhotels$Api$getHotels(m.autocompleter.selected)
+	};
+}();
 var _julianjelfs$elmhotels$TrpTest$main = {
 	main: _elm_lang$html$Html_App$program(
 		{
 			init: _julianjelfs$elmhotels$TrpTest$init,
 			update: _julianjelfs$elmhotels$TrpTest$update,
 			view: _julianjelfs$elmhotels$TrpTest$view,
-			subscriptions: function (_p4) {
+			subscriptions: function (_p2) {
 				return _elm_lang$core$Platform_Sub$none;
 			}
 		})

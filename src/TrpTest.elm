@@ -11,17 +11,23 @@ import SortBar
 import Pager
 import Filters
 import HotelsList
-import Autocompleter 
+import Autocompleter.View as ACV
+import Autocompleter.Types as ACT
+import Autocompleter.State as ACS
 import Filtering exposing (..)
 import Debug exposing(log)
 
 init: (Model, Cmd Msg)
 init =
-    (initialModel, Cmd.none)
+    let
+        m = initialModel
+    in
+        (m, (getHotels m.autocompleter.selected))
+
 
 initialModel : Model
 initialModel =
-    Model [] 0 (Criteria initialFilter initialSortOrder initialPager) Autocompleter.initialModel
+    Model [] 0 (Criteria initialFilter initialSortOrder initialPager) ACT.initialModel
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
@@ -50,19 +56,13 @@ update msg model =
                 in
                     (model, Cmd.none)
 
-            AutocompleterUpdate msg ->
-                let (m, e) = Autocompleter.update msg model.autocompleter
+            AutocompleterUpdate sub ->
+                let
+                    (updated, localFx, rootFx) = ACS.update sub model.autocompleter
                 in
-                    case msg of
-                        Autocompleter.SelectDestination dest -> 
-                            ({model | autocompleter = m, hotels = []}, 
-                            Cmd.batch [
-                                getHotels dest,
-                                Cmd.map AutocompleterUpdate e
-                            ])
-                        
-                        _ -> ({model | autocompleter = m}, Cmd.map AutocompleterUpdate e)
-
+                    ({model | autocompleter = updated}, Cmd.batch
+                        [ Cmd.map AutocompleterUpdate localFx
+                        , rootFx ])
 
 --VIEW
 view: Model -> Html Msg
@@ -74,7 +74,7 @@ view model =
                 Header.header
             ],
             section [ class "sidebar" ]
-                [ Html.map AutocompleterUpdate (Autocompleter.view model.autocompleter)
+                [ Html.map AutocompleterUpdate (ACV.view model.autocompleter)
                 , Filters.view filtered.criteria.filter
                 ],
             section [ class "content" ]

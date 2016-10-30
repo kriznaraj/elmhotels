@@ -48,7 +48,9 @@ hotelsDecoder =
     let
         hotel =
             Json.object6 Hotel
-               ("Name" := Json.string)
+                (("Name" := Json.string)
+                    |> Json.maybe
+                    |> Json.map (Maybe.withDefault "No Name"))
                (Json.succeed "")
                (Json.map estabIdToImageUrl ("EstablishmentId" := Json.int))
                ("Stars" := Json.int)

@@ -1,6 +1,6 @@
 module Models exposing(..)
 
-import Autocompleter
+import Autocompleter.Types as AC
 import Http
 
 
@@ -49,7 +49,7 @@ type Msg =
     | PageChange Pager
     | FilterChange Filter
     | SortChange SortOrder
-    | AutocompleterUpdate Autocompleter.Msg
+    | AutocompleterUpdate AC.Msg
 
 type alias Criteria =
     { filter : Filter
@@ -61,5 +61,5 @@ type alias Model =
     { hotels : HotelList
     , total : Int
     , criteria : Criteria
-    , autocompleter : Autocompleter.Model
+    , autocompleter : AC.Model
     }
