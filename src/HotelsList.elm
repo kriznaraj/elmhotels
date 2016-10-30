@@ -1,4 +1,4 @@
-module HotelsList exposing(..)
+module HotelsList exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -8,36 +8,36 @@ import Models exposing (..)
 
 backgroundImage : String -> Attribute Msg
 backgroundImage url =
-    style 
-        [ 
-            ("backgroundImage", ("url(" ++ url ++ ")")),
-            ("backgroundRepeat", "no-repeat")
+    style
+        [ ( "backgroundImage", ("url(" ++ url ++ ")") )
+        , ( "backgroundRepeat", "no-repeat" )
         ]
+
 
 hotelCard : Hotel -> Html Msg
 hotelCard hotel =
-    li [] [ 
-        div [class "hotel-card"] [ 
-            div [] [
-                div [class "hotel-image", (backgroundImage hotel.image)] [ ],
-                div [class "hotel-overlay"] [
-                     h3 [class "truncate"] [text hotel.name],
-                     div [class "hotel-text"] [
-                        p [ class "hotel-price"] [text ("Price: " ++ (toString hotel.price))],
-                        p [ class "hotel-rating"] [text ("Rating: " ++ (toString hotel.rating))],
-                        p [ class "hotel-stars"] [text ("Stars: " ++ (toString hotel.stars))]
-                    ]                   
-                ]                
+    li []
+        [ div [ class "hotel-card" ]
+            [ div []
+                [ div [ class "hotel-image", (backgroundImage hotel.image) ] []
+                , div [ class "hotel-overlay" ]
+                    [ h3 [ class "truncate" ] [ text hotel.name ]
+                    , div [ class "hotel-text" ]
+                        [ p [ class "hotel-price" ] [ text ("Price: " ++ (toString hotel.price)) ]
+                        , p [ class "hotel-rating" ] [ text ("Rating: " ++ (toString hotel.rating)) ]
+                        , p [ class "hotel-stars" ] [ text ("Stars: " ++ (toString hotel.stars)) ]
+                        ]
+                    ]
+                ]
             ]
         ]
-    ]
+
 
 hotelList : HotelList -> Html Msg
 hotelList hotels =
-    section [ class "hotel-list"] [ 
-        if((List.length hotels) == 0) then 
+    section [ class "hotel-list" ]
+        [ if ((List.length hotels) == 0) then
             h3 [] [ text "Loading hotels ..." ]
-        else
+          else
             ul [] (List.map hotelCard hotels)
-    ]
-
+        ]
