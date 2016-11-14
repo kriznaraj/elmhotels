@@ -24,10 +24,10 @@ update msg model =
         SelectDestination dest ->
             ( { model | selected = dest, destinations = [], query = dest.title }, Cmd.none, (getHotels dest) )
 
-        LoadResultsSucceeded results ->
+        LoadResults (Ok results) ->
             ( { model | destinations = results }, Cmd.none, Cmd.none )
 
-        LoadResultsFailed err ->
+        LoadResults (Err err) ->
             let
                 e =
                     log "Autocompleter lookup failed: " err

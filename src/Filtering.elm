@@ -45,20 +45,19 @@ sort model =
                     List.sortBy .name
 
                 Stars ->
-                        List.reverse << List.sortBy .stars
+                    List.reverse << List.sortBy .stars
 
                 Rating ->
-                        List.reverse << List.sortBy .rating
+                    List.reverse << List.sortBy .rating
 
                 Price ->
                     List.sortBy .price
-
     in
         { model | hotels = (sortFn model.hotels) }
 
 
 nameMatches : String -> Hotel -> Bool
-nameMatches query {name} =
+nameMatches query { name } =
     let
         queryLower =
             (String.toLower query)
@@ -90,20 +89,27 @@ ratingAtLeast min hotel =
 
 
 filter : Model -> Model
-filter ({criteria, hotels} as model) =
+filter ({ criteria, hotels } as model) =
     let
-        filter = criteria.filter
+        filter =
+            criteria.filter
 
         fns =
             [ ratingAtLeast filter.minRating
             , priceLessThan filter.minPrice
             , starsMatch filter.stars
-            , nameMatches filter.hotelName ]
+            , nameMatches filter.hotelName
+            ]
 
         hotelMatches =
             (\h ->
-                List.foldl (\fn matches ->
-                    matches && fn h) True fns )
+                List.foldl
+                    (\fn matches ->
+                        matches && fn h
+                    )
+                    True
+                    fns
+            )
 
         hotels =
             List.filter hotelMatches model.hotels
@@ -112,7 +118,7 @@ filter ({criteria, hotels} as model) =
 
 
 restrict : Model -> Model
-restrict ({hotels, criteria} as model) =
+restrict ({ hotels, criteria } as model) =
     { model | total = (List.length hotels) }
         |> filter
         |> sort

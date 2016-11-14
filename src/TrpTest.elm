@@ -2,7 +2,6 @@ module TrpTest exposing (..)
 
 import Task exposing (..)
 import Html exposing (..)
-import Html.App as Html exposing (map)
 import Html.Attributes exposing (..)
 import Api exposing (getHotels)
 import Models exposing (..)
@@ -54,10 +53,10 @@ update msg model =
             SortChange sort ->
                 ( updateCriteria model { criteria | sort = sort }, Cmd.none )
 
-            HotelsLoadSucceeded hotels ->
+            HotelsLoad (Ok hotels) ->
                 ( { model | hotels = hotels }, Cmd.none )
 
-            HotelsLoadFailed err ->
+            HotelsLoad (Err err) ->
                 let
                     e =
                         log "hotels failed to load: " err

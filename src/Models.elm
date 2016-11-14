@@ -56,8 +56,7 @@ type alias HotelList =
 
 type Msg
     = NoOp
-    | HotelsLoadSucceeded HotelList
-    | HotelsLoadFailed Http.Error
+    | HotelsLoad (Result Http.Error HotelList)
     | PageChange Pager
     | FilterChange Filter
     | SortChange SortOrder

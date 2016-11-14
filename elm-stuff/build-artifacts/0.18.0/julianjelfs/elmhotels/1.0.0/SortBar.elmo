@@ -1,0 +1,47 @@
+var _julianjelfs$elmhotels$SortBar$sortButton = F3(
+	function (currentSort, sort, label) {
+		var cls = _elm_lang$core$Native_Utils.eq(currentSort, sort) ? 'button sort-bar-button sort-selected' : 'button sort-bar-button';
+		return A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$class(cls),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html_Events$onClick(
+						_julianjelfs$elmhotels$Models$SortChange(sort)),
+					_1: {ctor: '[]'}
+				}
+			},
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html$text(label),
+				_1: {ctor: '[]'}
+			});
+	});
+var _julianjelfs$elmhotels$SortBar$view = function (sort) {
+	return A2(
+		_elm_lang$html$Html$section,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class('sort-bar'),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: A3(_julianjelfs$elmhotels$SortBar$sortButton, sort, _julianjelfs$elmhotels$Models$HotelName, 'Name'),
+			_1: {
+				ctor: '::',
+				_0: A3(_julianjelfs$elmhotels$SortBar$sortButton, sort, _julianjelfs$elmhotels$Models$Stars, 'Stars'),
+				_1: {
+					ctor: '::',
+					_0: A3(_julianjelfs$elmhotels$SortBar$sortButton, sort, _julianjelfs$elmhotels$Models$Rating, 'Rating'),
+					_1: {
+						ctor: '::',
+						_0: A3(_julianjelfs$elmhotels$SortBar$sortButton, sort, _julianjelfs$elmhotels$Models$Price, 'Price'),
+						_1: {ctor: '[]'}
+					}
+				}
+			}
+		});
+};

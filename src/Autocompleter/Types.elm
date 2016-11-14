@@ -31,5 +31,4 @@ tenerife =
 type Msg
     = QueryChanged String
     | SelectDestination Destination
-    | LoadResultsSucceeded DestinationList
-    | LoadResultsFailed Http.Error
+    | LoadResults (Result Http.Error DestinationList)

@@ -24,7 +24,7 @@ stars : Int -> Filter -> Html Msg
 stars num filter =
     div [ class "stars" ]
         [ input
-            [ type' "checkbox"
+            [ type_ "checkbox"
             , checked (List.member num filter.stars)
             , onClick (FilterChange (addOrRemoveStar filter num))
             ]
@@ -41,7 +41,7 @@ view filter =
             [ input
                 [ placeholder "Hotel Name"
                 , autofocus True
-                , type' "text"
+                , type_ "text"
                 , value filter.hotelName
                 , onInput (\str -> (FilterChange { filter | hotelName = str }))
                 ]
@@ -87,7 +87,7 @@ rangeInput name min max val filter updater =
         [ label [] [ text (name ++ ": ") ]
         , input
             [ placeholder name
-            , type' "range"
+            , type_ "range"
             , Html.Attributes.min min
             , Html.Attributes.max max
             , value (toString val)

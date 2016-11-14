@@ -1,0 +1,313 @@
+var _julianjelfs$elmhotels$Filters$parseFloat = function (str) {
+	return A2(
+		_elm_lang$core$Result$withDefault,
+		0,
+		_elm_lang$core$String$toFloat(str));
+};
+var _julianjelfs$elmhotels$Filters$rangeInput = F6(
+	function (name, min, max, val, filter, updater) {
+		return A2(
+			_elm_lang$html$Html$div,
+			{ctor: '[]'},
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$label,
+					{ctor: '[]'},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text(
+							A2(_elm_lang$core$Basics_ops['++'], name, ': ')),
+						_1: {ctor: '[]'}
+					}),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$input,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$placeholder(name),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$type_('range'),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$min(min),
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$html$Html_Attributes$max(max),
+										_1: {
+											ctor: '::',
+											_0: _elm_lang$html$Html_Attributes$value(
+												_elm_lang$core$Basics$toString(val)),
+											_1: {
+												ctor: '::',
+												_0: _elm_lang$html$Html_Events$onInput(
+													function (str) {
+														return _julianjelfs$elmhotels$Models$FilterChange(
+															A2(updater, filter, str));
+													}),
+												_1: {ctor: '[]'}
+											}
+										}
+									}
+								}
+							}
+						},
+						{ctor: '[]'}),
+					_1: {ctor: '[]'}
+				}
+			});
+	});
+var _julianjelfs$elmhotels$Filters$addOrRemoveStar = F2(
+	function (filter, star) {
+		var inList = A2(_elm_lang$core$List$member, star, filter.stars);
+		return inList ? _elm_lang$core$Native_Utils.update(
+			filter,
+			{
+				stars: A2(
+					_elm_lang$core$List$filter,
+					function (s) {
+						return !_elm_lang$core$Native_Utils.eq(s, star);
+					},
+					filter.stars)
+			}) : _elm_lang$core$Native_Utils.update(
+			filter,
+			{
+				stars: {ctor: '::', _0: star, _1: filter.stars}
+			});
+	});
+var _julianjelfs$elmhotels$Filters$stars = F2(
+	function (num, filter) {
+		return A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$class('stars'),
+				_1: {ctor: '[]'}
+			},
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$input,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$type_('checkbox'),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$checked(
+								A2(_elm_lang$core$List$member, num, filter.stars)),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$html$Html_Events$onClick(
+									_julianjelfs$elmhotels$Models$FilterChange(
+										A2(_julianjelfs$elmhotels$Filters$addOrRemoveStar, filter, num))),
+								_1: {ctor: '[]'}
+							}
+						}
+					},
+					{ctor: '[]'}),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$span,
+						{ctor: '[]'},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text(
+								A2(
+									_elm_lang$core$Basics_ops['++'],
+									_elm_lang$core$Basics$toString(num),
+									' Stars')),
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				}
+			});
+	});
+var _julianjelfs$elmhotels$Filters$view = function (filter) {
+	return A2(
+		_elm_lang$html$Html$section,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class('filters'),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$h3,
+				{ctor: '[]'},
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html$text('Filters'),
+					_1: {ctor: '[]'}
+				}),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{ctor: '[]'},
+					{
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$input,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$placeholder('Hotel Name'),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$autofocus(true),
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$html$Html_Attributes$type_('text'),
+										_1: {
+											ctor: '::',
+											_0: _elm_lang$html$Html_Attributes$value(filter.hotelName),
+											_1: {
+												ctor: '::',
+												_0: _elm_lang$html$Html_Events$onInput(
+													function (str) {
+														return _julianjelfs$elmhotels$Models$FilterChange(
+															_elm_lang$core$Native_Utils.update(
+																filter,
+																{hotelName: str}));
+													}),
+												_1: {ctor: '[]'}
+											}
+										}
+									}
+								}
+							},
+							{ctor: '[]'}),
+						_1: {ctor: '[]'}
+					}),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{ctor: '[]'},
+						{
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$label,
+								{ctor: '[]'},
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html$text('Stars: '),
+									_1: {ctor: '[]'}
+								}),
+							_1: {
+								ctor: '::',
+								_0: A2(
+									_elm_lang$html$Html$div,
+									{ctor: '[]'},
+									{
+										ctor: '::',
+										_0: A2(_julianjelfs$elmhotels$Filters$stars, 5, filter),
+										_1: {
+											ctor: '::',
+											_0: A2(_julianjelfs$elmhotels$Filters$stars, 4, filter),
+											_1: {
+												ctor: '::',
+												_0: A2(_julianjelfs$elmhotels$Filters$stars, 3, filter),
+												_1: {
+													ctor: '::',
+													_0: A2(_julianjelfs$elmhotels$Filters$stars, 2, filter),
+													_1: {
+														ctor: '::',
+														_0: A2(_julianjelfs$elmhotels$Filters$stars, 1, filter),
+														_1: {ctor: '[]'}
+													}
+												}
+											}
+										}
+									}),
+								_1: {ctor: '[]'}
+							}
+						}),
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$div,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$class('clear'),
+								_1: {ctor: '[]'}
+							},
+							{
+								ctor: '::',
+								_0: A6(
+									_julianjelfs$elmhotels$Filters$rangeInput,
+									'Minimum Rating',
+									'0',
+									'10',
+									filter.minRating,
+									filter,
+									F2(
+										function (c, str) {
+											return _elm_lang$core$Native_Utils.update(
+												filter,
+												{
+													minRating: _julianjelfs$elmhotels$Filters$parseFloat(str)
+												});
+										})),
+								_1: {ctor: '[]'}
+							}),
+						_1: {
+							ctor: '::',
+							_0: A6(
+								_julianjelfs$elmhotels$Filters$rangeInput,
+								'Minimum Price',
+								'0',
+								'7000',
+								filter.minPrice,
+								filter,
+								F2(
+									function (c, str) {
+										return _elm_lang$core$Native_Utils.update(
+											filter,
+											{
+												minPrice: _julianjelfs$elmhotels$Filters$parseFloat(str)
+											});
+									})),
+							_1: {
+								ctor: '::',
+								_0: A2(
+									_elm_lang$html$Html$div,
+									{ctor: '[]'},
+									{
+										ctor: '::',
+										_0: A2(
+											_elm_lang$html$Html$button,
+											{
+												ctor: '::',
+												_0: _elm_lang$html$Html_Attributes$class('button'),
+												_1: {
+													ctor: '::',
+													_0: _elm_lang$html$Html_Events$onClick(
+														_julianjelfs$elmhotels$Models$FilterChange(
+															A4(
+																_julianjelfs$elmhotels$Models$Filter,
+																{ctor: '[]'},
+																0,
+																'',
+																0))),
+													_1: {ctor: '[]'}
+												}
+											},
+											{
+												ctor: '::',
+												_0: _elm_lang$html$Html$text('Clear Filters'),
+												_1: {ctor: '[]'}
+											}),
+										_1: {ctor: '[]'}
+									}),
+								_1: {ctor: '[]'}
+							}
+						}
+					}
+				}
+			}
+		});
+};

@@ -26,7 +26,7 @@ view model =
             [ input
                 [ placeholder "Search for a destination"
                 , autofocus True
-                , type' "text"
+                , type_ "text"
                 , value model.query
                 , onInput (\str -> QueryChanged str)
                 ]
