@@ -61,6 +61,8 @@ type Msg
     | FilterChange Filter
     | SortChange SortOrder
     | AutocompleterUpdate AC.Msg
+    | ShowHotelDetail Hotel
+    | HideHotelDetail
 
 
 type alias Criteria =
@@ -75,4 +77,5 @@ type alias Model =
     , total : Int
     , criteria : Criteria
     , autocompleter : AC.Model
+    , hotelDetail: Maybe Hotel
     }

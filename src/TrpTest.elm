@@ -6,6 +6,7 @@ import Html.Attributes exposing (..)
 import Api exposing (getHotels)
 import Models exposing (..)
 import Header
+import HotelDetail exposing (..)
 import SortBar
 import Pager
 import Filters
@@ -28,7 +29,7 @@ init =
 
 initialModel : Model
 initialModel =
-    Model [] 0 (Criteria initialFilter initialSortOrder initialPager) ACT.initialModel
+    Model [] 0 (Criteria initialFilter initialSortOrder initialPager) ACT.initialModel Nothing
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -55,6 +56,12 @@ update msg model =
 
             HotelsLoad (Ok hotels) ->
                 ( { model | hotels = hotels }, Cmd.none )
+
+            ShowHotelDetail hotel ->
+                ({model | hotelDetail = Just hotel}, Cmd.none)
+
+            HideHotelDetail ->
+                ({model | hotelDetail = Nothing}, Cmd.none) 
 
             HotelsLoad (Err err) ->
                 let
@@ -89,6 +96,11 @@ view model =
             , section [ class "sidebar" ]
                 [ Html.map AutocompleterUpdate (ACV.view model.autocompleter)
                 , Filters.view filtered.criteria.filter
+                ]
+            , section [ class "light-box-section" ]
+                [ (case model.hotelDetail of
+                        Nothing -> div [][]
+                        Just hotel -> HotelDetail.lightBox hotel)
                 ]
             , section [ class "content" ]
                 [ SortBar.view filtered.criteria.sort

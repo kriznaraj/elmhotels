@@ -1,4 +1,6 @@
 node_modules
 *.swp
 .idea
-public/javascripts
+public/javascripts/
+elm-stuff/build-artifacts/
+public/stylesheets/

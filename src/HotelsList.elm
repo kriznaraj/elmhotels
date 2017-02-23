@@ -2,6 +2,7 @@ module HotelsList exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Html.Events exposing (..)
 import Debug exposing (log)
 import Models exposing (..)
 
@@ -19,7 +20,7 @@ hotelCard hotel =
     li []
         [ div [ class "hotel-card" ]
             [ div []
-                [ div [ class "hotel-image", (backgroundImage hotel.image) ] []
+                [ div [ onClick (ShowHotelDetail hotel), class "hotel-image", (backgroundImage hotel.image) ] []
                 , div [ class "hotel-overlay" ]
                     [ h3 [ class "truncate" ] [ text hotel.name ]
                     , div [ class "hotel-text" ]
