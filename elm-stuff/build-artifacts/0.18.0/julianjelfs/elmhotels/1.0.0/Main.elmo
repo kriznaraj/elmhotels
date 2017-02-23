@@ -1,0 +1,154 @@
+var _julianjelfs$elmhotels$Main$sum = function (numbers) {
+	var _p0 = numbers;
+	if (_p0.ctor === 'Empty') {
+		return 0;
+	} else {
+		return _p0._0 + _julianjelfs$elmhotels$Main$sum(_p0._1);
+	}
+};
+var _julianjelfs$elmhotels$Main$Model = F3(
+	function (a, b, c) {
+		return {numbers: a, names: b, name: c};
+	});
+var _julianjelfs$elmhotels$Main$TextChange = function (a) {
+	return {ctor: 'TextChange', _0: a};
+};
+var _julianjelfs$elmhotels$Main$ShowName = {ctor: 'ShowName'};
+var _julianjelfs$elmhotels$Main$Decrement = {ctor: 'Decrement'};
+var _julianjelfs$elmhotels$Main$Increment = {ctor: 'Increment'};
+var _julianjelfs$elmhotels$Main$view = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{ctor: '[]'},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$button,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Events$onClick(_julianjelfs$elmhotels$Main$Decrement),
+					_1: {ctor: '[]'}
+				},
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html$text('-'),
+					_1: {ctor: '[]'}
+				}),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{ctor: '[]'},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text(
+							_elm_lang$core$Basics$toString(
+								_julianjelfs$elmhotels$Main$sum(model.numbers))),
+						_1: {ctor: '[]'}
+					}),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$input,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$placeholder('Text to add'),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$html$Html_Events$onInput(_julianjelfs$elmhotels$Main$TextChange),
+								_1: {ctor: '[]'}
+							}
+						},
+						{ctor: '[]'}),
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$div,
+							{ctor: '[]'},
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html$text(
+									_elm_lang$core$Basics$toString(model.names)),
+								_1: {ctor: '[]'}
+							}),
+						_1: {
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$button,
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html_Events$onClick(_julianjelfs$elmhotels$Main$Increment),
+									_1: {ctor: '[]'}
+								},
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html$text('+'),
+									_1: {ctor: '[]'}
+								}),
+							_1: {
+								ctor: '::',
+								_0: A2(
+									_elm_lang$html$Html$button,
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html_Events$onClick(_julianjelfs$elmhotels$Main$ShowName),
+										_1: {ctor: '[]'}
+									},
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html$text('AddName'),
+										_1: {ctor: '[]'}
+									}),
+								_1: {ctor: '[]'}
+							}
+						}
+					}
+				}
+			}
+		});
+};
+var _julianjelfs$elmhotels$Main$Node = F2(
+	function (a, b) {
+		return {ctor: 'Node', _0: a, _1: b};
+	});
+var _julianjelfs$elmhotels$Main$Empty = {ctor: 'Empty'};
+var _julianjelfs$elmhotels$Main$Nodea = F2(
+	function (a, b) {
+		return {ctor: 'Nodea', _0: a, _1: b};
+	});
+var _julianjelfs$elmhotels$Main$addName = F2(
+	function (name, names) {
+		return A2(_julianjelfs$elmhotels$Main$Nodea, name, names);
+	});
+var _julianjelfs$elmhotels$Main$update = F2(
+	function (msg, model) {
+		var _p1 = msg;
+		switch (_p1.ctor) {
+			case 'Increment':
+				return _elm_lang$core$Native_Utils.update(
+					model,
+					{
+						numbers: A2(_julianjelfs$elmhotels$Main$Node, 1, model.numbers)
+					});
+			case 'Decrement':
+				return _elm_lang$core$Native_Utils.update(
+					model,
+					{
+						numbers: A2(_julianjelfs$elmhotels$Main$Node, -1, model.numbers)
+					});
+			case 'ShowName':
+				return _elm_lang$core$Native_Utils.update(
+					model,
+					{
+						names: A2(_julianjelfs$elmhotels$Main$addName, model.name, model.names)
+					});
+			default:
+				return _elm_lang$core$Native_Utils.update(
+					model,
+					{name: _p1._0});
+		}
+	});
+var _julianjelfs$elmhotels$Main$EmptyList = {ctor: 'EmptyList'};
+var _julianjelfs$elmhotels$Main$model = {numbers: _julianjelfs$elmhotels$Main$Empty, names: _julianjelfs$elmhotels$Main$EmptyList, name: ''};
+var _julianjelfs$elmhotels$Main$main = _elm_lang$html$Html$beginnerProgram(
+	{model: _julianjelfs$elmhotels$Main$model, view: _julianjelfs$elmhotels$Main$view, update: _julianjelfs$elmhotels$Main$update})();
