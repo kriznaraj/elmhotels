@@ -3,7 +3,7 @@ module TrpTest exposing (..)
 import Task exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Api exposing (getHotels)
+import Api exposing (getHotels, getUser)
 import Models exposing (..)
 import Header
 import HotelDetail exposing (..)
@@ -29,7 +29,7 @@ init =
 
 initialModel : Model
 initialModel =
-    Model [] 0 (Criteria initialFilter initialSortOrder initialPager) ACT.initialModel Nothing
+    Model [] 0 (Criteria initialFilter initialSortOrder initialPager) ACT.initialModel Nothing (getUser)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )

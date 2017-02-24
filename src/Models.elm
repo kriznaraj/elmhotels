@@ -78,4 +78,13 @@ type alias Model =
     , criteria : Criteria
     , autocompleter : AC.Model
     , hotelDetail: Maybe Hotel
+    , userDetail: User
     }
+
+
+type alias User =
+  { id : Int
+  , email : Maybe String
+  , name : String
+  , percentExcited : Float
+  }

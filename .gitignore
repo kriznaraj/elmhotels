@@ -4,3 +4,4 @@ node_modules
 public/javascripts/
 elm-stuff/build-artifacts/
 public/stylesheets/
+elm-stuff/

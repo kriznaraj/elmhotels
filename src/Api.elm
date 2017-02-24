@@ -2,6 +2,7 @@ module Api exposing (..)
 
 import Json.Decode as Json exposing (field)
 import Json.Encode exposing (Value, encode, int, object, string)
+import Json.Decode.Pipeline exposing (decode, required, optional, hardcoded)
 import Task exposing (..)
 import Http exposing (..)
 import String exposing (append, fromChar, foldl)
@@ -74,3 +75,16 @@ estabIdToImageUrl estabId =
 imageUrl : String -> String
 imageUrl estabPart =
     "https://d23wf1heedwns1.cloudfront.net/ei" ++ estabPart ++ "/0_260_260.jpg"
+
+userDecoder : Decoder User
+userDecoder =
+  decode User
+    |> required "id" int
+    |> required "email" (nullable string) -- `null` decodes to `Nothing`
+    |> optional "name" string "(fallback if name is `null` or not present)"
+    |> hardcoded 1.0
+
+
+getUser : Http.Request User
+getUser =
+    Http.get "data/user.json" (\d -> Json.Decode.decodeString userDecoder d)
