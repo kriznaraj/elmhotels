@@ -41,12 +41,28 @@ initialSortOrder =
 
 
 type alias Hotel =
-    { name : String
+    { estabId: Int
+    , name : String
     , thumbnail : String
     , image : String
     , stars : Int
     , rating : Float
     , price : Float
+    }
+
+type alias HotelDetail =
+    { establishmentType : String
+    , location : String
+    , provinceTitle: String
+    , address: String
+    , name : String
+    , establishmentId : Int
+    , stars : Int
+    , summary: String
+    , userRating : Float
+    , userRatingTitle : String
+    , userRatingCount : Int
+    , teaserPricePerNight: Float
     }
 
 
@@ -63,6 +79,8 @@ type Msg
     | AutocompleterUpdate AC.Msg
     | ShowHotelDetail Hotel
     | HideHotelDetail
+    | ShowUser (Result Http.Error User)
+    | ShowDetail (Result Http.Error HotelDetail)
 
 
 type alias Criteria =
@@ -77,8 +95,8 @@ type alias Model =
     , total : Int
     , criteria : Criteria
     , autocompleter : AC.Model
-    , hotelDetail: Maybe Hotel
-    , userDetail: User
+    , hotelDetail: Maybe HotelDetail
+    , user: Maybe User
     }
 
 

@@ -24,12 +24,12 @@ init =
         m =
             initialModel
     in
-        ( m, (getHotels m.autocompleter.selected) )
+        ( m, (getHotels m.autocompleter.selected))
 
 
 initialModel : Model
 initialModel =
-    Model [] 0 (Criteria initialFilter initialSortOrder initialPager) ACT.initialModel Nothing (getUser)
+    Model [] 0 (Criteria initialFilter initialSortOrder initialPager) ACT.initialModel Nothing Nothing
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -57,16 +57,33 @@ update msg model =
             HotelsLoad (Ok hotels) ->
                 ( { model | hotels = hotels }, Cmd.none )
 
+            ShowUser (Ok user) ->
+                ( { model | user = Just user }, Cmd.none )
+
+            ShowUser (Err err) ->
+                (model, Cmd.none)
+
+            ShowDetail (Ok detail) ->
+                ( { model | hotelDetail = Just detail }, Cmd.none )
+
+            ShowDetail (Err err) ->
+                let
+                    e = log "hotels failed to load: " err
+                in
+                    ( model, Cmd.none )
+
             ShowHotelDetail hotel ->
-                ({model | hotelDetail = Just hotel}, Cmd.none)
+                let
+                    user = getUser
+                in
+                    (model, Api.getHotelDetail hotel.estabId)
 
             HideHotelDetail ->
-                ({model | hotelDetail = Nothing}, Cmd.none) 
+                ({model| hotelDetail = Nothing}, Cmd.none) 
 
             HotelsLoad (Err err) ->
                 let
-                    e =
-                        log "hotels failed to load: " err
+                    e = log "hotels failed to load: " err
                 in
                     ( model, Cmd.none )
 
@@ -106,6 +123,7 @@ view model =
                 [ SortBar.view filtered.criteria.sort
                 , Pager.view filtered.total filtered.criteria.paging
                 , (HotelsList.hotelList filtered.hotels)
+                , userContent model.user
                 ]
             , section [ class "footer" ]
                 [ h3 [] [ text "My beautiful footer section" ]

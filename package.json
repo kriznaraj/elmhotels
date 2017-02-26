@@ -21,7 +21,9 @@
     "express": "2.5.8",
     "gulp-modify-file": "^0.1.0",
     "jade": ">= 0.0.1",
-    "proxy-middleware": "^0.14.0"
+    "lodash": "^4.17.4",
+    "proxy-middleware": "^0.14.0",
+    "request": "^2.79.0"
   },
   "devDependencies": {
     "gulp": "^3.9.0",

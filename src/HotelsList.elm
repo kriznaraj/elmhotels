@@ -1,5 +1,4 @@
 module HotelsList exposing (..)
-
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
@@ -18,13 +17,14 @@ backgroundImage url =
 hotelCard : Hotel -> Html Msg
 hotelCard hotel =
     li []
-        [ div [ class "hotel-card" ]
+        [ div [ onClick (ShowHotelDetail hotel), class "hotel-card" ]
             [ div []
-                [ div [ onClick (ShowHotelDetail hotel), class "hotel-image", (backgroundImage hotel.image) ] []
+                [ div [ class "hotel-image", (backgroundImage hotel.image) ] []
                 , div [ class "hotel-overlay" ]
                     [ h3 [ class "truncate" ] [ text hotel.name ]
                     , div [ class "hotel-text" ]
                         [ p [ class "hotel-price" ] [ text ("Price: " ++ (toString hotel.price)) ]
+                        , p [ class "hotel-rating" ] [ text ("Id: " ++ (toString hotel.estabId)) ]
                         , p [ class "hotel-rating" ] [ text ("Rating: " ++ (toString hotel.rating)) ]
                         , p [ class "hotel-stars" ] [ text ("Stars: " ++ (toString hotel.stars)) ]
                         ]

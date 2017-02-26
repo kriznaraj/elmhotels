@@ -182,7 +182,7 @@ input, select {
 .modal {
   position: fixed;
   z-index: 1;
-  padding-top: 100px;
+  padding-top: 10px;
   left: 0;
   top: 0;
   width: 100%;
@@ -194,10 +194,12 @@ input, select {
 .modal-content {
   position: relative;
   background-color: #fefefe;
+  width: 400px;
   margin: auto;
-  padding: 0;
-  width: 90%;
-  max-width: 1200px;
+  padding: 5px;
+  border: 1px solid #2196f3
+  /*width: 90%;
+  max-width: 1200px;*/
 }
 
 .close {
